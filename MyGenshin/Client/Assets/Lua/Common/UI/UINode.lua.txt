@@ -1,0 +1,238 @@
+UINode = BaseClass()
+UINode.isSingleton = true
+UINode.event = {
+    OnShow = "OnShow",
+    OnShowed = "OnShowed",
+    OnHide = "OnHide",
+    OnHided = "OnHided",
+    OnReappear = "OnReappear",
+    OnReappeared = "OnReappeared",
+    OnClose = "OnClose",
+    OnClosed = "OnClosed"
+}
+
+function UINode:Construtor(parent,transform)
+    self.viewCfg = {
+        prefabPath = nil,
+        prefabName = nil,
+        parent = parent,
+        parentTransform = transform,
+        canvasName = nil,
+        worldPositionStays=false,
+        isDestroyOnClose = false, --点击关闭时不隐藏 直接销毁 PS :父亲如果点击销毁 则孩子无论怎么设置都是点击销毁
+        isAutoDestroy = false, --父亲销毁时是否自动销毁  PS :父亲如果自动销毁 则孩子无论怎么设置都是自动销毁
+        isEnterUIState =false,
+        component = {}
+    }
+    self.state='unLoad'
+end
+
+function UINode:Load()
+    if self.isLoad then
+        return
+    end
+    --载入预制体
+    assert(self.viewCfg, "找不到UI的config")
+    assert(self.viewCfg.prefabName or self.viewCfg.prefabPath, "Prefab的路径名称不全")
+    local prefab = ResMgr.GetPrefab(self.viewCfg.prefabName, self.viewCfg.prefabPath)
+    assert(prefab, "Prefab载入失败")
+    --实例化游戏对象
+    local gameObject = GameObject.Instantiate(prefab)
+    self.gameObject = gameObject
+    if self.viewCfg.name then
+        gameObject.name = self.viewCfg.name
+    end
+    self.transform = gameObject.transform
+    self.transform:SetParent(UIManager:GetCanvas("Hide"), false)
+    self.gameObject.layer = CS.UnityEngine.LayerMask.NameToLayer("UI")
+    --UI生命周期事件管理器
+    self.eventMgr = NodeEventManager:New(self)
+    --是否点击销毁
+    if self.viewCfg.parent and (self.viewCfg.parent.viewCfg.isDestroyOnClose or self.viewCfg.isDestroyOnClose) then
+        self.viewCfg.isDestroyOnClose = true
+    end
+    --自动销毁机制
+    if self.viewCfg.parent and (self.viewCfg.parent.viewCfg.isAutoDestroy or self.viewCfg.isAutoDestroy) then
+        self.viewCfg.isAutoDestroy = true
+        table.insert(self.viewCfg.parent.AutoDestroy, self)
+    end
+    self.AutoDestroy = {}
+    -- 动画中屏蔽按钮
+    self:InitFreeze()
+    --UI动效组件初始化
+    self:ComponentInit()
+    --Unity对象注册
+    self:FindUnityUIComponent(self.transform)
+    --自定义初始化
+    self:OnAwake()
+    --按钮事件注册
+    self:AddEvent()
+    --载入完毕
+    self.isLoad = true
+    self.state="Loaded"
+    return self
+end
+function UINode:OnAwake()
+end
+
+function UINode:AddEvent()
+end
+
+function UINode:SetPosition(Vector)
+    self.transform.position = Vector
+end
+
+function UINode:InitFreeze()
+    self.freeze = false
+    local freeze = function(callback)
+        self.freeze = true
+        callback()
+    end
+    local thaw = function(callback)
+        self.freeze = false
+        callback()
+    end
+    self.eventMgr:AddListener(UINode.event.OnShow, freeze)
+    self.eventMgr:AddListener(UINode.event.OnHide, freeze)
+    self.eventMgr:AddListener(UINode.event.OnReappear, freeze)
+    self.eventMgr:AddListener(UINode.event.OnClose, freeze)
+    self.eventMgr:AddListener(UINode.event.OnShowed, thaw)
+    self.eventMgr:AddListener(UINode.event.OnHided, thaw)
+    self.eventMgr:AddListener(UINode.event.OnReappeared, thaw)
+    self.eventMgr:AddListener(UINode.event.OnClosed, thaw)
+end
+
+function UINode:AddClickEvent(btn, callback)
+    btn.onClick:AddListener(
+        function()
+            if self.freeze == false then
+                callback(btn)
+            end
+        end
+    )
+end
+
+function UINode:DoShow()
+    assert(self.viewCfg, "找不到UI的config")
+    local root
+    if self.viewCfg.parent then
+        if self.viewCfg.parentTransform==nil then
+            self.viewCfg.parentTransform=self.viewCfg.parent.transform
+        end
+        self.transform:SetParent(self.viewCfg.parentTransform, self.viewCfg.worldPositionStays)
+        root = self.viewCfg.parent.root
+    elseif self.viewCfg.canvasName then
+        root = UIManager:AddToCanvas(self, self.viewCfg.canvasName)
+    else
+        root = UIManager:AddToCanvas(self, "Top")
+    end
+    self.root = root
+    self.transform:SetAsLastSibling()
+    self.gameObject:SetActive(true)
+    self.state="Show"
+    if self.viewCfg.isEnterUIState then
+        GlobalMgr.Instance:EnterGamePlayState(GamePlayState.UI)
+    end
+
+end
+
+function UINode:Show()
+    if self.isLoad == nil then
+        self:Load()
+    end
+    self:DoShow()
+    if self.firstShow == nil then
+        self.firstShow = true
+        self.eventMgr:Call(
+            UINode.event.OnShow,
+            function()
+                UIManager:PushInStack(self)
+                self.eventMgr:Call(UINode.event.OnShowed)            
+            end
+        )
+    else
+        self.eventMgr:Call(
+            UINode.event.OnReappear,
+            function()
+                self.eventMgr:Call(UINode.event.OnReappeared)
+            end
+        )
+    end
+    return self
+end
+
+function UINode:DoHide()
+    self.gameObject:SetActive(false)
+    self.state="Hide"
+end
+
+function UINode:Hide()
+    self.eventMgr:Call(
+        UINode.event.OnHide,
+        function()
+            self:DoHide()
+            self.eventMgr:Call(UINode.event.OnHided)
+        end
+    )
+    return self
+end
+
+function UINode:DoClose()
+    if self.viewCfg.isDestroyOnClose then
+        for i, k in ipairs(self.AutoDestroy) do
+            if k ~= nil then
+                k:DoClose()
+            end
+        end
+        self.eventMgr:ClearAll()
+        UnityDestroy(self.gameObject)
+        self:Destroy()
+    else
+        self:DoHide()
+        self.firstShow = nil
+        
+    end
+    self.state='Close'
+    if self.viewCfg.isEnterUIState then
+        GlobalMgr.Instance:QuitGamePlayState()
+    end
+end
+
+function UINode:Close()
+    UIManager:PopOutStack(self)
+    self.eventMgr:Call(
+        UINode.event.OnClose,
+        function()
+            self:DoClose()
+            self.eventMgr:Call(UINode.event.OnClosed)
+        end
+    )
+    
+    return self
+end
+
+function UINode:ComponentInit()
+    self.loaded_components = self.loaded_components or {}
+    for i, v in ipairs(self.viewCfg.component) do
+        local component = v[1]:New(self, v[2])
+        table.insert(self.loaded_components, component)
+    end
+end
+
+function UINode:FindUnityUIComponent(transform)
+    for i = 0, transform.childCount - 1 do
+        local child = transform:GetChild(i)
+        if child.tag == "LuaUI" then
+            self:SetUnityUIComponent(child)
+        elseif child.tag == "UIBg" then
+            child.gameObject:AddComponent(Helper.GetType("UIBgResize"))
+        end
+        self:FindUnityUIComponent(child)
+    end
+end
+
+function UINode:SetUnityUIComponent(transform)
+    local key = transform.name
+    local t = Split(key, "_")
+    self[key] = transform:GetComponent(t[1])
+end

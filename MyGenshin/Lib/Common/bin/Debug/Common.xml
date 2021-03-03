@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Common</name>
+    </assembly>
+    <members>
+        <member name="M:Common.Utils.GameUtil.GetPropertyCount(System.Int32)">
+            <summary>
+            根据稀有度判断随机词条的数量
+            </summary>
+            <param name="rare">稀有度</param>
+            <returns>词条数量</returns>
+        </member>
+        <member name="M:Common.Utils.GameUtil.ParseSlot(SkillBridge.Message.EquipType)">
+            <summary>
+            根据装备类型获取对应的槽位ID
+            </summary>
+            <param name="type">装备类型</param>
+            <returns>槽位ID</returns>
+        </member>
+        <member name="T:Network.MessageDistributer">
+            <summary>
+            MessageDistributer
+            消息分发器
+            </summary>
+        </member>
+        <member name="T:Network.MessageDistributer`1">
+            <summary>
+            消息分发器
+            MessageDistributer
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:Network.MessageDistributer`1.Distribute">
+            <summary>
+            一次性分发队列中的所有消息
+            </summary>
+        </member>
+        <member name="M:Network.MessageDistributer`1.Start(System.Int32)">
+            <summary>
+            启动消息处理器
+            [多线程模式]
+            </summary>
+            <param name="ThreadNum">工作线程数</param>
+        </member>
+        <member name="M:Network.MessageDistributer`1.Stop">
+            <summary>
+            停止消息处理器
+            [多线程模式]
+            </summary>
+        </member>
+        <member name="M:Network.MessageDistributer`1.MessageDistribute(System.Object)">
+            <summary>
+            消息处理线程
+            [多线程模式]
+            </summary>
+            <param name="stateInfo"></param>
+        </member>
+        <member name="T:Network.PackageHandler">
+            <summary>
+            PackageHandler
+            数据包处理器
+            </summary>
+        </member>
+        <member name="T:Network.PackageHandler`1">
+            <summary>
+            PackageHandler
+            数据包处理器
+            </summary>
+            <typeparam name="T">消息发送者类型</typeparam>
+        </member>
+        <member name="M:Network.PackageHandler`1.ReceiveData(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            接收数据到PackageHandler
+            </summary>
+            <param name="data"></param>
+            <param name="offset"></param>
+            <param name="count"></param>
+        </member>
+        <member name="M:Network.PackageHandler`1.PackMessage(SkillBridge.Message.NetMessage)">
+            <summary>
+            打包消息
+            </summary>
+            <param name="message"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Network.PackageHandler`1.UnpackMessage(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            提取消息
+            </summary>
+            <param name="packet"></param>
+            <param name="offset"></param>
+            <param name="length"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Network.PackageHandler`1.ParsePackage">
+            <summary>
+            数据包解析
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

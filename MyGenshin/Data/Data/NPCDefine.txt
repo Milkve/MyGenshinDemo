@@ -1,0 +1,29 @@
+{
+  "1": {
+    "ID": 1,
+    "Name": "爱丽丝",
+    "Description": "「蒙德商会」道具商人",
+    "StoreID": 1
+  },
+  "2": {
+    "ID": 2,
+    "Name": "莉莉丝",
+    "Description": "「蒙德商会」装备商人",
+    "StoreID": 2
+  },
+  "3": {
+    "ID": 3,
+    "Name": "卡恩",
+    "Description": "村长"
+  },
+  "4": {
+    "ID": 4,
+    "Name": "埃布尔",
+    "Description": "副本传送"
+  },
+  "5": {
+    "ID": 5,
+    "Name": "奥德里齐",
+    "Description": "冒险家"
+  }
+}

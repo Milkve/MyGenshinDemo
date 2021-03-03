@@ -1,0 +1,50 @@
+BagDeleteConfirm = BaseClass(UINode)
+BagDeleteConfirm.Singleton = true
+function BagDeleteConfirm:Construtor()
+    self.viewCfg.prefabName = "UIBagDeleteComfirm"
+    self.viewCfg.prefabPath = "ui/bag/UIBagDeleteConfirm.prefab"
+    self.viewCfg.canvasName = "Normal"
+    self.viewCfg.isAutoDestroy = true
+    self.viewCfg.isDestroyOnClose = true
+    self.viewCfg.component = {
+        {UI.Fade, {alpha = 1, durtion = 0.5, delay = 0}},
+        {UI.Move, {distance = 10, durtion = 0.3, dalay = 0.1, direction = Vector3.up}},
+        {UI.Mask, {isCloseOnClick = true}},
+    }
+    self.warp={}
+end
+
+
+
+function BagDeleteConfirm:AddEvent()
+    local OnClick=function(btn)
+        if self.Button_Cancel==btn then
+            UIManager:Close(self)
+        elseif self.Button_Confirm==btn then
+            BagCtrl:SendSell()
+            UIManager:Close(self)
+            BagCtrl:GetGroup().State.Value = UIState.Single
+            BagCtrl:GetGroup():ClearMultiple()
+        end
+    end
+    self:AddClickEvent(self.Button_Cancel,OnClick)
+    self:AddClickEvent(self.Button_Confirm,OnClick)
+end
+
+
+function BagDeleteConfirm:Clear()
+
+end
+
+function BagDeleteConfirm:SetData(selectables)
+    require("Game.Common.UIInfoGrid")
+    for k,v in pairs(selectables) do
+        local warp = WarpView:New(self, self.Transform_Content)
+        table.insert(self.warp, warp)
+        UIManager:Show(warp)
+        local grid = UIInfoGridView:New(warp)
+        grid:Load()
+        grid:SetData(v)    
+        UIManager:Show(grid)
+    end
+end

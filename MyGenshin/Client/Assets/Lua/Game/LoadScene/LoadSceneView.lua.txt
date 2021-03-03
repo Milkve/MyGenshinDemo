@@ -1,0 +1,18 @@
+LoadSceneView=BaseClass(UINode)
+LoadSceneView.Singleton=true
+
+
+function LoadSceneView:Construtor()
+    self.viewCfg.prefabName = "UILoadScene"
+    self.viewCfg.prefabPath = "ui/LoadScene/UILoadScene.prefab"
+    self.viewCfg.canvasName = "Top"
+    self.viewCfg.isDestroyOnClose = true
+    self.viewCfg.component = {
+        {UI.Fade, {alpha = 1, durtion = 0.5, delay = 0}},
+    }
+end
+
+
+function LoadSceneView:SetFill(progress)
+    self.Image_Fill.fillAmount=progress
+end

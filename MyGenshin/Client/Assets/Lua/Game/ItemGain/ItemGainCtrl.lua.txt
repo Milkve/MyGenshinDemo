@@ -1,0 +1,23 @@
+require('Game.ItemGain.ItemGainGridView')
+require('Game.ItemGain.ItemGainView')
+
+
+ItemGainCtrl = {}
+
+function ItemGainCtrl:Init()
+    self:AddEvent()
+    self.GainView=ItemGainView:New()
+end
+
+function ItemGainCtrl:AddEvent()
+
+end
+
+
+function ItemGainCtrl:ShowGain()
+    UIManager:Show(self.GainView)
+    self.GainView:GenItem()
+end
+
+
+return ItemGainCtrl

@@ -1,0 +1,9 @@
+WarpView = BaseClass(UINode)
+function WarpView:Construtor(parent,transform)
+    self.viewCfg.prefabName = "UIWarp"
+    self.viewCfg.prefabPath = "ui/common/UIWarp.prefab"
+    self.viewCfg.parent = parent
+    self.viewCfg.parentTransform=transform
+    self.viewCfg.isDestroyOnClose=true
+end
+

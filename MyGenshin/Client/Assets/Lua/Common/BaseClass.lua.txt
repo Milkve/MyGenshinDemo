@@ -1,0 +1,78 @@
+local function destroyFunc(self)
+    if self.isDestroy then
+        return
+    end
+    self.isDestroy = true
+    local super = self.__class_type   
+    while (super) do
+        super.Instance=nil
+        local OnDestroy = rawget(super, "OnDestroy")
+        if OnDestroy then
+            OnDestroy(self)
+        end
+        super = super.super
+    end
+end
+
+function BaseClass(super)
+    local class_type = {}
+    class_type.DefaultVar = false
+    class_type.Construtor = false
+    class_type.Singleton=false
+    class_type.super = super
+    class_type.New = function(self, ...)
+        if class_type.Singleton then
+            if class_type.Instance then
+                return class_type.Instance
+            end
+        end
+        local obj = nil
+        local create
+        create = function(c, obj, ...)
+            if c.super then
+                create(c.super, obj, ...)
+            end
+            if c.Construtor then
+                c.Construtor(obj, ...)
+            end
+        end
+        if class_type.DefaultVar then
+            obj = class_type.DefaultVar(obj)
+        else
+            obj = {}
+        end
+
+        setmetatable(
+            obj,
+            {
+                __index = function(t, k)
+                    local ret = class_type[k]
+                    obj[k] = ret
+                    return ret
+                end
+            }
+        )
+        
+        create(class_type, obj, ...)
+        obj.__class_type = class_type
+        obj.Destroy = destroyFunc
+        if class_type.Singleton then
+            class_type.Instance=obj 
+        end
+        return obj
+    end
+    if super then
+        setmetatable(
+            class_type,
+            {
+                __index = function(t, k)
+                    local ret = super[k]
+                    class_type[k] = ret
+                    return ret
+                end
+            }
+        )
+    end
+
+    return class_type
+end

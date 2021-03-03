@@ -1,0 +1,6 @@
+QuestConst = {}
+QuestConst["All"] = "全部任务"
+QuestConst[QuestType.Main] = "主线任务"
+QuestConst[QuestType.Branch] = "支线任务"
+QuestConst[QuestType.Repeated] = "重复任务"
+QuestConst[QuestType.World] = "世界任务"

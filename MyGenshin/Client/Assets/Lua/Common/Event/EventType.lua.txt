@@ -1,0 +1,8 @@
+GlobleEvent=EventParse("Globle",{
+    'Update',
+     "LateUpdate",
+    'EnterLogin',
+    'EnterChrSelect',
+    'EnterGamePlaying',
+    'EnterMap'
+})

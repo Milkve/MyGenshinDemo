@@ -1,0 +1,16 @@
+SelectIcon = {
+    {"Leave", "sprite/selectIcon/0 Leave.png"},
+    {"Talk", "sprite/selectIcon/1 Talk.png"},
+    {"ItemStore", "sprite/selectIcon/2 ItemStore.png"},  
+    {'Acceptable',"sprite/selectIcon/3 Acceptable.png"},
+    {'Completed',"sprite/selectIcon/4 Completed.png"},
+    {'Accept',"sprite/selectIcon/5 Accept.png"},
+    {'Refuse',"sprite/selectIcon/6 Refuse.png"},
+    {'Finish',"sprite/selectIcon/7 Finish.png"},
+    {"Other", "sprite/selectIcon/8 Other.png"},
+}
+
+SelectAreaPositon = {
+    up = {anchorMin=Vector2(0.5,0.5),anchorMax=Vector2(0.5,0.5),anchoredPosition=Vector2(100,-100)},
+    down = {anchorMin=Vector2(0.5,0),anchorMax=Vector2(0.5,0),anchoredPosition=Vector2(500,400)}
+}

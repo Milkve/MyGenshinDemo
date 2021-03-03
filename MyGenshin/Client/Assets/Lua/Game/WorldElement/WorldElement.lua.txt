@@ -1,0 +1,46 @@
+WorldElement=BaseClass()
+
+
+
+function WorldElement:Construtor(transform)
+    self.viewCfg = {
+
+        prefabPath = nil,
+        prefabName = nil,
+        parentTransform = transform,
+    }
+end
+
+function WorldElement:AddEvent()
+end
+function WorldElement:Show()
+    local prefab = ResMgr.GetPrefab(self.viewCfg.prefabName, self.viewCfg.prefabPath)
+    local gameObject = GameObject.Instantiate(prefab)
+    self.gameObject = gameObject
+    if self.viewCfg.name then
+        gameObject.name = self.viewCfg.name
+    end
+    self.transform = gameObject.transform
+    self.transform:SetParent(self.viewCfg.parentTransform, false)
+    self.gameObject.layer = CS.UnityEngine.LayerMask.NameToLayer("UI")
+    
+    self:FindUnityUIComponent(self.transform)
+    self:AddEvent()
+end
+
+function WorldElement:FindUnityUIComponent(transform)
+    for i = 0, transform.childCount - 1 do
+        local child = transform:GetChild(i)
+        if child.tag == "LuaUI" then
+            self:SetUnityUIComponent(child)
+        end
+        self:FindUnityUIComponent(child)
+    end
+end
+
+
+function WorldElement:SetUnityUIComponent(transform)
+    local key = transform.name
+    local t = Split(key, "_")
+    self[key] = transform:GetComponent(t[1])
+end

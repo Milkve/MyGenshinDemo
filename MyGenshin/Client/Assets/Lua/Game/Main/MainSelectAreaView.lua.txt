@@ -1,0 +1,21 @@
+MainSelectAreaView = BaseClass(UINode)
+function MainSelectAreaView:Construtor()
+    self.viewCfg.canvasName = "Normal"
+    self.viewCfg.prefabName = "UIMainSelectArea"
+    self.viewCfg.prefabPath = "ui/main/UIMainSelectArea.prefab"
+    self.viewCfg.isDestroyOnClose = false
+    self.viewCfg.component = {}
+end
+
+function MainSelectAreaView:AddEvent()
+end
+
+function MainSelectAreaView:PositionInit(data)
+    if self.rectTransform == nil then
+        self.rectTransform = self.gameObject:GetComponent("RectTransform")
+    end
+
+    for k, v in pairs(data) do
+        self.rectTransform[k] = v
+    end
+end

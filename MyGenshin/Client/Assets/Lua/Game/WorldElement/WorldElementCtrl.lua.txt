@@ -1,0 +1,33 @@
+WorldElementCtrl={}
+
+require('Game.WorldElement.WorldElement')
+require('Game.WorldElement.NpcInfoView')
+
+function WorldElementCtrl:Init()
+    self.AllWorldElement={}
+end
+
+function AddChrInfo(npcctrl)
+    print(npcctrl)
+    WorldElementCtrl:AddChrInfo(npcctrl)
+end
+
+
+function WorldElementCtrl:AddChrInfo(npcctrl)
+    local chrInfo= NpcInfoView:New(npcctrl.transform)
+    chrInfo:Show()
+    chrInfo:SetData(npcctrl)
+end
+
+
+
+
+
+
+
+
+
+
+
+
+return WorldElementCtrl

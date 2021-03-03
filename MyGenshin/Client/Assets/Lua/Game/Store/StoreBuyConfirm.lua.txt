@@ -1,0 +1,59 @@
+StoreBuyConfirm = BaseClass(UINode)
+StoreBuyConfirm.Singleton = true
+function StoreBuyConfirm:Construtor()
+    self.viewCfg.prefabName = "UIStoreBuyComfirm"
+    self.viewCfg.prefabPath = "ui/store/UIStoreBuy.prefab"
+    self.viewCfg.canvasName = "Normal"
+    self.viewCfg.isAutoDestroy = true
+    self.viewCfg.isDestroyOnClose = true
+    self.viewCfg.component = {
+        {UI.Fade, {alpha = 1, durtion = 0.5, delay = 0}},
+        {UI.Move, {distance = 10, durtion = 0.3, dalay = 0.1, direction = Vector3.up}},
+        {UI.Mask, {isCloseOnClick = true}},
+    }
+end
+
+
+
+function StoreBuyConfirm:AddEvent()
+    local OnClick=function(btn)
+        if self.Button_Cancel==btn then
+            UIManager:Close(self)
+        elseif self.Button_Confirm==btn then
+            StoreCtrl:Send(self.goods.ID,self.Slider_Count.value)
+            
+            UIManager:Close(self)
+        elseif self.Button_Minus==btn then
+            self.Slider_Count.value=self.Slider_Count.value-1
+        elseif self.Button_Plus==btn then
+            self.Slider_Count.value=self.Slider_Count.value+1
+        end
+    end
+    self:AddClickEvent(self.Button_Cancel,OnClick)
+    self:AddClickEvent(self.Button_Confirm,OnClick)
+    self:AddClickEvent(self.Button_Minus,OnClick)
+    self:AddClickEvent(self.Button_Plus,OnClick)
+
+
+    local OnValueChange=function(value)
+        self.Text_Money.text=math.floor( self.goods.Price*value)
+        self.Text_Count.text=math.floor(value)
+    end
+    self.Slider_Count.onValueChanged:AddListener(OnValueChange)
+end
+
+
+
+
+function StoreBuyConfirm:SetData(goods,Define)
+    self.goods=goods
+    self.Text_Name.text=Define.Name
+    self.Text_Description.text=Define.Description
+    self.Text_Money.text=goods.Price
+    self.Image_Icon.sprite=ResMgr.GetSprite(Define.Name, Define.Resource)
+    self.Image_Icon:SetNativeSize()
+    self.Image_Quality.sprite = ResMgr.GetSprite("", UIConst.RareBgResource[Define.Rare + 1])
+    local max = StoreCtrl:GetMax(goods)
+    self.Slider_Count.maxValue = max
+    self.Text_Max.text= max
+end

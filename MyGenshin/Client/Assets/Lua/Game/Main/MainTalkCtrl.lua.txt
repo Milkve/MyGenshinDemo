@@ -1,0 +1,174 @@
+require("Game.Main.MainSelectView")
+require("Game.Main.MainSelectAreaView")
+require("Game.Main.MainConst")
+MainTalkCtrl = {}
+local SelectHihgt = 80
+function MainTalkCtrl:Init()
+    self:EventInit()
+    self.talk=MainTalkView:New()
+    self.isTalking = false
+    self.SelectsUp = {}
+    self.ShowCountUp = 0
+    self.SelectsDown = {}
+    self.ShowCountDown = 0
+end
+
+function MainTalkCtrl:EventInit()
+    local OnEnterGamePlaying = function()
+        self.up = MainSelectAreaView:New()
+        self.up:Load()
+        self.up:PositionInit(SelectAreaPositon.up)
+        self.down = MainSelectAreaView:New()
+        self.down:Load()
+        self.down:PositionInit(SelectAreaPositon.down)
+        UIManager:Show(self.up)
+    end
+
+    GlobleEventManager:AddListener(GlobleEvent.EnterGamePlaying, OnEnterGamePlaying)
+    -- local OnGamePlayStateChanged = function(state)
+    --     if state == GamePlayState.Talking then
+    --         self.isTalking = true
+    --         -- UIManager:Show(self.down)
+       
+    --     else
+    --         self.isTalking = false
+    --         -- UIManager:Show(self.up)
+
+    --     end
+    -- end
+    -- BindCSEvent(GlobalMgr.Instance, "OnGamePlayStateChanged", OnGamePlayStateChanged)
+
+    local OnNpcEnter = function(npcDefine)
+        self:AddSelect(npcDefine.ID, npcDefine)
+    end
+    BindCSEvent(NpcMgr.Instance, "OnNpcEnter", OnNpcEnter)
+    local OnNpcLeave = function(npcDefine)
+        self:RemoveSelect(npcDefine.ID)
+    end
+    BindCSEvent(NpcMgr.Instance, "OnNpcLeave", OnNpcLeave)
+end
+
+function MainTalkCtrl:CalPositon(total)
+    local re = {}
+    if self.isTalking then
+        for i = 0, total - 1 do
+            table.insert(re, i * SelectHihgt)
+        end
+    else
+        for i = 0, total - 1 do
+            table.insert(re, (i - (total - 1) / 2) * SelectHihgt)
+        end
+    end
+    return re
+end
+
+function MainTalkCtrl:AddSelect(id, npcDefine)
+    if self.isTalking then
+        local select = MainSelectView:New(self.down)
+        select:Load()
+        select:SetData(id, npcDefine)
+        table.insert(self.SelectsDown, select)
+        self.ShowCountDown = self.ShowCountDown + 1
+        select.transform.localPosition = Vector3(0, self:CalPositon(self.ShowCountDown)[self.ShowCountDown], 0)
+        UIManager:Show(select)
+    else
+        local select = MainSelectView:New(self.up)
+        select:Load()
+        select:SetData(id, npcDefine)
+        table.insert(self.SelectsUp, select)
+        self.ShowCountUp = self.ShowCountUp + 1
+        select.transform.localPosition = Vector3(0, self:CalPositon(self.ShowCountUp)[self.ShowCountUp], 0)
+        UIManager:Show(select)
+    end
+    self:Update()
+end
+
+function MainTalkCtrl:RemoveSelect(id)
+    if self.isTalking then
+        for k, v in pairs(self.SelectsDown) do
+            if v.id == id then
+                UIManager:Close(v)
+                table.remove(self.SelectsDown,k)
+                break
+            end
+        end
+        self.ShowCountDown = self.ShowCountDown - 1
+    else
+        for k, v in pairs(self.SelectsUp) do
+            if v.id == id then
+                UIManager:Close(v)
+                table.remove(self.SelectsUp,k)
+                break
+            end
+        end
+        self.ShowCountUp = self.ShowCountUp - 1
+    end
+    self:Update()
+end
+
+
+function MainTalkCtrl:EnterTalking(talkDefine, npcDefine)
+    self.isTalking = true
+    NpcMgr.Instance.CurrentTalkToID=npcDefine.ID
+    NpcMgr.Instance:NpcActive()
+    UIManager:Show(self.talk)
+    self:SetTalk(talkDefine, npcDefine)
+    GlobalMgr.Instance:EnterGamePlayState( GamePlayState.Talking)
+end
+function MainTalkCtrl:ExitTalking()
+    NpcMgr.Instance:NpcInActive()
+    NpcMgr.Instance.CurrentTalkToID=nil
+    UIManager:Close(self.talk)
+    GlobalMgr.Instance:QuitGamePlayState()
+    self.isTalking = false
+end
+
+function  MainTalkCtrl:SetTalk(talkDefine,npcDefine,callback)
+    self.talk:Load()
+    self.talk:SetData(talkDefine, npcDefine,callback)
+    
+end
+
+function MainTalkCtrl:ShowDown()
+    UIManager:Show(self.down)
+end
+
+function MainTalkCtrl:ClearDown()
+    for k, v in pairs(self.SelectsDown) do
+        UIManager:Close(v)
+        self.SelectsDown[k] = nil
+    end
+    self.ShowCountDown = 0
+    UIManager:Close(self.down)
+end
+
+
+function MainTalkCtrl:Update()
+    if self.isTalking then
+        local position = self:CalPositon(self.ShowCountDown)
+        for i = 1, self.ShowCountDown  do
+            self.SelectsDown[i]:SetFinalPositon(position[i])
+        end
+    else
+        local position = self:CalPositon(self.ShowCountUp)
+        for i = 1, self.ShowCountUp do
+            self.SelectsUp[i]:SetFinalPositon(position[i])
+        end
+    end
+end
+
+function MainTalkCtrl:GenSelects(talkDefine)
+    MainTalkCtrl:ShowDown()
+    for i=talkDefine.OperationID.Count-1,0,-1 do
+        MainTalkCtrl:AddSelect(talkDefine.OperationID[i])
+        if talkDefine.OperationID[i]==0 and talkDefine.ID==NpcMgr.Instance.CurrentTalkToID then
+              self.talk2quest=QuestMgr.Instance:GetTalkSelect(NpcMgr.Instance.CurrentTalkToID)
+              for k,v in pairs(self.talk2quest) do
+                MainTalkCtrl:AddSelect(k)
+            end
+        end 
+    end
+
+end
+
+return MainTalkCtrl

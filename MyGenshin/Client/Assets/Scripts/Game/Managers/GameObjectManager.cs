@@ -1,0 +1,107 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+using Entities;
+using Services;
+using SkillBridge.Message;
+using Models;
+using System;
+
+namespace Managers
+{
+    class GameObjectManager : MonoSingleton<GameObjectManager>
+    {
+
+        Dictionary<int, UnityEngine.GameObject> GameObects = new Dictionary<int, UnityEngine.GameObject>();
+
+        protected override void OnStart()
+        {
+            StartCoroutine(CreateCharacters());
+            CharacterManager.Instance.OnCharacterEnter = this.OnCharacterEnter;
+            CharacterManager.Instance.OnCharacterLeave = this.OnCharacterLeave;
+        }
+ 
+        private void OnCharacterLeave(int characterId)
+        {
+            Debug.LogFormat("OnCharacterLeave:characterId{0}", characterId);
+            if (GameObects.ContainsKey(characterId))
+            {
+                DestroyCharacter(GameObects[characterId]);
+                GameObects.Remove(characterId);
+            }
+        }
+        private void DestroyCharacter(GameObject character)
+        {
+            Debug.LogFormat("DestoryCharacter:GameObject {0}", character.name);
+            //UIWorldElementsManager.Instance.RemoveCharacter(character.transform);
+            Destroy(character);
+        }
+
+        private void OnCharacterEnter(Character character)
+        {
+            CreateCharacter(character);
+        }
+
+        IEnumerator CreateCharacters()
+        {
+            foreach (Character character in CharacterManager.Instance.Characters.Values)
+            {
+                CreateCharacter(character);
+                yield return null;
+            }
+
+
+        }
+
+        public void CreateCharacter(Character character)
+        {
+            if (!GameObects.ContainsKey(character.entityId) || GameObects[character.entityId] == null)
+            {
+                UnityEngine.Object obj = ResMgr.GetPrefab(character.Define.Name,character.Define.Resource);
+
+                if (obj == null)
+                {
+                    Debug.LogErrorFormat("Character[{0}] Resource[{1}] not existed.", character.Define.TID, character.Define.Resource);
+                    return;
+                }
+                GameObject go = (GameObject)Instantiate(obj, this.transform);
+                go.name = "Character_" + character.Info.Id + "_" + character.Info.Name;
+                GameObects[character.Info.Entity.Id] = go;
+                //UIWorldElementsManager.Instance.AddCharacter(go.transform, character);
+                
+                InitGameObject(character, go);
+
+            }
+
+        }
+
+        private void InitGameObject(Character character, GameObject go)
+        {
+
+            go.transform.position = GameObjectTool.LogicToWorld(character.position);
+            go.transform.forward = GameObjectTool.LogicToWorld(character.direction);
+            EntityController ec = go.GetComponent<EntityController>();
+            if (ec != null)
+            {
+                ec.isPlayer = character.IsPlayer;
+                ec.entity = character;
+                ec.enabled = true;
+            }
+
+            PlayerController pc = go.GetComponent<PlayerController>();
+            if (pc != null)
+            {
+                if (character.Info.Id == User.Instance.CurrentCharacter.Id)
+                {
+                    User.Instance.CurrentCharacterObject = go;
+                    pc.character = character;
+                }
+            }
+        }
+
+
+
+
+    }
+}

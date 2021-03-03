@@ -1,0 +1,18 @@
+QuestTypeNodeView = BaseClass(UINode)
+
+function QuestTypeNodeView:Construtor(parent,transform)
+    self.viewCfg.prefabName = "UIQuestTypeNode"
+    self.viewCfg.prefabPath = "ui/quest/UIQuestTypeNode.prefab"
+    self.viewCfg.parent=parent
+    self.viewCfg.parentTransform=transform
+    self.viewCfg.isAutoDestroy=true
+    -- self.viewCfg.isDestroyOnClose=true
+    self.viewCfg.component = {
+    }
+    self.Node={}
+end
+
+
+function QuestTypeNodeView:SetData(type)
+    self.Text_QuestType.text=QuestConst[type]
+end

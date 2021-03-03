@@ -1,0 +1,19 @@
+QuestTargetNodeView = BaseClass(UINode)
+
+function QuestTargetNodeView:Construtor(parent, transform)
+    self.viewCfg.prefabName = "UIQuestTargetNode"
+    self.viewCfg.prefabPath = "ui/quest/UIQuestTargetNode.prefab"
+    self.viewCfg.parent = parent
+    self.viewCfg.parentTransform = transform
+    self.viewCfg.isDestroyOnClose=true
+    self.viewCfg.component = {}
+end
+
+function QuestTargetNodeView:SetData(Questtarget, n)
+    self.Text_TargetDescription.text = Questtarget.Description
+    if Questtarget.Type ~= QuestTargetType.None then
+        self.Text_Process.text = n .. " / " .. Questtarget.Value
+    else
+        self.Text_Process.text = ""
+    end
+end

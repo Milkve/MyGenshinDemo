@@ -1,0 +1,150 @@
+{
+  "1": {
+    "ID": 1,
+    "Name": "初来乍到",
+    "Type": 0,
+    "Description": "不想写任务说明",
+    "LimitLevel": 1,
+    "LimitClass": [],
+    "Chapter": 1,
+    "Targets": [
+      {
+        "Type": 0,
+        "Description": "与装备商人<color=#5197C7>莉莉丝</color>对话",
+        "ID": 0,
+        "Value": 0
+      }
+    ],
+    "AcceptTalk": 5001,
+    "SubmitTalk": 5002,
+    "PreQuests": [],
+    "PostQuests": [
+      2
+    ],
+    "AcceptNpc": 1,
+    "SubmitNpc": 2,
+    "Rewards": [
+      {
+        "Type": 0,
+        "ID": 0,
+        "Value": 300
+      },
+      {
+        "Type": 2,
+        "ID": 1,
+        "Value": 10
+      }
+    ]
+  },
+  "1001": {
+    "ID": 1001,
+    "Name": "初来乍到",
+    "Type": 1,
+    "Description": "不想写任务说明",
+    "LimitLevel": 1,
+    "LimitClass": [],
+    "Chapter": 1,
+    "Targets": [
+      {
+        "Type": 0,
+        "Description": "与装备商人<color=#5197C7>莉莉丝</color>对话",
+        "ID": 0,
+        "Value": 0
+      }
+    ],
+    "AcceptTalk": 5001,
+    "SubmitTalk": 5002,
+    "PreQuests": [],
+    "PostQuests": null,
+    "AcceptNpc": 1,
+    "SubmitNpc": 2,
+    "Rewards": [
+      {
+        "Type": 0,
+        "ID": 0,
+        "Value": 300
+      },
+      {
+        "Type": 2,
+        "ID": 1,
+        "Value": 10
+      }
+    ]
+  },
+  "2": {
+    "ID": 2,
+    "Name": "村长",
+    "Type": 0,
+    "Description": "不想写任务说明",
+    "LimitLevel": 1,
+    "LimitClass": [],
+    "Chapter": 1,
+    "Targets": [
+      {
+        "Type": 0,
+        "Description": "与村长<color=#5197C7>卡恩</color>对话",
+        "ID": 0,
+        "Value": 0
+      }
+    ],
+    "AcceptTalk": 5003,
+    "SubmitTalk": 5004,
+    "PreQuests": [
+      1
+    ],
+    "PostQuests": [
+      3
+    ],
+    "AcceptNpc": 2,
+    "SubmitNpc": 3,
+    "Rewards": [
+      {
+        "Type": 0,
+        "ID": 0,
+        "Value": 300
+      },
+      {
+        "Type": 2,
+        "ID": 2,
+        "Value": 10
+      }
+    ]
+  },
+  "3": {
+    "ID": 3,
+    "Name": "见爱丽丝",
+    "Type": 0,
+    "Description": "不想写任务说明",
+    "LimitLevel": 10,
+    "LimitClass": [],
+    "Chapter": 1,
+    "Targets": [
+      {
+        "Type": 0,
+        "Description": "回去找<color=#5197C7>爱丽丝</color>",
+        "ID": 0,
+        "Value": 0
+      }
+    ],
+    "AcceptTalk": 5005,
+    "SubmitTalk": 5006,
+    "PreQuests": [
+      2
+    ],
+    "PostQuests": null,
+    "AcceptNpc": 3,
+    "SubmitNpc": 1,
+    "Rewards": [
+      {
+        "Type": 0,
+        "ID": 0,
+        "Value": 300
+      },
+      {
+        "Type": 2,
+        "ID": 3,
+        "Value": 5
+      }
+    ]
+  }
+}

@@ -1,0 +1,9 @@
+LoginConst = {
+    event = EventParse(
+        "LoginConst",
+        {
+            "StartLogin",
+            "StartRegister",
+        }
+    )
+}

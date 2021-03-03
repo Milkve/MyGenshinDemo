@@ -1,0 +1,55 @@
+MainTalkView= BaseClass(UINode)
+MainTalkView .Singleton=true
+
+
+
+
+function MainTalkView:Construtor()
+    self.viewCfg.canvasName="Normal"
+    self.viewCfg.prefabName ="UIMainTalk"
+    self.viewCfg.prefabPath ="ui/main/UIMainTalk.prefab"
+    self.viewCfg.isDestroyOnClose=false
+    self.viewCfg.component={
+        {UI.Fade, {alpha = 1, durtion = 0.3}},
+        {UI.HideAll,{}},
+    }
+    self.currentTextIndex=0
+end
+
+
+function MainTalkView:AddEvent()
+    local onClick =function(btn) 
+        if self.Button_Bg==btn then
+            if self.currentTextIndex==self.totalText then
+                return
+            else
+                self:ShowText()
+            end
+        end
+    end
+    self:AddClickEvent(self.Button_Bg,onClick)
+
+end
+
+function MainTalkView:SetData(talkdefine,npcDefine,callback)
+    if npcDefine~=nil then
+        self.Text_Name.text=npcDefine.Name
+        self.Text_Capacity.text= npcDefine.Description
+    end
+    self.callback=callback
+    self.currentTextIndex=0
+    self.talkDefine =talkdefine
+    self.totalText=self.talkDefine.Text.Count
+    self:ShowText(self.currentTextIndex)
+end
+
+function MainTalkView:ShowText()
+    self.Text_Text.text=self.talkDefine.Text[self.currentTextIndex]
+    self.currentTextIndex=self.currentTextIndex+1
+    if self.currentTextIndex==self.totalText then
+        MainTalkCtrl:GenSelects(self.talkDefine)
+        if self.callback~=nil then
+            self.callback()
+        end
+    end
+end

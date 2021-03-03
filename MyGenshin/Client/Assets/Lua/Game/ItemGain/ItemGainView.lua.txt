@@ -1,0 +1,52 @@
+ItemGainView = BaseClass(UINode)
+ItemGainView.Singleton = true
+function ItemGainView:Construtor()
+    self.viewCfg.prefabName = "UIGainItem"
+    self.viewCfg.prefabPath = "ui/itemGain/UIGainItem.prefab"
+    self.viewCfg.canvasName = "Normal"
+    self.viewCfg.component = {
+        {UI.Fade, {alpha = 1, durtion = 0.2, delay = 0}}
+    }
+    self.gird = {}
+    self.queue = StatusService.Instance.queue
+end
+
+function ItemGainView:AddEvent()
+    local onClick = function(btn)
+        if self.Button_Close == btn then
+            UIManager:Close(self)
+        end
+    end
+    self:AddClickEvent(self.Button_Close, onClick)
+end
+
+function ItemGainView:GenItem()
+    self:ClearChild()
+    while (self.queue.Count > 0) do
+        local nstatus = self.queue:Dequeue()
+        if nstatus.Action == StatusAction.Add and (nstatus.Type == StatusType.Item or nstatus.Type == StatusType.Equip or nstatus.Type == StatusType.Gold) then
+            local warp = WarpView:New(self, self.Transform_Content)
+            table.insert(self.gird, warp)
+            UIManager:Show(warp)
+            local grid = ItemGainGridView:New(warp)
+            grid:Load()
+            if nstatus.Type == StatusType.Item then
+                local define = DataMgr.Instance.Items[nstatus.Id]
+                grid:SetItemData(nstatus.Value, define)
+            elseif nstatus.Type == StatusType.Equip then
+                local define = DataMgr.Instance.Equips[nstatus.Value]
+                grid:SetItemData(1, define)
+            elseif nstatus.Type == StatusType.Gold then
+                local define = DataMgr.Instance.Specials[1]
+                grid:SetItemData(nstatus.Value, define)
+            end
+            UIManager:Show(grid)
+        end
+    end
+end
+function ItemGainView:ClearChild()
+    for i, v in pairs(self.gird) do
+        UIManager:Close(v)
+    end
+    self.gird = {}
+end

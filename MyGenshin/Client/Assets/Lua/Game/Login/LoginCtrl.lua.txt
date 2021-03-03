@@ -1,0 +1,52 @@
+require("Game.Login.LoginBGView")
+require("Game.Login.LoginView")
+require("Game.Login.LoginConfirmView")
+require("Game.Login.LoginConst")
+require("Game.Login.LoginTipView")
+require("Game.Login.LoginRegisterView")
+LoginCtrl = {}
+
+function LoginCtrl:Init()
+    self:EventInit()
+end
+
+function LoginCtrl:EventInit()
+    local EnterLogin = function()
+        LoginBGView:New():Show()
+    end
+    GlobleEventManager:AddListener(GlobleEvent.EnterLogin, EnterLogin)
+    local OnLogin = function(res, msg)
+        if res == Result.Success then
+            UIManager:Close(LoginBGView:New())
+            GlobleEventManager:Call(GlobleEvent.EnterChrSelect)
+        else
+            local loginConfirm = LoginConfirmView:New()
+            UIManager:Show(loginConfirm)
+            loginConfirm:SetData(msg)
+        end
+    end
+    BindCSEvent(UserService.Instance,'OnLogin',OnLogin)
+    local OnRegister = function(res, msg)
+        local loginConfirm = LoginConfirmView:New()
+        UIManager:Show(loginConfirm)
+        if res == Result.Success then
+            --TODO 注册完毕自动填入
+            --LoginView.Instance:SetData()
+            loginConfirm:SetData("注册成功")
+            UIManager:Close(LoginRegisterView:New())
+        else
+            loginConfirm:SetData(msg)
+        end
+    end
+    BindCSEvent(UserService.Instance,'OnRegister',OnRegister)
+    local startLogin = function(loginInfo)
+        UserService.Instance:SendLogin(loginInfo.accuant, loginInfo.password)
+    end
+    GlobleEventManager:AddListener(LoginConst.event.StartLogin, startLogin)
+    local startRegister = function(registerInfo)
+        UserService.Instance:SendRegister(registerInfo.accuant, registerInfo.password)
+    end
+    GlobleEventManager:AddListener(LoginConst.event.StartRegister, startRegister)
+end
+
+return LoginCtrl

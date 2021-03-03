@@ -1,0 +1,32 @@
+MainSkillView= BaseClass(UINode)
+MainSkillView .Singleton=true
+
+
+
+
+function MainSkillView:Construtor()
+    self.viewCfg.canvasName="Normal"
+    self.viewCfg.prefabName ="UIMainSkill"
+    self.viewCfg.prefabPath ="ui/main/UIMainSkill.prefab"
+    self.viewCfg.component={
+        {UI.Fade, {alpha = 1, durtion = 0.3, delay = 0.1}},
+    }
+end
+
+
+function MainSkillView:AddEvent()
+    local OnClick = function(btn)
+
+        if self.Button_Attack == btn then
+        elseif self.Button_Q == btn then
+        elseif self.Button_E == btn then
+        elseif self.Button_Run == btn then
+        elseif self.Button_Jump == btn then
+        end
+    end
+    self:AddClickEvent(self.Button_Attack,OnClick)
+    self:AddClickEvent(self.Button_Q,OnClick)
+    self:AddClickEvent(self.Button_E,OnClick)
+    self:AddClickEvent(self.Button_Run,OnClick)
+    self:AddClickEvent(self.Button_Jump,OnClick)
+end

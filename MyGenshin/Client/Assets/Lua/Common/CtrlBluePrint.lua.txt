@@ -1,0 +1,14 @@
+local ctrl=
+{'Game.Login.LoginCtrl',
+'Game.ChrSelect.ChrSelectCtrl',
+'Game.LoadScene.LoadSceneCtrl',
+'Game.Main.MainCtrl',
+'Game.Main.MainTalkCtrl',
+'Game.Bag.BagCtrl',
+'Game.Store.StoreCtrl',
+'Game.ItemGain.ItemGainCtrl',
+'Game.Quest.QuestCtrl',
+'Game.WorldElement.WorldElementCtrl'
+}
+return ctrl
+

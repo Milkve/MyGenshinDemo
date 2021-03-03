@@ -1,0 +1,76 @@
+
+require('Game.ChrSelect.ChrSelectView')
+require('Game.ChrSelect.ChrCreateView')
+ChrSelectCtrl = {}
+
+function ChrSelectCtrl:Init()
+    self.currnetChrIndex=0 
+    self:EventInit()
+end
+
+function ChrSelectCtrl:EventInit()
+    local ChrSelect=function()
+        self:SceneInit()
+        self:ChrInit()
+    end
+    GlobleEventManager:AddListener(GlobleEvent.EnterChrSelect,ChrSelect)
+    local OnChrCreate =function (res,msg,chr)
+        if res == Result.Success then
+            UIManager:Close(ChrCreateView:New())
+            self.ChrSelectView:ChrSelectInit(self.chrs)
+        else
+            local loginConfirm = LoginConfirmView:New()
+            UIManager:Show(loginConfirm)
+            loginConfirm:SetData(msg)
+        end
+    end
+
+    BindCSEvent(UserService.Instance,'OnCharacterCreate',OnChrCreate)
+end
+
+function ChrSelectCtrl:SceneInit()
+    self.pointsTrans={}
+    local  p= GameObject.Find('Points')
+    for i=0,p.transform.childCount-1 do 
+        local child = p.transform:GetChild(i)
+        self.pointsTrans[child.name]=child.transform
+    end
+end
+
+function  ChrSelectCtrl:ChrInit()
+    self.chrs=CS.Models.User.Instance.Info.Player.Characters
+    self.ChrSelectView=ChrSelectView:New()
+    self.ChrSelectView:Load()
+    self.ChrSelectView:ChrSelectInit(self.chrs)
+    UIManager:Show(self.ChrSelectView)
+end
+
+function ChrSelectCtrl:EnterCreateChr()
+    self.ChrCreateView=ChrCreateView:New()
+    UIManager:Show(self.ChrCreateView)
+    -- CameraCtrl:MoveTo(self.pointsTrans['CreateCamera'].localPosition,0.7)
+    -- CameraCtrl:RotateTo(self.pointsTrans['CreateCamera'].localRotation,0.7)
+
+end
+
+function ChrSelectCtrl:SendChrCreate(name,class)
+    UserService.Instance:SendCharacterCreate(name,class)
+end
+
+function ChrSelectCtrl:EnterGame()
+    User.Instance.CurrentCharacter = self.chrs[self.currnetChrIndex];
+    UIManager:CloseAll(UIManager:GetCanvas("Normal"))
+    UserService.Instance:SendGameEnter(self.currnetChrIndex)
+end
+
+function ChrSelectCtrl:ShowModelAt(modelclass, transform)
+    assert(DataMgr.Instance.Characters:ContainsKey(modelclass))
+    local chrdefine =DataMgr.Instance.Characters[modelclass]
+    local prefab = ResMgr.GetPrefab(chrdefine.Name,chrdefine.Resource)
+    local gameObject = GameObject.Instantiate(prefab)
+    gameObject.transform:SetParent(transform,false)
+    return gameObject
+end
+
+
+return ChrSelectCtrl

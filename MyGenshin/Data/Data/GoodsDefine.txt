@@ -1,0 +1,171 @@
+{
+  "1": {
+    "ID": 1,
+    "StoreID": 1,
+    "ItemID": 1,
+    "Count": 1,
+    "Price": 100,
+    "Type": "Item",
+    "isActive": true,
+    "LimitType": "Day",
+    "Limit": 100
+  },
+  "2": {
+    "ID": 2,
+    "StoreID": 1,
+    "ItemID": 2,
+    "Count": 1,
+    "Price": 100,
+    "Type": "Item",
+    "isActive": true,
+    "LimitType": "Day",
+    "Limit": 100
+  },
+  "3": {
+    "ID": 3,
+    "StoreID": 1,
+    "ItemID": 3,
+    "Count": 1,
+    "Price": 200,
+    "Type": "Item",
+    "isActive": true,
+    "LimitType": "Day",
+    "Limit": 100
+  },
+  "4": {
+    "ID": 4,
+    "StoreID": 1,
+    "ItemID": 4,
+    "Count": 1,
+    "Price": 200,
+    "Type": "Item",
+    "isActive": true,
+    "LimitType": "Day",
+    "Limit": 100
+  },
+  "5": {
+    "ID": 5,
+    "StoreID": 1,
+    "ItemID": 5,
+    "Count": 1,
+    "Price": 100,
+    "Type": "Item",
+    "isActive": true,
+    "LimitType": "Day",
+    "Limit": 100
+  },
+  "6": {
+    "ID": 6,
+    "StoreID": 1,
+    "ItemID": 6,
+    "Count": 1,
+    "Price": 100,
+    "Type": "Item",
+    "isActive": true,
+    "LimitType": "Day",
+    "Limit": 100
+  },
+  "7": {
+    "ID": 7,
+    "StoreID": 1,
+    "ItemID": 7,
+    "Count": 1,
+    "Price": 200,
+    "Type": "Item",
+    "isActive": true,
+    "LimitType": "Day",
+    "Limit": 100
+  },
+  "8": {
+    "ID": 8,
+    "StoreID": 1,
+    "ItemID": 8,
+    "Count": 1,
+    "Price": 200,
+    "Type": "Item",
+    "isActive": true,
+    "LimitType": "Day",
+    "Limit": 100
+  },
+  "9": {
+    "ID": 9,
+    "StoreID": 1,
+    "ItemID": 9,
+    "Count": 1,
+    "Price": 300,
+    "Type": "Item",
+    "isActive": true,
+    "LimitType": "Day",
+    "Limit": 100
+  },
+  "10": {
+    "ID": 10,
+    "StoreID": 1,
+    "ItemID": 10,
+    "Count": 1,
+    "Price": 300,
+    "Type": "Item",
+    "isActive": true,
+    "LimitType": "Day",
+    "Limit": 100
+  },
+  "11": {
+    "ID": 11,
+    "StoreID": 1,
+    "ItemID": 13,
+    "Count": 1,
+    "Type": "Item",
+    "CurrencyID": [
+      16
+    ],
+    "CurrencyPrice": [
+      10
+    ],
+    "isActive": true,
+    "LimitType": "Day",
+    "Limit": 10
+  },
+  "12": {
+    "ID": 12,
+    "StoreID": 1,
+    "ItemID": 14,
+    "Count": 1,
+    "Type": "Item",
+    "CurrencyID": [
+      16
+    ],
+    "CurrencyPrice": [
+      50
+    ],
+    "isActive": true,
+    "LimitType": "Day",
+    "Limit": 10
+  },
+  "13": {
+    "ID": 13,
+    "StoreID": 1,
+    "ItemID": 15,
+    "Count": 1,
+    "Type": "Item",
+    "CurrencyID": [
+      16
+    ],
+    "CurrencyPrice": [
+      100
+    ],
+    "isActive": true,
+    "LimitType": "Day",
+    "Limit": 10
+  },
+  "14": {
+    "ID": 14,
+    "StoreID": 2,
+    "ItemID": 1,
+    "Count": 1,
+    "Price": 300,
+    "Type": "Equip",
+    "isActive": true,
+    "LimitType": "Day",
+    "Limit": 10
+  }
+}

@@ -1,0 +1,43 @@
+ChrCreateView = BaseClass(UINode)
+ChrCreateView.Singleton = true
+
+function ChrCreateView:Construtor()
+    self.viewCfg.prefabName = "UIChrCreate"
+    self.viewCfg.prefabPath = "ui/chrSelect/UIChrCreate.prefab"
+    self.viewCfg.canvasName = "Normal"
+    self.viewCfg.isDestroyOnClose = true
+    self.viewCfg.component = {
+        {UI.Fade, {alpha = 1, durtion = 0.5, delay = 0}},
+        {UI.CameraCtrl, {target = ChrSelectCtrl.pointsTrans["CreateCamera"], durtion = 0.7}},
+        {UI.HideAll, {}}
+    }
+    self.curClass = 0
+end
+
+function ChrCreateView:OnAwake()
+    self.chrsObj = ChrSelectCtrl:ShowModelAt(self.curClass+1, ChrSelectCtrl.pointsTrans["CreatePoint"])
+end
+
+function ChrCreateView:AddEvent()
+    local OnClick = function(btn)
+        if btn == self.Button_Back then
+            UIManager:Close(self)
+        elseif btn == self.Button_Past then
+            self.curClass = self.curClass + 1
+            UnityDestroy(self.chrsObj)
+            self.chrsObj = ChrSelectCtrl:ShowModelAt(self.curClass % 2+1, ChrSelectCtrl.pointsTrans["CreatePoint"])
+        elseif btn == self.Button_Next then
+            self.curClass = self.curClass - 1
+            UnityDestroy(self.chrsObj)
+            self.chrsObj = ChrSelectCtrl:ShowModelAt(self.curClass % 2+1, ChrSelectCtrl.pointsTrans["CreatePoint"])
+        elseif btn == self.Button_Confirm then
+            ChrSelectCtrl:SendChrCreate(self.Text_Name.text, self.curClass % 2+1)
+        -- body
+        end
+    end
+
+    self:AddClickEvent(self.Button_Back, OnClick)
+    self:AddClickEvent(self.Button_Next, OnClick)
+    self:AddClickEvent(self.Button_Past, OnClick)
+    self:AddClickEvent(self.Button_Confirm, OnClick)
+end

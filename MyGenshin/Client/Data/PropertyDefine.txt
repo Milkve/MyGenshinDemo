@@ -1,0 +1,60 @@
+{
+  "1": {
+    "ID": 1,
+    "Name": "攻击",
+    "Precision": 0,
+    "Type": "AddStatistic"
+  },
+  "2": {
+    "ID": 2,
+    "Name": "生命",
+    "Precision": 0,
+    "Type": "AddStatistic"
+  },
+  "3": {
+    "ID": 3,
+    "Name": "防御",
+    "Precision": 0,
+    "Type": "AddStatistic"
+  },
+  "4": {
+    "ID": 4,
+    "Name": "暴击率",
+    "Precision": -3,
+    "Type": "AddStatistic"
+  },
+  "5": {
+    "ID": 5,
+    "Name": "暴击伤害",
+    "Precision": -3,
+    "Type": "AddStatistic"
+  },
+  "6": {
+    "ID": 6,
+    "Name": "移动速度",
+    "Precision": 0,
+    "Type": "AddStatistic"
+  },
+  "1001": {
+    "ID": 1001,
+    "Name": "属性提升",
+    "Description": "属性提升\n·攻击时有<color=#5197C7>15%%</color>的几率提升<color=#5197C7>@value@</color>的攻击力",
+    "Precision": -2,
+    "Type": "AddSkill",
+    "SkillID": 1,
+    "SkillParams": [
+      15
+    ]
+  },
+  "1002": {
+    "ID": 1002,
+    "Name": "重击",
+    "Description": "攻击时有<p></p>%几率附加<value></value>的伤害",
+    "Precision": 0,
+    "Type": "AddSkill",
+    "SkillID": 2,
+    "SkillParams": [
+      100
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+StoreModel = BaseClass()
+StoreModel.Singleton = true
+
+function StoreModel:Init()
+    self.goods = {}
+end
+
+function StoreModel:SetData(define)
+    self:Clear()
+    self.id=define.ID
+    self.define=define
+    self:InitGoods()
+end
+
+function StoreModel:Clear()
+    self.id = nil
+    self.goods = {}
+    self.define = nil
+end
+function StoreModel:InitGoods()
+    for i,v in pairs(DataMgr.Instance.Goods) do 
+        if v.StoreID==self.id then
+            self:AddGoods(v)
+        end
+    end
+end
+
+function StoreModel:AddGoods(item)
+    table.insert(self.goods, item)
+end
+function StoreModel:GetItems()
+    return self.goods
+end

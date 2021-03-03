@@ -1,0 +1,78 @@
+QuestChapterNodeView = BaseClass(UINode)
+
+function QuestChapterNodeView:Construtor(parent, transform)
+    self.viewCfg.prefabName = "UIQuestChapterNode"
+    self.viewCfg.prefabPath = "ui/quest/UIQuestChapterNode.prefab"
+    self.viewCfg.parent = parent
+    self.viewCfg.isAutoDestroy = true
+    -- self.viewCfg.isDestroyOnClose = true
+    self.viewCfg.parentTransform = transform
+    self.viewCfg.component = {}
+    self.Node = {}
+    self.select = false
+    self.content = true
+    self.freezing = false
+end
+
+function QuestChapterNodeView:AddEvent()
+    self.OnClick = function(data)
+        self:ChangeContent()
+        
+    end
+    self.UIElementQuestChapterNode_Main.ActionOnClick:AddListener(self.OnClick)
+end
+
+function QuestChapterNodeView:OnDestroy()
+    self.UIElementQuestChapterNode_Main.ActionOnClick:RemoveListener(self.OnClick)
+end
+function QuestChapterNodeView:SetData(Chapter)
+    local chapterDefine = DataMgr.Instance.Chapters[Chapter]
+    self.Text_Title.text = chapterDefine.Name
+    self.Text_SubTitle.text = chapterDefine.SubTitle
+end
+--  我也不知道为啥能用
+function QuestChapterNodeView:ChangeContent()
+    if self.freezing then
+        return
+    end
+    self.freezing = true
+    if self.content == true then
+        self.content = false
+        for quest, subNode in pairs(self.Node) do
+            subNode:SetCallback(
+                UINode.event.OnClosed,
+                function()
+                    self.Transform_Content.gameObject:SetActive(false)
+                    self.freezing = false
+                end
+            )
+            UIManager:Close(subNode)
+        end
+    else
+        self.content = true
+        self.Transform_Content.gameObject:SetActive(true)
+        for quest, subNode in pairs(self.Node) do
+            subNode:SetCallback(
+                UINode.event.OnShowed,
+                function()
+                    self.freezing = false
+                end
+            )
+            UIManager:Show(subNode)
+        end
+    end
+end
+
+
+function QuestChapterNodeView:SetSelect(bool)
+    if self.animator == nil then
+        self.animator = self.UIElementQuestChapterNode_Main:GetComponent("Animator")
+    end
+    if bool == true and self.select == false then
+        self.select = true
+        self.animator:SetBool("Selected", true)
+    elseif bool == false and self.select == true then
+        self.select = false
+        self.animator:SetBool("Selected", false)
+    end
+end

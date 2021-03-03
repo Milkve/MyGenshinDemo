@@ -1,0 +1,31 @@
+MainBtnView = BaseClass(UINode)
+MainBtnView.Singleton = true
+
+function MainBtnView:Construtor()
+    self.viewCfg.canvasName = "Normal"
+    self.viewCfg.prefabName = "UIMainBtn"
+    self.viewCfg.prefabPath = "ui/main/UIMainBtn.prefab"
+    self.viewCfg.component = {
+        {UI.Fade, {alpha = 1, durtion = 0.3, delay = 0.1}},
+        {UI.Move, {distance = 10, durtion = 0.3, dalay = 0.1, direction = Vector3.down}}
+    }
+end
+
+function MainBtnView:AddEvent()
+    local OnClick = function(btn)
+        if self.Button_Char == btn then
+        elseif self.Button_Menu == btn then
+        elseif self.Button_Achieve == btn then
+        elseif self.Button_Quest == btn then
+            QuestCtrl:ShowQuest()
+        elseif self.Button_Bag == btn then
+            BagCtrl:ShowBag()
+        elseif self.Button_Eye == btn then
+        end
+    end
+    self:AddClickEvent(self.Button_Char,OnClick)
+    self:AddClickEvent(self.Button_Menu,OnClick)
+    self:AddClickEvent(self.Button_Quest,OnClick)
+    self:AddClickEvent(self.Button_Bag,OnClick)
+    self:AddClickEvent(self.Button_Eye,OnClick)
+end

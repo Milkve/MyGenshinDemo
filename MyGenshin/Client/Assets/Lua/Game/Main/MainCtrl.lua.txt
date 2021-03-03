@@ -1,0 +1,26 @@
+require ("Game.Main.MainMiniMapView")
+require ("Game.Main.MainBtnView")
+require ("Game.Main.MainSkillView")
+require ("Game.Main.MainChatView")
+require ("Game.Main.MainStatusView")
+require ("Game.Main.MainTalkView")
+MainCtrl = {}
+
+
+function MainCtrl:Init()
+    self:EventInit()
+end
+
+function MainCtrl:EventInit()
+    local OnEnterMain =function()
+        UIManager:Show(MainMiniMapView:New())
+        UIManager:Show(MainBtnView:New())
+        UIManager:Show(MainSkillView:New())
+        UIManager:Show(MainChatView:New())
+        UIManager:Show(MainStatusView:New())
+    end
+
+    GlobleEventManager:AddListener(GlobleEvent.EnterGamePlaying,OnEnterMain)
+end
+
+return MainCtrl

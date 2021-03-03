@@ -1,0 +1,60 @@
+require("Game.Store.StoreView")
+require("Game.Store.StoreModel")
+require("Game.Store.StoreGridView")
+require("Game.Store.StoreBuyConfirm")
+StoreCtrl = {}
+
+function StoreCtrl:Init()
+    self.model = StoreModel:New()
+    self:AddEvent()
+end
+
+
+function StoreCtrl:AddEvent()
+    local OnBuy=function(res,message)
+        if res==Result.Success then
+            print('successed')
+        else
+            print('failed')
+        end
+    end
+    ItemService.Instance.OnBuy:AddListener( OnBuy)
+end
+
+function StoreCtrl:ShowStore()
+    local npcID = NpcMgr.Instance.CurrentTalkToID
+    local storeID = DataMgr.Instance.NPCs[npcID].StoreID
+    local StoreDefine = DataMgr.Instance.Stores[storeID]
+    self.model:SetData(StoreDefine)
+    self.store = StoreView:New()
+    UIManager:Show(self.store)
+    self.store:GenItemView()
+end
+
+function StoreCtrl:CloseStore()
+    UIManager:Close(self.store)
+end
+
+function StoreCtrl:SetInfo(goodsDefine, itemDefine,EquipDefine)
+    self.store:SetInfo(goodsDefine,itemDefine,EquipDefine)
+end
+
+
+function StoreCtrl:GetMax(goodsDefine)
+    local limit =ItemMgr.Instance:GetGoodsLimit(goodsDefine.ID)
+    local gold = ItemMgr.Instance.Gold
+
+    return math.min(limit.canBuy, math.floor(gold/goodsDefine.Price))
+end
+
+function StoreCtrl:Send(id,count)
+    ItemService.Instance:SendBuyItem(id,count)
+end
+
+function StoreCtrl:BuyGoods(goodsDefine, Define)
+    self.buy = StoreBuyConfirm:New()
+    UIManager:Show(self.buy)
+    self.buy:SetData(goodsDefine, Define)
+end
+
+return StoreCtrl

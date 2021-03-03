@@ -1,0 +1,41 @@
+
+
+UIConst = {
+    RareColor = {
+        Color(111 / 256, 115 / 256, 132 / 256),
+        Color(72 / 256, 136 / 256, 112 / 256),
+        Color(89 / 256, 122 / 256, 189 / 256),
+        Color(146 / 256, 87 / 256, 209 / 256),
+        Color(169 / 256, 105 / 256, 60 / 256)
+    },
+    Star = {
+        Name = "UIRareStar",
+        Path = "ui/common/UIRareStar.prefab"
+    },
+    Property = {
+        Name = "UIProperty",
+        Path = "ui/common/UIProperty.prefab"
+    },
+    RareResource = {
+        "sprite/quality/UI_QualityBg_1.png",
+        "sprite/quality/UI_QualityBg_2.png",
+        "sprite/quality/UI_QualityBg_3.png",
+        "sprite/quality/UI_QualityBg_4.png",
+        "sprite/quality/UI_QualityBg_5.png"
+    },
+    RareSquareResource = {
+        "sprite/quality/UI_QualityBg_1s.png",
+        "sprite/quality/UI_QualityBg_2s.png",
+        "sprite/quality/UI_QualityBg_3s.png",
+        "sprite/quality/UI_QualityBg_4s.png",
+        "sprite/quality/UI_QualityBg_5s.png"
+    },
+    RareBgResource = {
+        "sprite/quality/UI_QUALITY_1.png",
+        "sprite/quality/UI_QUALITY_2.png",
+        "sprite/quality/UI_QUALITY_3.png",
+        "sprite/quality/UI_QUALITY_4.png",
+        "sprite/quality/UI_QUALITY_5.png"
+    }
+
+}

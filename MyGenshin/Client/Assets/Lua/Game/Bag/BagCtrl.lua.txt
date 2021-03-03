@@ -1,0 +1,65 @@
+require("Game.Bag.BagView")
+require("Game.Bag.BagModel")
+require("Game.Bag.BagGridView")
+require("Game.Common.WarpView")
+require("Game.Bag.BagConst")
+require("Game.Bag.BagDelete")
+require("Game.Bag.BagDeleteConfirm")
+BagCtrl = {}
+
+function BagCtrl:Init()
+end
+
+function BagCtrl:ShowBag()
+    if not BagModel.loaded then
+        BagModel.items = ItemMgr.Instance.Items
+        BagModel.equips = EquipMgr.Instance.Equips
+        BagModel.loaded = true
+    end
+
+    self.bag = BagView:New()
+    if not self.bag.isLoad then
+        self.bag:Load()
+        self.bag.Toggle_Weapon.isOn = true
+        UIManager:Show(self.bag)
+        
+    else
+        UIManager:Show(self.bag)
+        self.bag:InitScrollView()
+    end
+end
+
+function BagCtrl:CloseBag()
+    UIManager:Close(self.bag)
+end
+
+function BagCtrl:SetDelete(item,equip)
+    self.bag:SetDelete(item, equip)
+end
+
+function BagCtrl:SetInfo(item, equip)
+    self.bag:SetInfo(item, equip)
+end
+
+function BagCtrl:GetGroup()
+    if self.bag~=nil then
+        return self.bag.UIGroup_Group
+    end
+end
+
+function BagCtrl:SetMode(state)
+    self:GetGroup().State.Value=state
+end
+
+function BagCtrl:SellConfirm()
+    self.confirm=BagDeleteConfirm:New()
+    UIManager:Show(self.confirm)
+    self.confirm:SetData(self:GetGroup():GetSelectables())
+end
+
+function BagCtrl:SendSell()
+    ItemService.Instance:SendSellItem(self:GetGroup():GetSelectables())
+end
+
+
+return BagCtrl

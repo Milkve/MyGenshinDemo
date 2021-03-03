@@ -1,0 +1,35 @@
+UIInfoGridView = BaseClass(UINode)
+function UIInfoGridView:Construtor(parent)
+    self.viewCfg.prefabName = "UIGainGrid"
+    self.viewCfg.prefabPath = "ui/common/UIInfoGrid.prefab"
+    self.viewCfg.parent = parent
+    self.viewCfg.isAutoDestroy = true
+    self.viewCfg.isDestroyOnClose = true
+end
+
+
+function UIInfoGridView:AddEvent()
+
+
+end
+
+
+function UIInfoGridView:SetData(selectable)
+    self.Image_Icon.sprite = ResMgr.GetSprite(selectable.Define.Name,selectable.Define.Resource)
+    self.Image_Icon:SetNativeSize()
+    self:SetRare(selectable.Rare)
+    self.Text_Count.text = ''..selectable.SelectCount
+    local ratio =  self.Image_Icon.rectTransform.sizeDelta.x/self.Image_Icon.rectTransform.sizeDelta.y
+    self.Image_Icon.rectTransform.anchorMin = Vector2(0.5, 0)
+    self.Image_Icon.rectTransform.anchorMax = Vector2(0.5, 1)
+    self.Image_Icon.rectTransform.offsetMin=Vector2(0,1)
+    self.Image_Icon.rectTransform.offsetMax=Vector2(0,-2)
+    self.Image_Icon.rectTransform.anchoredPosition=Vector2(0,0)
+    local ration=Helper.AddAspectRatioFitter(self.Image_Icon.gameObject)
+    ration.aspectMode = AspectMode.HeightControlsWidth
+    ration.aspectRatio=ratio
+end
+
+function UIInfoGridView:SetRare(n)
+    self.Image_Bg.sprite = ResMgr.GetSprite(n, UIConst.RareSquareResource[n + 1])
+end

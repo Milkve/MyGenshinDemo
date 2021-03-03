@@ -1,0 +1,47 @@
+LoginView = BaseClass(UINode)
+LoginView.Singleton = true
+
+function LoginView:Construtor(parent)
+    self.viewCfg.prefabName = "UILogin"
+    self.viewCfg.prefabPath = "ui/login/UILogin.prefab"
+    self.viewCfg.parent = parent
+    self.viewCfg.isDestroyOnClose=true
+    self.viewCfg.isAutoDestroy=true
+    self.viewCfg.component = {
+        {UI.Fade, {alpha = 1, durtion = 0.3, delay = 0.1}}, --渐隐
+        {UI.Move, {distance = 10, durtion = 0.3, dalay = 0.1, direction = Vector3.up}}, --飞入
+        {UI.Mask, {isCloseOnClick = true}} --蒙版
+    }
+end
+
+function LoginView:AddEvent()
+    local onClick = function(btn)
+        if btn == self.Button_Enter then
+            -- UserService.Instance:SendLogin(accuant, password)
+            local loginInfo = {
+                accuant = self.Text_Accuant.text,
+                password = self.Text_Password.text
+            }
+            if loginInfo.accuant == "" or loginInfo.password == "" then
+                local LoginTip = LoginTipView:New(self)
+                UIManager:Show(LoginTip)
+                LoginTip:SetData("请输入用户名/密码")
+                return
+            end
+            GlobleEventManager:Call(LoginConst.event.StartLogin, loginInfo)
+        elseif btn == self.Button_Register then
+            local register = LoginRegisterView:New(self)
+            UIManager:Show(register)
+        elseif btn == self.Button_Close then
+            UIManager:Close(self)
+        end
+    end
+    self:AddClickEvent(self.Button_Enter, onClick)
+    self:AddClickEvent(self.Button_Close, onClick)
+    self:AddClickEvent(self.Button_Register, onClick)
+end
+
+function LoginView:SetData(acc, psw)
+    self.Text_Accuant.text = acc
+    self.Text_Password.text = psw
+end

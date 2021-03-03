@@ -1,0 +1,47 @@
+{
+  "1": {
+    "ID": 1,
+    "Name": "UIRootCanvas",
+    "Resource": "UIRootCanvas"
+  },
+  "2": {
+    "ID": 2,
+    "Name": "UIMessageBox",
+    "Resource": "UIMessageBox"
+  },
+  "3": {
+    "ID": 3,
+    "Name": "UILoading",
+    "Resource": "UILoading"
+  },
+  "4": {
+    "ID": 4,
+    "Name": "UILogIN",
+    "Resource": "UILogIN"
+  },
+  "5": {
+    "ID": 5,
+    "Name": "UIResgister",
+    "Resource": "UIResgister"
+  },
+  "6": {
+    "ID": 6,
+    "Name": "UICharacterSelect",
+    "Resource": "UICharacterSelect"
+  },
+  "7": {
+    "ID": 7,
+    "Name": "UICharacterCreate",
+    "Resource": "UICharacterCreate"
+  },
+  "8": {
+    "ID": 8,
+    "Name": "UIItemBag",
+    "Resource": "UIItemBag"
+  },
+  "9": {
+    "ID": 9,
+    "Name": "UITip",
+    "Resource": "UITip"
+  }
+}

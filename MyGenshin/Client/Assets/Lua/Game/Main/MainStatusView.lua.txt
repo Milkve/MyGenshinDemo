@@ -1,0 +1,15 @@
+MainStatusView= BaseClass(UINode)
+MainStatusView .Singleton=true
+
+
+
+
+function MainStatusView:Construtor()
+    self.viewCfg.canvasName="Normal"
+    self.viewCfg.prefabName ="UIMainStatus"
+    self.viewCfg.prefabPath ="ui/main/UIMainStatus.prefab"
+    self.viewCfg.component={
+        {UI.Fade, {alpha = 1, durtion = 0.3, delay = 0.1}},
+        {UI.Move, {distance = 10, durtion = 0.3, dalay = 0.1, direction = Vector3.down}},
+    }
+end

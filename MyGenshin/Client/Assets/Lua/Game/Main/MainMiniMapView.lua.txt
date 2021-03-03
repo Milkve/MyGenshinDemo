@@ -1,0 +1,15 @@
+MainMiniMapView= BaseClass(UINode)
+MainMiniMapView .Singleton=true
+
+
+
+
+function MainMiniMapView:Construtor()
+    self.viewCfg.canvasName="Normal"
+    self.viewCfg.prefabName ="UIMiniMap"
+    self.viewCfg.prefabPath ="ui/main/UIMiniMap.prefab"
+    self.viewCfg.component={
+        {UI.Fade, {alpha = 1, durtion = 0.3, delay = 0.1}},
+        {UI.Move, {distance = 10, durtion = 0.3, dalay = 0.1, direction = Vector3.down}},
+    }
+end

@@ -1,0 +1,59 @@
+--Unity
+GameObject = CS.UnityEngine.GameObject
+WaitForEndOfFrame = CS.UnityEngine.WaitForEndOfFrame
+WaitForSeconds = CS.UnityEngine.WaitForSeconds
+WaitForFixedUpdate = CS.UnityEngine.WaitForFixedUpdate
+Vector2 = CS.UnityEngine.Vector2
+Vector3 = CS.UnityEngine.Vector3
+Vector4 = CS.UnityEngine.Vector4
+Quaternion = CS.UnityEngine.Quaternion
+Color = CS.UnityEngine.Color
+CanvasGroup = CS.UnityEngine.CanvasGroup
+UnityDestroy = CS.UnityEngine.Object.Destroy
+DontDestroyOnLoad = CS.UnityEngine.Object.DontDestroyOnLoad
+Screen = CS.UnityEngine.Screen
+Time = CS.UnityEngine.Time
+LayoutRebuilder = CS.UnityEngine.UI.LayoutRebuilder
+Camera = CS.UnityEngine.Camera
+--Custom
+
+Helper = CS.Helper
+AppConfig = CS.AppConfig
+ResMgr = CS.ResMgr
+
+Cor = require "Common.cs_coroutine"
+Result = CS.SkillBridge.Message.Result
+User = CS.Models.User
+MainPlayerCamera = CS.MainPlayerCamera
+GameUtil = CS.Common.Utils.GameUtil
+--enum
+GoodsLimitType = CS.Common.Data.GoodsDefine.GoodsLimitType
+GoodsType = CS.Common.Data.GoodsDefine.GoodsType
+ItemType = CS.SkillBridge.Message.ItemType
+EquipType = CS.SkillBridge.Message.EquipType
+StatusType = CS.SkillBridge.Message.StatusType
+StatusAction = CS.SkillBridge.Message.StatusAction
+PropertyType = CS.Common.Data.PropertyDefine.PropertyType
+UIState = CS.UI.Common.UIGroup.UIState
+AspectMode = CS.UnityEngine.UI.AspectRatioFitter.AspectMode
+NpcQuestStatus = CS.Managers.QuestManager.NpcQuestStatus
+QuestStatus = CS.SkillBridge.Message.QuestStatus
+QuestType = CS.Common.Data.QuestDefine.QuestType
+QuestTargetType = CS.Common.Data.QuestDefine.QuestTargetType
+RewardType = CS.Common.Data.QuestDefine.RewardType
+--Manager
+GlobalMgr = CS.Managers.GlobalManager
+GamePlayState = CS.Managers.GamePlayState
+NpcMgr = CS.Managers.NPCManager
+DataMgr = CS.Managers.DataManager
+SceneMgr = CS.SceneManager
+ItemMgr = CS.Managers.ItemManager
+EquipMgr = CS.Managers.EquipManager
+QuestMgr = CS.Managers.QuestManager
+--Service
+UserService = CS.Services.UserService
+ItemService = CS.Services.ItemService
+StatusService = CS.Services.StatusService
+QuestService = CS.Services.QuestService
+--DoTween
+Ease = CS.DG.Tweening.Ease

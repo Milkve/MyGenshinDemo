@@ -1,0 +1,37 @@
+LoginConfirmView = BaseClass(UINode)
+LoginConfirmView.Singleton = true
+
+function LoginConfirmView:Construtor(parent)
+    self.viewCfg.prefabName = "UILoginConfirm"
+    self.viewCfg.prefabPath = "ui/login/UILoginConfirm.prefab"
+    self.viewCfg.parent = parent
+    self.viewCfg.component = {
+        --渐隐
+        {UI.Fade, {alpha = 1, durtion = 0.3, delay = 0.1}},
+        --飞入
+        {UI.Move, {distance = 10, durtion = 0.3, dalay = 0.1, direction = Vector3.up}},
+        --模态蒙版
+        {UI.Mask, {isCloseOnClick = true}}
+    }
+end
+
+function LoginConfirmView:SetData(text, callback)
+    self.Text_Text.text = text
+    self.callback = callback
+end
+
+function LoginConfirmView:AddEvent()
+    local onClick = function(btn)
+        if btn == self.Button_Confirm then
+            if self.callback then
+                self.callback()
+            else
+                UIManager:Close(self)
+            end
+        elseif btn == self.Button_Cancel then
+            UIManager:Close(self)
+        end
+    end
+    self:AddClickEvent(self.Button_Confirm, onClick)
+    self:AddClickEvent(self.Button_Cancel, onClick)
+end

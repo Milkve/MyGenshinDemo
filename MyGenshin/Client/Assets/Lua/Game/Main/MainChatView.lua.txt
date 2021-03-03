@@ -1,0 +1,15 @@
+MainChatView= BaseClass(UINode)
+MainChatView .Singleton=true
+
+
+
+
+function MainChatView:Construtor()
+    self.viewCfg.canvasName="Normal"
+    self.viewCfg.prefabName ="UIMainChat"
+    self.viewCfg.prefabPath ="ui/main/UIMainChat.prefab"
+    self.viewCfg.component={
+        {UI.Fade, {alpha = 1, durtion = 0.3, delay = 0.1}},
+        {UI.Move, {distance = 10, durtion = 0.3, dalay = 0.1, direction = Vector3.down}},
+    }
+end

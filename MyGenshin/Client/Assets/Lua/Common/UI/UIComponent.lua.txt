@@ -1,0 +1,236 @@
+UI = UI or {}
+
+UIComponent = BaseClass()
+
+local component_example = {
+    --渐隐
+    {UI.Fade, {alpha = 1, durtion = 0.3, delay = 0.1}},
+    --飞入
+    {UI.Move, {distance = 10, durtion = 0.3, dalay = 0.1, direction = Vector3.up}},
+    --模态蒙版
+    {UI.Mask, {isCloseOnClick = true}},
+    --延迟操作
+    {
+        UI.DelayOperation,
+        {
+            func_callback = function()
+            end,
+            delay = 3
+        }
+    },
+    --摄像机视角控制
+    {UI.CameraCtrl, {target = "targetTransfrom", durtion = 0.7}},
+    --隐藏其他窗口 关闭当前窗口后还原
+    {UI.HideAll, {}},
+    --状态显示
+    {UI.ShowState, {}}
+}
+
+function UIComponent:Construtor(owner, arges)
+    self.owner = owner
+    self.cfg = self.cfg or {}
+    for k, v in pairs(arges) do
+        self.cfg[k] = v
+    end
+    self.isShow = self.cfg.isShow == false and false or true
+    self.isHide = self.cfg.isHide == false and false or true
+    self:OnAwake()
+end
+
+function UIComponent:OnAwake()
+end
+
+UI.Fade = BaseClass(UIComponent)
+
+function UI.Fade:OnAwake()
+    assert(self.owner, "缺少owner")
+    self.canvasGroup = self.owner.gameObject:GetComponent("CanvasGroup")
+    if isNull(self.canvasGroup) then
+        self.canvasGroup = Helper.AddCanvasGroup(self.owner.gameObject)
+        self.canvasGroup.alpha = 0
+    end
+    local OnShow = function(callback)
+        if self.isShow then
+            self.canvasGroup:DOFade(self.cfg.alpha or 1, self.cfg.durtion or 0):SetDelay(self.cfg.delay or 0):SetEase(
+                Ease.OutCubic
+            ):OnComplete(
+                function()
+                    callback()
+                end
+            )
+        else
+            callback()
+        end
+    end
+    local OnHide = function(callback)
+        if self.isHide then
+            self.canvasGroup:DOFade(0, self.cfg.durtion or 0):SetDelay(self.cfg.delay or 0):SetEase(Ease.OutCubic):OnComplete(
+                function()
+                    callback()
+                end
+            )
+        else
+            callback()
+        end
+    end
+
+    self.owner.eventMgr:AddListener(UINode.event.OnShow, OnShow)
+    self.owner.eventMgr:AddListener(UINode.event.OnReappear, OnShow)
+
+    self.owner.eventMgr:AddListener(UINode.event.OnHide, OnHide)
+    self.owner.eventMgr:AddListener(UINode.event.OnClose, OnHide)
+end
+
+UI.Move = BaseClass(UIComponent)
+
+function UI.Move:OnAwake()
+    assert(self.owner, "缺少owner")
+    self.transform = self.owner.transform
+    self.distance =
+        Vector3.Scale(Vector3(self.cfg.distance or 0, self.cfg.distance or 0), self.cfg.direction or Vector3.zero)
+    self.transform.localPosition = self.transform.localPosition - self.distance
+
+    local OnShow = function(callback)
+        if self.isShow then
+            self.transform:DOLocalMove(self.transform.localPosition + self.distance, self.cfg.durtion or 0):SetDelay(
+                self.cfg.delay or 0
+            ):OnComplete(
+                function()
+                    callback()
+                end
+            )
+        else
+            callback()
+        end
+    end
+
+    local OnHide = function(callback)
+        if self.isHide then
+            self.transform:DOLocalMove(self.transform.localPosition - self.distance, self.cfg.durtion or 0):SetDelay(
+                self.cfg.delay or 0
+            ):OnComplete(
+                function()
+                    callback()
+                end
+            )
+        else
+            callback()
+        end
+    end
+    self.owner.eventMgr:AddListener(UINode.event.OnShow, OnShow)
+    self.owner.eventMgr:AddListener(UINode.event.OnReappear, OnShow)
+    self.owner.eventMgr:AddListener(UINode.event.OnHide, OnHide)
+    self.owner.eventMgr:AddListener(UINode.event.OnClose, OnHide)
+end
+
+UI.Mask = BaseClass(UIComponent)
+
+function UI.Mask:OnAwake()
+    assert(self.owner, "缺少owner")
+    require("Game.Common.MaskView")
+    self.mask = MaskView:New(self.owner, nil, self.cfg.isCloseOnClick)
+    local OnShow = function(callback)
+        if self.isShow then
+            UIManager:Show(self.mask)
+            if self.cfg.color ~= nil then
+                self.mask:SetColor(self.cfg.color)
+            end
+            self.mask.transform:SetAsFirstSibling()
+            callback()
+        else
+            callback()
+        end
+    end
+    local OnHide = function(callback)
+        if self.isHide and state == 0 then
+            UIManager:Hide(self.mask)
+            callback()
+        else
+            callback()
+        end
+    end
+    self.owner.eventMgr:AddListener(UINode.event.OnShow, OnShow)
+    self.owner.eventMgr:AddListener(UINode.event.OnReappear, OnShow)
+    self.owner.eventMgr:AddListener(UINode.event.OnHide, OnHide)
+    self.owner.eventMgr:AddListener(UINode.event.OnClose, OnHide)
+end
+
+UI.DelayOperation = BaseClass(UIComponent)
+function UI.DelayOperation:OnAwake()
+    assert(self.owner, "缺少owner")
+    assert(self.cfg.delay, self.cfg.func_callback)
+    self.cor_operation = function()
+        coroutine.yield(WaitForSeconds(self.cfg.delay))
+        if self.cfg.func_owner then
+            self.cfg.func_callback(self.cfg.func_owner)
+        else
+            self.cfg.func_callback()
+        end
+    end
+
+    local OnShow = function(callback)
+        Cor.start(self.cor_operation)
+        callback()
+    end
+
+    self.owner.eventMgr:AddListener(UINode.event.OnShow, OnShow)
+end
+
+UI.HideAll = BaseClass(UIComponent)
+function UI.HideAll:OnAwake()
+    assert(self.owner, "缺少owner")
+    self.owner.isHideAll = true
+    local OnShow = function(callback)
+        UIManager:HideAll(self.owner.root)
+        callback()
+    end
+    local OnHide = function(callback)
+        UIManager:Reappear(self.owner.root)
+        callback()
+    end
+
+    self.owner.eventMgr:AddListener(UINode.event.OnShow, OnShow)
+    -- self.owner.eventMgr:AddListener(UINode.event.OnReappear, OnShow)
+    -- self.owner.eventMgr:AddListener(UINode.event.OnHide, OnHide)
+    self.owner.eventMgr:AddListener(UINode.event.OnClose, OnHide)
+end
+
+UI.CameraCtrl = BaseClass(UIComponent)
+function UI.CameraCtrl:OnAwake()
+    assert(self.owner, "缺少owner")
+    assert(self.cfg.target)
+    local OnShow = function(callback)
+        MainPlayerCamera.Instance:MoveTo(
+            self.cfg.target.localPosition,
+            self.cfg.durtion or 0,
+            function()
+            end
+        )
+        MainPlayerCamera.Instance:RotateTo(
+            self.cfg.target.localRotation.eulerAngles,
+            self.cfg.durtion or 0,
+            callback ~= nil and callback or function()
+                end
+        )
+    end
+
+    self.owner.eventMgr:AddListener(UINode.event.OnShow, OnShow)
+    self.owner.eventMgr:AddListener(UINode.event.OnReappear, OnShow)
+end
+
+UI.ShowState = BaseClass(UIComponent)
+function UI.ShowState:OnAwake()
+    assert(self.owner, "缺少owner")
+    local getCallback = function(event)
+        return function(callback)
+            print(event)
+            UIManager:ShowStats()
+            callback()
+        end
+    end
+    for k, v in pairs(UINode.event) do
+        if self.cfg[v] ~= nil then
+            self.owner.eventMgr:AddListener(v, getCallback(v))
+        end
+    end
+end

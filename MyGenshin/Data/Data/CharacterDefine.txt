@@ -1,0 +1,49 @@
+{
+  "1": {
+    "TID": 1,
+    "Name": "战士",
+    "Type": "Normal",
+    "Class": 1,
+    "Resource": "model\\Character\\Warrior.prefab",
+    "Description": "这是一个战士",
+    "InitLevel": 1,
+    "Speed": 300
+  },
+  "2": {
+    "TID": 2,
+    "Name": "弓箭手",
+    "Type": "Normal",
+    "Class": 2,
+    "Resource": "model\\Character\\Archer.prefab",
+    "Description": "这是一个弓箭手",
+    "InitLevel": 1,
+    "Speed": 300
+  },
+  "1001": {
+    "TID": 1001,
+    "Name": "恶鬼",
+    "Type": "Normal",
+    "Class": 1001,
+    "Resource": "Monster/M1001",
+    "InitLevel": 1,
+    "Speed": 300
+  },
+  "1002": {
+    "TID": 1002,
+    "Name": "-",
+    "Type": "Normal",
+    "Class": 1002,
+    "Resource": "Monster/M1002",
+    "InitLevel": 1,
+    "Speed": 300
+  },
+  "1003": {
+    "TID": 1003,
+    "Name": "-",
+    "Type": "Normal",
+    "Class": 1003,
+    "Resource": "Monster/M1003",
+    "InitLevel": 1,
+    "Speed": 300
+  }
+}

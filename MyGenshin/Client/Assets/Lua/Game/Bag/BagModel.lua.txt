@@ -1,0 +1,5 @@
+BagModel={
+    loaded=false,
+    items=nil,
+    equips=nil
+}

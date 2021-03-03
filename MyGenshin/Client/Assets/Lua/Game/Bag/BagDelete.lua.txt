@@ -1,0 +1,82 @@
+BagDeleteView = BaseClass(UINode)
+BagDeleteView.Singleton = true
+function BagDeleteView:Construtor()
+    self.viewCfg.prefabName = "UIDelete"
+    self.viewCfg.prefabPath = "ui/bag/UIBagDelete.prefab"
+    self.viewCfg.canvasName = "Normal"
+    self.viewCfg.component = {
+        {UI.Move, {distance = 20, durtion = 0.3, dalay = 0.1, direction = Vector3.up}}
+    }
+end
+
+function BagDeleteView:AddEvent()
+    local onClick = function(btn)
+        if btn == self.Button_Back then
+            BagCtrl:GetGroup().State.Value = UIState.Single
+            BagCtrl:GetGroup():ClearMultiple()
+        elseif btn == self.Button_Minus then
+            self:SetCount( self.selectable.SelectCount-1)
+        elseif btn == self.Button_Plus then
+            self:SetCount( self.selectable.SelectCount+1)
+        elseif btn == self.Button_DeleteMax then
+            self:SetCount( self.selectable.Count)
+        elseif btn == self.Button_Delete then
+            BagCtrl:SellConfirm()
+        end
+    end
+
+    self:AddClickEvent(self.Button_Back, onClick)
+    self:AddClickEvent(self.Button_Minus, onClick)
+    self:AddClickEvent(self.Button_Plus, onClick)
+    self:AddClickEvent(self.Button_DeleteMax, onClick)
+    self:AddClickEvent(self.Button_Delete, onClick)
+
+    local onCountChange = function(old, new)
+        self.Text_Delete.text = "" .. new
+    end
+
+    BagCtrl:GetGroup().SelectCount.OnValueChange:AddListener(onCountChange)
+    local onSell=function(res,meg)
+        if res==Result.Success then
+            BagCtrl:GetGroup().State.Value = UIState.Single
+            BagCtrl:GetGroup():ClearMultiple()
+        end
+    end
+
+end
+function BagDeleteView:SetCount(num)
+    self:CountCheck(num)
+    BagCtrl:GetGroup():SetCount(num)
+end
+
+
+function BagDeleteView:CountCheck(num)
+    if num<=1 then
+        self.Button_Minus.interactable = false
+        self.Button_Minus:GetComponent("CanvasGroup").alpha=0.5
+    else 
+        self.Button_Minus.interactable = true
+        self.Button_Minus:GetComponent("CanvasGroup").alpha=1
+    end
+
+    if num>=self.selectable.Count then
+        self.Button_Plus.interactable = false
+        self.Button_Plus:GetComponent("CanvasGroup").alpha=0.5
+    else 
+        self.Button_Plus.interactable = true
+        self.Button_Plus:GetComponent("CanvasGroup").alpha=1
+    end
+end
+
+
+function BagDeleteView:SetData(selectable)
+    self.selectable=selectable
+    if selectable.MultipleSelect==true then
+        self.Transform_Selected.gameObject:SetActive(true)
+        self.Text_Tip.gameObject:SetActive(false)
+        self:SetCount(selectable.SelectCount)       
+    else
+        self.Transform_Selected.gameObject:SetActive(false)
+        self.Text_Tip.gameObject:SetActive(true)
+    end 
+end

@@ -1,0 +1,42 @@
+LoginRegisterView = BaseClass(UINode)
+LoginRegisterView.Singleton = true
+
+function LoginRegisterView:Construtor(parent)
+    self.viewCfg.prefabName = "UIRegister"
+    self.viewCfg.prefabPath = "ui/login/UIRegister.prefab"
+    self.viewCfg.parent = parent
+    self.viewCfg.component = {
+    }
+end
+
+function LoginRegisterView:AddEvent()
+    
+
+
+    local onClick = function(btn)
+        if btn == self.Button_Enter then
+            -- UserService.Instance:SendLogin(accuant, password)
+            local RegisterInfo = {
+                accuant = self.Text_Accuant.text,
+                password = self.Text_Password.text,
+                confirm=self.Text_Confirm.text
+            }
+            if RegisterInfo.accuant=='' or RegisterInfo.password=='' then
+                local LoginTip=LoginTipView:New(self)
+                UIManager:Show(LoginTip)
+                LoginTip:SetData("请输入用户名/密码")
+                return
+            elseif RegisterInfo.password~=RegisterInfo.confirm then
+                local LoginTip=LoginTipView:New(self)
+                UIManager:Show(LoginTip)
+                LoginTip:SetData("两次输入的密码不一致")
+                return
+            end
+            GlobleEventManager:Call(LoginConst.event.StartRegister, RegisterInfo)
+        elseif btn == self.Button_Close then
+            UIManager:Close(self)
+        end
+    end
+    self:AddClickEvent(self.Button_Enter, onClick)
+    self:AddClickEvent(self.Button_Close, onClick)
+end

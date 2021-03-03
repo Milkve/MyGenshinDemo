@@ -1,0 +1,7 @@
+ChrSelectConst = {
+    event = EventParse(
+        "ChrSelectConst",
+        {
+        }
+    )
+}

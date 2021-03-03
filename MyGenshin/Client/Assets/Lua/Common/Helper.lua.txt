@@ -1,0 +1,40 @@
+function isNull(o)
+    return o == nil or o:Equals(nil)
+end
+
+function Split(str, reps)
+    local resultStrList = {}
+    string.gsub(
+        str,
+        "[^" .. reps .. "]+",
+        function(w)
+            table.insert(resultStrList, w)
+        end
+    )
+    return resultStrList
+end
+
+function EventParse(classtype, events)
+    local new = {}
+    for i, event in ipairs(events) do
+        if classtype then
+            new[event] = classtype .. "." .. event
+        else
+            new[event] = event
+        end
+    end
+    return new
+end
+
+
+function BindCSEvent(obj, event, callback)
+    if obj[event] == nil then
+        obj[event] = callback
+    else
+        obj[event] = obj[event] + callback
+    end
+end
+
+function UnBindCSEvent(obj, event, callback)
+    obj[event] = obj[event] - callback
+end

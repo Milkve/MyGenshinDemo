@@ -1,0 +1,130 @@
+BagGridView = BaseClass(UINode)
+
+function BagGridView:Construtor(parent)
+    self.viewCfg.prefabName = "UIBagGrid"
+    self.viewCfg.prefabPath = "ui/bag/UIBagGrid.prefab"
+    self.viewCfg.parent = parent
+    self.viewCfg.isAutoDestroy = true
+    self.viewCfg.isDestroyOnClose = true
+    self.viewCfg.component = {
+        {UI.Fade, {alpha = 1, durtion = 0.5, delay = 0}},
+        {UI.Move, {distance = 10, durtion = 0.3, dalay = 0.1, direction = Vector3.up}}
+    }
+end
+
+function BagGridView:AddEvent()
+    self.onPointerClick = function(value)
+        self.Animator_Click = self.Animator_Click or self.Image_SingleSelect:GetComponent("Animator")
+        self.Animator_Click:SetTrigger("Click")
+    end
+
+    self.onPointerClickMul = function(value)
+        if self.UIElement_Main.MultipleSelect == true then
+            BagCtrl:GetGroup():DeselectMultiple(self.UIElement_Main)
+            self.Image_MultipleSelect:GetComponent("CanvasGroup"):DOFade(0, 0.1)
+            self.Image_MultipleSelectFrame:GetComponent("CanvasGroup"):DOFade(0, 0.1)
+            self.Image_MultipleSelectFrame.transform:DOLocalMoveY(
+                self.Image_MultipleSelectFrame.transform.localPosition.y + 48,
+                0.1
+            )
+        else
+            BagCtrl:GetGroup():SelectMultiple(self.UIElement_Main)
+            self.Image_MultipleSelect:GetComponent("CanvasGroup"):DOFade(1, 0.5)
+            self.Image_MultipleSelectFrame:GetComponent("CanvasGroup"):DOFade(1, 0.5)
+            self.Image_MultipleSelectFrame.transform:DOLocalMoveY(
+                self.Image_MultipleSelectFrame.transform.localPosition.y - 48,
+                0.5
+            )
+        end
+        BagCtrl:SetDelete(self.item, self.equip)
+    end
+    self.onStateChange = function(old, new)
+        if new ==UIState.Single and self.UIElement_Main.MultipleSelect==true  then
+            self.Image_MultipleSelect:GetComponent("CanvasGroup"):DOFade(0, 0.1)
+            self.Image_MultipleSelectFrame:GetComponent("CanvasGroup"):DOFade(0, 0.1)
+            self.Image_MultipleSelectFrame.transform:DOLocalMoveY(
+                self.Image_MultipleSelectFrame.transform.localPosition.y + 48,
+                0.1
+            )
+        end
+    end
+    BagCtrl:GetGroup().State.OnValueChange:AddListener(self.onStateChange)
+    self.onSelect = function(value)
+        BagCtrl:SetInfo(self.itemDefine, self.equip)
+        self.Animator_Select = self.Animator_Select or self.UIElement_Main:GetComponent("Animator")
+        self.Animator_Select:SetBool("Selected", true)
+    end
+    self.onDeselect = function(value)
+        self.Animator_Select = self.Animator_Select or self.UIElement_Main:GetComponent("Animator")
+        self.Animator_Select:SetBool("Selected", false)
+    end
+    self.UIElement_Main.ActionOnPointerClick:AddListener(3, self.onPointerClick)
+    self.UIElement_Main.ActionOnPointerClick:AddListener(2, self.onPointerClickMul)
+    self.UIElement_Main.ActionOnSelect:AddListener(3, self.onSelect)
+    self.UIElement_Main.ActionOnDeselect:AddListener(3, self.onDeselect)
+    self.onItemChange = function(old, value)
+        self.Text_Text.text = value
+    end
+end
+
+function BagGridView:SetItem(item)
+    if self.item ~= nil then
+        self.item.OnChange:RemoveListener(self.onItemChange)
+    end
+    self.item = item
+    self.item.OnChange:AddListener(self.onItemChange)
+end
+function BagGridView:OnDestroy()
+    if self.item ~= nil then
+        self.item.OnChange:RemoveListener(self.onItemChange)
+    end
+    BagCtrl:GetGroup().State.OnValueChange:RemoveListener(self.onStateChange)
+    self.UIElement_Main.ActionOnPointerClick:RemoveListener(3, self.onPointerClick)
+    self.UIElement_Main.ActionOnPointerClick:RemoveListener(UIState.Multiple, self.onPointerClickMul)
+    self.UIElement_Main.ActionOnSelect:RemoveListener(3, self.onSelect)
+    self.UIElement_Main.ActionOnDeselect:RemoveListener(3, self.onDeselect)
+end
+function BagGridView:UIElementInit(group, selectable)
+    self.UIElement_Main:Init(group, selectable)
+    if selectable.MultipleSelect == true and self.UIElement_Main.currentState == UIState.Multiple then
+        self.Image_MultipleSelect:GetComponent("CanvasGroup").alpha = 1
+        self.Image_MultipleSelectFrame:GetComponent("CanvasGroup").alpha = 1
+        self.Image_MultipleSelectFrame:GetComponent("RectTransform").localPosition =
+            self.Image_MultipleSelectFrame:GetComponent("RectTransform").localPosition - Vector3(0, 48, 0)
+    end
+end
+
+function BagGridView:SetItemData(item, group)
+    self.itemDefine = item.Define
+    self:SetItem(item)
+    self:UIElementInit(group, item)
+    self.Image_Icon.sprite = ResMgr.GetSprite(item.Define.Name, item.Define.Resource)
+    self.Image_Icon:SetNativeSize()
+    self:SetRare(item.Define.Rare)
+    self.Text_Text.text = item.Count
+    
+end
+
+function BagGridView:SetEquipData(equip, group)
+    self.equip = equip
+    self:UIElementInit(group, equip)
+    self:SetRare(equip.Define.Rare)
+    self.Text_Text.text = "Lv.1"
+    self.Image_Icon.sprite = ResMgr.GetSprite(equip.Define.Name, equip.Define.Resource)
+    self.Image_Icon.rectTransform.localScale=Vector3(1,1,1)
+    self.Image_Icon:SetNativeSize()
+    self.Image_Icon.rectTransform.anchorMin = Vector2(0.5, 0)
+    self.Image_Icon.rectTransform.anchorMax = Vector2(0.5, 1)
+    self.Image_Icon.rectTransform.offsetMin=Vector2(0,37)
+    self.Image_Icon.rectTransform.offsetMax=Vector2(0,-3)
+    local ration=Helper.AddAspectRatioFitter(self.Image_Icon.gameObject)
+    ration.aspectMode = AspectMode.HeightControlsWidth
+    ration.aspectRatio=0.953
+
+    
+end
+
+function BagGridView:SetRare(n)
+    AddStar(self.Transform_Star, n)
+    self.Image_Bg.sprite = ResMgr.GetSprite(n, UIConst.RareResource[n + 1])
+end

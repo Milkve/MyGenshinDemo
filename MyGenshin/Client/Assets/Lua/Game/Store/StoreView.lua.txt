@@ -1,0 +1,106 @@
+StoreView = BaseClass(UINode)
+StoreView.Singleton = true
+
+function StoreView:Construtor()
+    self.viewCfg.prefabName = "UIStore"
+    self.viewCfg.prefabPath = "ui/store/UIStore.prefab"
+    self.viewCfg.canvasName = "Normal"
+    self.viewCfg.isEnterUIState = true
+    self.viewCfg.component = {
+        {UI.Fade, {alpha = 1, durtion = 0.5, delay = 0}},
+        {UI.HideAll, {}},
+    }
+    self.warp = {}
+
+end
+
+
+function StoreView:OnDestroy()
+    UnBindCSEvent(ItemMgr.Instance, "OnGoldChange", self.onchange)
+end
+function StoreView:InitScrollView(toggle)
+    self:ClearChild()
+end
+function  StoreView:AddEvent()
+    local onClick =function(btn)
+        if self.Button_Close == btn then
+            StoreCtrl:CloseStore()
+        elseif  self.Button_Confirm==btn then
+            StoreCtrl:BuyGoods(self.currentGoods,self.currentDefine)
+        end
+    end
+
+    self:AddClickEvent(self.Button_Close,onClick)
+    self:AddClickEvent(self.Button_Confirm,onClick)
+    self.onchange =function(value)
+        self.Text_Money.text=value
+    end
+    BindCSEvent(ItemMgr.Instance, "OnGoldChange", self.onchange)
+
+end
+function StoreView:ClearChild()
+    -- 停止生成物品
+    if self.gen ~= nil then
+        Cor.stop(self.gen)
+    end
+    for i, v in pairs(self.warp) do
+        UIManager:Close(v)
+    end
+    self.warp = {}
+end
+
+function StoreView:SetInfo(goodsDefine,itemDefine,equipDefine)
+    require('Game.Common.UIDetialView')
+    if self.detial==nil then
+        self.detial=UIDetialView:New(self)
+        self.detial:Load()
+        
+    end
+    self.currentGoods=goodsDefine
+    self.currentDefine=itemDefine~=nil and itemDefine or equipDefine
+    self.detial:SetParent(self)
+    self.detial:SetInfo(itemDefine,nil,equipDefine)
+    UIManager:Show(self.detial)
+end
+
+function StoreView:SetRare(n)
+    ClearStar(self.Transform_Star)
+    AddStar(self.Transform_Star, n)
+    self.Image_Title.color = UIConst.RareColor[n + 1]
+    self.Image_Property.sprite = ResMgr.GetSprite("", UIConst.RareBgResource[n + 1])
+end
+function StoreView:Refresh()
+    self.Text_Title.text=StoreCtrl.model.define.Name
+    self.Text_Money.text=ItemMgr.Instance.Gold
+end
+
+function StoreView:GenItemView()
+    self:ClearChild()
+    self:Refresh()
+    local gen = function()
+        local flag=true
+        for i, v in pairs(StoreCtrl.model.goods) do
+            
+            local warp = WarpView:New(self,self.Transform_Content)
+            table.insert(self.warp, warp)
+            UIManager:Show(warp)
+            local grid = StoreGridView:New(warp)
+            grid:Load()
+            if v.Type==GoodsType.Item then
+                local define = DataMgr.Instance.Items[v.ItemID]
+                grid:SetItemData(v, define, self.ToggleGroup_Group)
+            elseif  v.Type==GoodsType.Equip then
+                local define = DataMgr.Instance.Equips[v.ItemID]
+                grid:SetEquipData(v, define, self.ToggleGroup_Group)
+            end
+            UIManager:Show(grid)
+            if flag then
+                grid.Toggle_Select.isOn = true
+                flag=false
+
+            end
+            coroutine.yield(WaitForSeconds(0.1))
+        end
+    end
+    self.gen = Cor.start(gen)
+end

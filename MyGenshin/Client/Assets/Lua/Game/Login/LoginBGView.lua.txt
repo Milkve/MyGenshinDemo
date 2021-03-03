@@ -1,0 +1,41 @@
+LoginBGView = BaseClass(UINode)
+LoginBGView.Singleton = true
+
+function LoginBGView:Construtor()
+    self.viewCfg.prefabName = "UILoginBG"
+    self.viewCfg.prefabPath = "ui/login/UILoginBG.prefab"
+    self.viewCfg.canvasName = "Normal"
+    self.viewCfg.isDestroyOnClose=true
+    self.viewCfg.component={ 
+        {UI.Fade, {alpha = 1, durtion = 0.3, delay = 0.1}},
+        {
+            UI.DelayOperation,
+            {
+                func_callback = function()
+                    GameObject.Find("UILoading"):GetComponent("UILoadingSliderView"):Hide()
+                end,
+                delay = 0
+            }
+        }
+    }
+end
+
+function LoginBGView:AddEvent()
+    local onClick = function(btn)
+        if btn == self.Button_Exit then
+            local loginConfirm = LoginConfirmView:New(self)
+            UIManager:Show(loginConfirm)
+            loginConfirm:SetData(
+                "确认退出游戏",
+                function()
+                    CS.GameStart.QuitGame()
+                end
+            )
+        elseif btn == self.Button_Login then
+            local loginView = LoginView:New(self)
+            UIManager:Show(loginView)
+        end
+    end
+    self:AddClickEvent(self.Button_Login, onClick)
+    self:AddClickEvent(self.Button_Exit, onClick)
+end

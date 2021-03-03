@@ -1,0 +1,199 @@
+QuestView = BaseClass(UINode)
+QuestView.Singleton = true
+
+function QuestView:Construtor()
+    self.viewCfg.prefabName = "UIQuest"
+    self.viewCfg.prefabPath = "ui/quest/UIQuest.prefab"
+    self.viewCfg.canvasName = "Normal"
+    self.viewCfg.isEnterUIState = true
+    self.viewCfg.component = {
+        {UI.Fade, {alpha = 1, durtion = 0.5, delay = 0}},
+        {UI.HideAll, {}}
+    }
+    self.Node = {}
+    self.Targets = {}
+    self.Reward = {}
+    self.current=nil
+end
+
+function QuestView:AddEvent()
+    local OnClick = function(btn)
+        if btn == self.Button_Close then
+            QuestCtrl:CloseQuest()
+        end
+    end
+    self:AddClickEvent(self.Button_Close, OnClick)
+
+    local OnValueChange = function(toggle, value)
+        if value then
+            if toggle == self.Toggle_All then
+                self:GenTreeList("All")
+                self.Text_Title.text = "所有任务"
+            elseif toggle == self.Toggle_Main then
+                self:GenTreeList(QuestType.Main)
+                self.Text_Title.text = "主线任务"
+            elseif toggle == self.Toggle_Branch then
+                self:GenTreeList(QuestType.Branch)
+                self.Text_Title.text = "支线任务"
+            elseif toggle == self.Toggle_Event then
+                self:GenTreeList(QuestType.Repeated)
+                self.Text_Title.text = "重复任务"
+            elseif toggle == self.Toggle_World then
+                self:GenTreeList(QuestType.World)
+                self.Text_Title.text = "世界任务"
+            end
+        end
+    end
+    self.Toggle_All.onValueChanged:AddListener(
+        function(value)
+            OnValueChange(self.Toggle_All, value)
+        end
+    )
+    self.Toggle_Main.onValueChanged:AddListener(
+        function(value)
+            OnValueChange(self.Toggle_Main, value)
+        end
+    )
+    self.Toggle_Branch.onValueChanged:AddListener(
+        function(value)
+            OnValueChange(self.Toggle_Branch, value)
+        end
+    )
+    self.Toggle_Event.onValueChanged:AddListener(
+        function(value)
+            OnValueChange(self.Toggle_Event, value)
+        end
+    )
+    self.Toggle_World.onValueChanged:AddListener(
+        function(value)
+            OnValueChange(self.Toggle_World, value)
+        end
+    )
+end
+
+function QuestView:Clear()
+    for k, v in pairs(self.Node) do
+        UIManager:Close(v)
+    end
+    self.current = nil
+end
+
+function QuestView:SetData(quest)
+    self.Text_ShowTitle.text = quest.Define.Name
+    self.Text_AcceptNpc.text = DataMgr.Instance.NPCs[quest.Define.AcceptNpc].Name
+    self.Text_Description.text = quest.Define.Description
+    self:GenTarget(quest)
+    self:GenReward(quest)
+end
+
+function QuestView:GenTarget(quest)
+    for i, v in pairs(self.Targets) do
+        v:Close()
+    end
+    self.Targets = {}
+    for i = 0, quest.Define.Targets.Count - 1 do
+        self.Targets[i] = QuestTargetNodeView:New(self, self.Transform_TargetContent)
+        UIManager:Show(self.Targets[i])
+        self.Targets[i]:SetData(quest.Define.Targets[i], quest.ReachedTargets[i])
+        -- QuestCtrl:Mark(self.Targets[i].transform)
+    end
+    -- QuestCtrl:Mark(self.transform)
+end
+
+function QuestView:GenReward(quest)
+    for i, v in pairs(self.Reward) do
+        v:Close()
+    end
+    require("Game.Common.UIInfoGrid")
+    for i, v in pairs(quest.Define.Rewards) do
+        self.Reward[i] = UIInfoGridView:New(self, self.Transform_RewardContent)
+        UIManager:Show(self.Reward[i])
+        local temp = {}
+        if v.Type == RewardType.Gold then
+            temp.Define = DataMgr.Instance.Specials[1]
+        elseif v.Type == RewardType.Item then
+            temp.Define = DataMgr.Instance.Items[v.ID]
+        end
+        temp.Rare = temp.Define.Rare
+        temp.SelectCount = v.Value
+        self.Reward[i]:SetData(temp)
+    end
+    QuestCtrl.dirty=true
+end
+
+function QuestView:GenTreeList(type)
+    self:Clear()
+    -- local quests = QuestMgr.Instance:GetQuestByStatusAndChapter()
+    -- for questType, TypeGroup in pairs(quests) do
+    --     if type == "All" or questType == type then
+    --         for Chapter, ChapterGroup in pairs(TypeGroup) do
+    --             for QuestID, Quest in pairs(ChapterGroup) do
+    --                 if self.Node[questType] == nil then
+    --                     self.Node[questType] = QuestTypeNodeView:New(self, self.Transform_Content)
+    --                     self.Node[questType]:Load()
+    --                     self.Node[questType]:SetData(questType)
+    --                 end
+    --                 UIManager:Show(self.Node[questType])
+
+    --                 local TypeNode = self.Node[questType]
+    --                 if TypeNode.Node[Chapter] == nil then
+    --                     TypeNode.Node[Chapter] = QuestChapterNodeView:New(TypeNode, TypeNode.Transform_Content)
+    --                     TypeNode.Node[Chapter]:Load()
+    --                     TypeNode.Node[Chapter]:SetData(Chapter)
+    --                 end
+    --                 UIManager:Show(TypeNode.Node[Chapter])
+    --                 local ChapterNode = TypeNode.Node[Chapter]
+    --                 if ChapterNode.Node[QuestID] == nil then
+    --                     ChapterNode.Node[QuestID] = QuestSubNodeView:New(ChapterNode, ChapterNode.Transform_Content)
+    --                     ChapterNode.Node[QuestID]:Load()
+    --                     ChapterNode.Node[QuestID]:SetData(Quest)
+    --                 end
+    --                 UIManager:Show(ChapterNode.Node[QuestID])
+    --                 if QuestCtrl.currentQuest == nil then
+    --                     ChapterNode.Node[QuestID].OnClick()
+    --                 end
+    --             end
+    --         end
+    --     end
+    -- end
+    for QuestID, quest in pairs(QuestCtrl.Quests) do
+        if type == "All" or quest.Type== type then
+            if self.Node[quest.Type] == nil then
+                self.Node[quest.Type] = QuestTypeNodeView:New(self, self.Transform_Content)
+                self.Node[quest.Type]:Load()
+                self.Node[quest.Type]:SetData(quest.Type)
+            end
+            UIManager:Show(self.Node[quest.Type])
+
+            local TypeNode = self.Node[quest.Type]
+            if TypeNode.Node[quest.Chapter] == nil then
+                TypeNode.Node[quest.Chapter] = QuestChapterNodeView:New(TypeNode, TypeNode.Transform_Content)
+                TypeNode.Node[quest.Chapter]:Load()
+                TypeNode.Node[quest.Chapter]:SetData(quest.Chapter)
+            end
+            UIManager:Show(TypeNode.Node[quest.Chapter])
+            local ChapterNode = TypeNode.Node[quest.Chapter]
+            if ChapterNode.Node[QuestID] == nil then
+                ChapterNode.Node[QuestID] = QuestSubNodeView:New(ChapterNode, ChapterNode.Transform_Content)
+                ChapterNode.Node[QuestID]:Load()
+                ChapterNode.Node[QuestID]:SetData(quest)
+            end
+            UIManager:Show(ChapterNode.Node[QuestID])
+            if self.current == nil then
+                ChapterNode.Node[QuestID].OnClick()
+            end
+        end
+    end
+    -- QuestCtrl:RebuildLayout()
+end
+
+
+function QuestView:RebuildLayout()
+    -- print('rebuilt')
+-- 
+    -- LayoutRebuilder.ForceRebuildLayoutImmediate(self.Transform_TargetContent)
+    -- LayoutRebuilder.ForceRebuildLayoutImmediate(self.Transform_DescriptionArea) 
+    LayoutRebuilder.ForceRebuildLayoutImmediate(self.Transform_Content)
+     
+    
+end

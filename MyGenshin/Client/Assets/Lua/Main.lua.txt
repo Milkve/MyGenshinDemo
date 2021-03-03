@@ -1,0 +1,53 @@
+require "Common.BaseRequire"
+
+
+
+local Game={}
+local ctrls={}
+
+
+function LuaMain()
+    Game:Init()
+end
+
+
+
+function OnStart()
+
+end
+
+function OnDestroy()
+    -- body
+end
+
+
+function Game:Init()
+    self:EventInit()
+    self:UIInit()
+    self:CtrlInit()
+end
+function Game:EventInit()
+    GlobleEventManager=EventManager:New()
+end
+function Game:UIInit()
+    UIManager:Init()
+end
+
+function Game:CtrlInit()
+    for i,v in ipairs(ctrlPath) do
+        local ctrl=require(v)
+        ctrl:Init()
+        table.insert(ctrls,ctrl)
+    end
+end
+
+function  Update()
+    GlobleEventManager:Call(GlobleEvent.Update)
+end
+
+function LateUpdate()
+
+    GlobleEventManager:Call(GlobleEvent.LateUpdate)
+end
+
+

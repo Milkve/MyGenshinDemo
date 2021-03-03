@@ -1,0 +1,113 @@
+require('Common.UI.UINode')
+UIDetialView = BaseClass(UINode)
+function UIDetialView:Construtor(parent)
+    self.viewCfg.prefabName = "UIDetial"
+    self.viewCfg.prefabPath = "ui/common/UIDetial.prefab"
+    self.viewCfg.parent = parent
+    -- self.viewCfg.isDestroyOnClose=true
+end
+
+
+function UIDetialView:SetParent(parent)
+    self.viewCfg.parent=parent
+    self.viewCfg.parentTransform=parent.transform
+    -- self.transform:SetParent(self.viewCfg.parentTransform, self.viewCfg.worldPositionStays)
+end
+
+function UIDetialView:SetRare(n)
+    ClearStar(self.Transform_Star)
+    AddStar(self.Transform_Star, n)
+    self.Image_Title.color = UIConst.RareColor[n + 1]
+    self.Image_Property.sprite = ResMgr.GetSprite("", UIConst.RareBgResource[n + 1])
+end
+function UIDetialView:Clear()
+    self.Text_Type.text =''
+    self.Text_InfoTitle.text =''
+    -- self.Text_Description.text =equip.Define.Description
+    self.Image_InfoIcon.sprite = nil
+    self.Text_BasicLabel.text=''
+    self.Text_Basic.text=''
+    self.Text_Basic2Label.text=''
+    self.Text_Basic2.text=''
+    ClearProperty(self.Transform_Description)
+end
+function UIDetialView:SetInfo(itemDefine,equip,equipDefine)
+    self:Clear()
+    if itemDefine~=nil then
+        self:SetRare(itemDefine.Rare)
+        self.Text_Type.text =itemDefine.Category
+        self.Text_InfoTitle.text =itemDefine.Name
+        -- self.Text_Description.text =item.Define.Description
+        AddProperty(self.Transform_Description,itemDefine.Description)
+        self.Image_InfoIcon.sprite = ResMgr.GetSprite(itemDefine.Name,itemDefine.Resource)
+        
+        self.Image_InfoIcon.rectTransform.anchorMin = Vector2(0.5, 0.5)
+        self.Image_InfoIcon.rectTransform.anchorMax = Vector2(0.5, 0.5)
+        local ration=Helper.AddAspectRatioFitter(self.Image_InfoIcon.gameObject)
+        ration.aspectMode = AspectMode.None
+        self.Image_InfoIcon:SetNativeSize()
+    end
+    if equip~=nil then
+        self:SetRare(equip.Define.Rare)
+        self.Text_Type.text =equip.Define.Category
+        self.Text_InfoTitle.text =equip.Define.Name
+        -- self.Text_Description.text =equip.Define.Description
+        self.Image_InfoIcon.sprite = ResMgr.GetSprite(equip.Define.Name,string.gsub(equip.Define.Resource,'%.(.*)','l.%1'))
+        self.Image_InfoIcon.rectTransform.localScale=Vector3(1,1,1)
+        
+        self.Image_InfoIcon:SetNativeSize()
+        local ratio =  self.Image_InfoIcon.rectTransform.sizeDelta.x/self.Image_InfoIcon.rectTransform.sizeDelta.y
+        self.Image_InfoIcon.rectTransform.anchorMin = Vector2(0.5, 0)
+        self.Image_InfoIcon.rectTransform.anchorMax = Vector2(0.5, 1)
+        self.Image_InfoIcon.rectTransform.offsetMin=Vector2(0,0)
+        self.Image_InfoIcon.rectTransform.offsetMax=Vector2(0,0)
+        self.Image_InfoIcon.rectTransform.anchoredPosition=Vector2(0,0)
+        local ration=Helper.AddAspectRatioFitter(self.Image_InfoIcon.gameObject)
+        ration.aspectMode = AspectMode.HeightControlsWidth
+        ration.aspectRatio=ratio
+
+        local basics =equip:GetBasicProperties()
+        self.Text_BasicLabel.text=basics[0].Name
+        self.Text_Basic.text=PropertyValue(basics[0])
+        self.Text_Basic2Label.text=basics[1].Name
+        self.Text_Basic2.text=PropertyValue(basics[1])
+        for k,v in pairs(equip:GetFixProperties()) do 
+            AddProperty(self.Transform_Description,Property2Str(v))
+        end
+        for k,v in pairs(equip:GetRandomProperties()) do 
+            AddProperty(self.Transform_Description,Property2Str(v))
+        end
+        
+    end
+    if  equipDefine~=nil then
+        self:SetRare(equipDefine.Rare)
+        self.Text_Type.text =equipDefine.Category
+        self.Text_InfoTitle.text ="未鉴定的"..equipDefine.Name
+        self.Image_InfoIcon.sprite = ResMgr.GetSprite(equipDefine.Name,string.gsub(equipDefine.Resource,'%.(.*)','l.%1'))
+        self.Image_InfoIcon.rectTransform.localScale=Vector3(1,1,1)
+        self.Image_InfoIcon:SetNativeSize()
+        local ratio =  self.Image_InfoIcon.rectTransform.sizeDelta.x/self.Image_InfoIcon.rectTransform.sizeDelta.y
+        self.Image_InfoIcon.rectTransform.anchorMin = Vector2(0.5, 0)
+        self.Image_InfoIcon.rectTransform.anchorMax = Vector2(0.5, 1)
+        self.Image_InfoIcon.rectTransform.offsetMin=Vector2(0,0)
+        self.Image_InfoIcon.rectTransform.offsetMax=Vector2(0,0)
+        self.Image_InfoIcon.rectTransform.anchoredPosition=Vector2(0,0)
+        local ration=Helper.AddAspectRatioFitter(self.Image_InfoIcon.gameObject)
+        ration.aspectMode = AspectMode.HeightControlsWidth
+        ration.aspectRatio=ratio
+
+        local basics =equipDefine.BasicProperties
+        self.Text_BasicLabel.text= DataMgr.Instance.Properties[ basics[0].ID].Name
+        self.Text_Basic.text='???'
+        self.Text_Basic2Label.text=DataMgr.Instance.Properties[ basics[1].ID].Name
+        self.Text_Basic2.text='???'
+        for i = 1,equipDefine.FixProperties.Count do
+            AddProperty(self.Transform_Description,"·??????")
+        end
+        for i=1,GameUtil.GetPropertyCount(equipDefine.Rare) do 
+            AddProperty(self.Transform_Description,"·??????")
+        end
+    end
+
+    LayoutRebuilder.ForceRebuildLayoutImmediate(self.Transform_Description)
+end

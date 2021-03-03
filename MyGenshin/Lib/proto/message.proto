@@ -1,0 +1,423 @@
+syntax = "proto3";
+
+package SkillBridge.Message;
+
+option csharp_namespace = "SkillBridge.Message";
+option cc_enable_arenas = true;
+
+////////////////////////////////////////////////////////////////
+//
+//  Basic Defines
+//
+////////////////////////////////////////////////////////////////
+enum RESULT
+{
+	SUCCESS = 0;
+	FAILED = 1;
+}
+
+enum CHARACTER_TYPE
+{
+	Player = 0;
+	NPC = 1;
+	Monster = 2;
+}
+
+
+enum CHARACTER_STATE
+{
+	IDLE = 0;
+	MOVE = 1;
+}
+
+enum ENTITY_EVENT
+{
+	NONE = 0;
+	IDLE = 1;
+	MOVE_FWD = 2;
+	MOVE_BACK = 3;
+	JUMP = 4;
+}
+enum ITEM_TYPE{
+	Avatar=1;  		//	00001
+	Food = 3; 		//	00011
+	Material = 5; 	//	00101
+	Quest = 7;  	//	00111
+	Consume=9; 		//	01001
+	Weapon=2;		//	00010
+	Equip=4;		//  00100
+}
+enum EQUIP_TYPE{
+	Sword=2;        //  00010  	单手剑
+	GreatSword=6;	//  00110	双手剑
+	Bow=10;			//  01010	弓
+	Polearms=14;	//  01110	长柄武器
+	Magic=18;		//  10010	法器
+	Flower=4;		//	00100	花
+	Sand=12;		//  01100	沙
+	Crown=20;		//	10100	冠
+	Feather=28;		// 	11100	羽
+	Cup=36;			// 100100	杯
+}
+
+message NItemInfo {
+	int32 id=1;
+	int32 count=2;
+}
+message NGoodsInfo{
+	int32 id =1;
+	int32 count=2;
+}
+
+
+message NEquipInfo{
+	int32 id=1;
+	int32 templateId=2;
+	bytes property = 3;
+}
+message NUserInfo {
+	int32 id = 1;
+	NPlayerInfo player = 2;
+}
+
+message NPlayerInfo {
+	int32 id = 1;
+	repeated NCharacterInfo characters = 2;
+}
+
+message NGoodsLimit {
+	int32 goodsId=1;
+	int32 count=2;
+}
+message NCharacterInfo {
+	int32 id = 1;
+	int32 tid = 2;
+	string name = 3;
+	CHARACTER_TYPE type = 4;
+	int32 class = 5;
+	int32 level = 6;
+	int32 mapId = 7;
+	NEntity entity = 8;
+	int64 gold =9;
+	bytes equiped =10; 
+	repeated NItemInfo items=11;
+	repeated NEquipInfo equips=12;	
+	repeated NGoodsLimit goodsLimit=13;
+	repeated NQuestInfo quests=14;
+}
+
+message NVector3
+{
+	int32 x = 1;
+	int32 y = 2;
+	int32 z = 3;
+}
+
+////////////////////////////////////////////////////////////////
+//
+//  Entities
+//
+////////////////////////////////////////////////////////////////
+
+
+message NEntity {
+	int32 id = 1;
+	NVector3 position = 2;
+	NVector3 direction = 3;
+	int32 speed = 4;
+}
+
+message NEntitySync {
+	int32 id = 1;
+	ENTITY_EVENT event = 2;
+	NEntity entity = 3;
+	
+}
+
+
+
+////////////////////////////////////////////////////////////////
+//
+//  Messages
+//
+////////////////////////////////////////////////////////////////
+
+message NetMessage{
+	NetMessageRequest Request = 1;
+	NetMessageResponse Response = 2;
+}
+
+message NetMessageRequest{
+	UserRegisterRequest userRegister = 1;
+	UserLoginRequest userLogin = 2;
+	UserCreateCharacterRequest createChar = 3;
+	UserGameEnterRequest gameEnter = 4;
+	UserGameLeaveRequest gameLeave = 5;
+	
+	MapCharacterEnterRequest mapCharacterEnter = 6;
+
+	MapEntitySyncRequest mapEntitySync = 8;
+	MapTeleportRequest mapTeleport = 9;
+	ItemBuyRequest itemBuyRequest=10;
+	ItemSellRequest itemSellRequest=11;
+	EquipWearRequest equipRequest=12;
+
+	QuestListRequest questListRequest = 13;
+	QuestAcceptRequest questAcceptRequest = 14;
+	QuestSubmitRequest questSubmitRequest = 15;
+}
+
+
+
+message NetMessageResponse{
+	UserRegisterResponse userRegister = 1;
+	UserLoginResponse userLogin = 2;
+	UserCreateCharacterResponse createChar = 3;
+	UserGameEnterResponse gameEnter = 4;
+	UserGameLeaveResponse gameLeave = 5;
+
+	MapCharacterEnterResponse mapCharacterEnter = 6;
+	MapCharacterLeaveResponse mapCharacterLeave = 7;
+
+	MapEntitySyncResponse mapEntitySync = 8;
+	ItemBuyResponse itemBuyResponse =9;
+	ItemSellResponse itemSellResponse=10;
+	StatusNotify statusNotify=11;
+	EquipWearResponse equipResponse=12;
+
+
+	QuestListResponse questListResponse = 13;
+	QuestAcceptResponse questAcceptResponse = 14;
+	QuestSubmitResponse questSubmitResponse = 15;
+
+}
+
+
+// User Protocol
+message UserLoginRequest {
+	string user = 1;
+	string passward = 2;
+}
+
+message UserLoginResponse {
+	RESULT result = 1;
+	string errormsg = 2;
+	NUserInfo userinfo = 3;
+}
+
+
+message UserRegisterRequest
+{
+	string user = 1;
+	string passward = 2;
+}
+
+message UserRegisterResponse {
+	RESULT result = 1;
+	string errormsg = 2;
+}
+
+message UserCreateCharacterRequest
+{
+	string name = 1;
+	int32 class = 2;
+}
+
+message UserCreateCharacterResponse {
+	RESULT result = 1;
+	string errormsg = 2;
+	repeated NCharacterInfo characters = 3;
+}
+
+message UserGameEnterRequest
+{
+	int32 characterIdx = 1;
+}
+
+message UserGameEnterResponse {
+	RESULT result = 1;
+	string errormsg = 2;
+	NCharacterInfo character = 3;
+}
+
+message UserGameLeaveRequest
+{
+}
+
+message UserGameLeaveResponse {
+	RESULT result = 1;
+	string errormsg = 2;
+}
+
+// Map Protocol
+message MapCharacterEnterRequest
+{
+	int32 mapId = 1;
+}
+
+message MapCharacterEnterResponse
+{
+	int32 mapId = 1;
+	repeated NCharacterInfo characters = 2;
+}
+
+message MapCharacterLeaveResponse
+{
+	int32 characterId = 1;
+}
+
+
+message MapEntitySyncRequest
+{
+    NEntitySync entitySync = 1;
+}
+
+
+message MapEntitySyncResponse
+{
+    repeated NEntitySync entitySyncs = 2;
+}
+
+message MapTeleportRequest
+{
+	int32 teleporterId = 1;
+}
+
+
+enum STATUS_ACTION{
+	UPDATE=0;
+	ADD=1;
+	DELETE=2;
+}
+
+
+enum STATUS_TYPE{
+	GOLD=0;			
+	EXP=1;
+	ITEM=2;
+	SKILLPOINT=3;
+	GOODSLIMIT=4;
+	EQUIP=5;
+	EQUIPED=6;
+}
+
+
+message NStatus{
+	STATUS_TYPE type=1;
+	STATUS_ACTION action =2;
+	int32 id =3;
+	int32 value=4;
+	bytes param=5;
+}
+message StatusNotify{
+	repeated Nstatus status=1;
+}
+
+
+//Item Protocal
+message ItemBuyRequest
+{
+	NGoodsInfo nGoodsInfo=1;
+}
+
+
+message ItemBuyResponse
+{
+	RESULT result = 1;
+	string errormsg = 2;
+}
+
+
+message ItemSellRequest{
+	repeated NItemInfo nItemInfos=1;
+	repeated NEquipInfo nEquipInfos=2;
+}
+message ItemSellResponse{
+	RESULT result = 1;
+	string errormsg = 2;
+}
+
+//Equip Protocal
+message EquipWearRequest{
+	int32 id=1;
+	STATUS_ACTION action=2;
+}
+message EquipWearResponse{
+	RESULT result = 1;
+	string errormsg = 2;
+}
+
+
+
+//Quest 
+
+enum QUEST_STATUS
+{
+	None=0;		//未接受
+	IN_PROGRESS = 1;//已接受，未完成
+	COMPLATED = 2;//已完成，未提交
+	FINISHED = 3;//已完成，已提交
+	FAILED = 4;//已失败
+	
+}
+
+enum QUEST_LIST_TYPE
+{
+	ALL = 0;
+	IN_PROGRESS = 1;
+	FINISHED = 2;
+}
+
+message NQuestInfo
+{
+	int32 id = 1;
+	int32 guid = 2;
+	QUEST_STATUS status = 3;
+	repeated int32 targets = 4;
+}
+
+message QuestListRequest
+{
+	QUEST_LIST_TYPE listType = 1;
+}
+
+message QuestListResponse
+{
+	RESULT result = 1;
+	string errormsg = 2;
+	repeated NQuestInfo  quests = 3;
+}
+
+message QuestAcceptRequest
+{
+	int32 quest_id = 1;
+}
+
+message QuestAcceptResponse
+{
+	RESULT result = 1;
+	string errormsg = 2;
+	NQuestInfo quest = 3;
+}
+
+message QuestSubmitRequest
+{
+	int32 quest_id = 1;
+}
+
+message QuestSubmitResponse
+{
+	RESULT result = 1;
+	string errormsg = 2;
+	NQuestInfo quest = 3;
+}
+message QuestAbandonRequest
+{
+	int32 quest_id = 1;
+}
+
+message QuestAbandonResponse
+{
+	RESULT result = 1;
+	string errormsg = 2;
+}

@@ -1,0 +1,59 @@
+NpcInfoView = BaseClass(WorldElement)
+
+function NpcInfoView:Construtor(transform)
+    self.viewCfg = {
+        prefabPath = "ui/worldElement/NpcInfo.prefab",
+        prefabName = "NpcInfo",
+        parentTransform = transform
+    }
+end
+
+function NpcInfoView:AddEvent()
+    self.Canvas_Main.worldCamera = Camera.main
+
+    GlobleEventManager:AddListener(
+        GlobleEvent.Update,
+        function()
+            self:Update()
+        end
+    )
+end
+
+function NpcInfoView:OnDestroy()
+    self.npc.Status:RemoveListener(self.onStateChange)
+end
+
+function NpcInfoView:UpdateStatusSprite(status)
+    if status == NpcQuestStatus.Visible then
+        self.Image_NpcStatus.gameObject:SetActive(true)
+        self.Image_NpcStatus.sprite = ResMgr.GetSprite("NpcStatus_Visible", "sprite/npcStatus/UI_NpcStatus_Visible.png")
+    elseif status == NpcQuestStatus.Complete then
+        self.Image_NpcStatus.gameObject:SetActive(true)
+        self.Image_NpcStatus.sprite =
+            ResMgr.GetSprite("NpcStatus_Complete", "sprite/npcStatus/UI_NpcStatus_Complete.png")
+    elseif status == NpcQuestStatus.Acceptable then
+        self.Image_NpcStatus.gameObject:SetActive(true)
+        self.Image_NpcStatus.sprite =
+            ResMgr.GetSprite("NpcStatus_Acceptable", "sprite/npcStatus/UI_NpcStatus_Acceptable.png")
+    else
+        self.Image_NpcStatus.gameObject:SetActive(false)
+    end
+end
+
+function NpcInfoView:SetData(npcctrl)
+    self.npc = npcctrl
+
+    self.Text_Name.text = self.npc.Define.Name
+    self.Text_Identity.text = self.npc.Define.Description
+    self:UpdateStatusSprite(self.npc.Status.Value)
+
+    self.onStatusChange = function(old, new)
+        self:UpdateStatusSprite(new)
+    end
+    self.npc.Status.OnValueChange:AddListener(self.onStatusChange)
+end
+
+function NpcInfoView:Update()
+    -- print('lookat')
+    self.Canvas_Main.transform.forward=Camera.main.transform.forward
+end

@@ -1,0 +1,48 @@
+function AddStar(transform, n)
+    local star = ResMgr.GetPrefab(UIConst.Star.Name, UIConst.Star.Path)
+    for i = 0, n do
+        GameObject.Instantiate(star, transform)
+    end
+end
+function ClearStar(transform)
+    for i = 0, transform.childCount - 1 do
+        UnityDestroy(transform:GetChild(i).gameObject)
+    end
+end
+
+function AddProperty(transform, str)
+    local text = ResMgr.GetPrefab(UIConst.Property.Name, UIConst.Property.Path)
+    text = GameObject.Instantiate(text, transform)
+    text:GetComponent("Text").text = str
+end
+
+function Property2Str(property)
+    local strValue=nil
+    local value=PropertyValue(property)
+    if property.Type == PropertyType.AddStatistic then
+        strValue = '·'..property.Name..'+'..value
+    elseif property.Type == PropertyType.AddSkill then
+        strValue=string.gsub(property.Descirption,"@[Vv]alue@",'%%s')
+        strValue=string.format(strValue,value)
+    end
+    return strValue
+end
+function PropertyValue(property)
+    if property.Index==-3 then
+        return''..property.Value * 10^(-1)..'%'
+   elseif  property.Index==-2 then
+       return ''..property.Value..'%'
+   elseif  property.Index==-1 then
+       return ''..property.Value*10^(-1)
+   elseif  property.Index>=0 then
+       return''..math.floor (property.Value*10^(property.Index))
+   end
+end
+function ClearProperty(transform)
+    for i = 0, transform.childCount - 1 do
+        local go = transform:GetChild(i).gameObject
+        if go:GetComponent("Text") ~= nil then
+            UnityDestroy(go)
+        end
+    end
+end

@@ -1,0 +1,73 @@
+QuestSubNodeView = BaseClass(UINode)
+
+function QuestSubNodeView:Construtor(parent, transform)
+    self.viewCfg.prefabName = "UIQuestSubNode"
+    self.viewCfg.prefabPath = "ui/quest/UIQuestSubNode.prefab"
+    self.viewCfg.parent = parent
+    self.viewCfg.parentTransform = transform
+    self.viewCfg.isAutoDestroy = true
+    -- self.viewCfg.isDestroyOnClose = true
+    self.viewCfg.component = {
+        {UI.Fade, {alpha = 1, durtion = 0.3, delay = 0, isHide = false}}
+    }
+    self.select = false
+end
+function QuestSubNodeView:AddEvent()
+    if self.animator == nil then
+        self.animator = self.UIElementQuestNode_Main:GetComponent("Animator")
+    end
+    self.OnClick = function(data)
+        QuestCtrl:SetCurrentQuest(self.quest)
+    end
+    self.UIElementQuestNode_Main.ActionOnClick:AddListener(self.OnClick)
+
+    self.eventMgr:AddListener(
+        UINode.event.OnShow,
+        function(callback)
+            self.animator:SetBool("Selected", self.select)
+            callback()
+        end
+    )
+    -- self.OnSelect = function(data)
+    --     self:SetSelect(true)
+    -- end
+    -- self.UIElementQuestNode_Main.ActionOnSelect:AddListener(self.OnSelect)
+    -- self.OnDeselect = function(data)
+    -- self:SetSelect(false)
+    -- end
+    -- self.UIElementQuestNode_Main.ActionOnDeselect:AddListener(self.OnDeselect)
+end
+
+function QuestSubNodeView:OnDestroy()
+    self.UIElementQuestNode_Main.ActionOnClick:RemoveListener(self.OnClick)
+    -- self.UIElementQuestNode_Main.ActionOnSelect:RemoveListener(self.OnSelect)
+    -- self.UIElementQuestNode_Main.ActionOnDeselect:RemoveListener(self.OnDeselect)
+end
+
+function QuestSubNodeView:SetCallback(type, aciton)
+    self.temp = function(callback)
+        self.eventMgr:RemoveListener(type, self.temp)
+        aciton()
+        callback()
+    end
+    self.eventMgr:AddListener(type, self.temp)
+end
+
+function QuestSubNodeView:SetSelect(bool)
+    if bool == true and self.select == false then
+        self.select = true
+    elseif bool == false and self.select == true then
+        self.select = false
+    end
+    self.animator:SetBool("Selected", self.select)
+end
+
+function QuestSubNodeView:SetData(quest)
+    self.quest = quest
+    self.Text_Title.text = quest.Define.Name
+    if (quest.NpcStatus.Value == NpcQuestStatus.Visible) then
+        self.Text_SubTitle.text = "<color=#FF989E>需要等级 " .. quest.LimitLevel .. "</color>"
+    else
+        self.Text_SubTitle.text = ""
+    end
+end

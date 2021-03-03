@@ -1,0 +1,48 @@
+EventManager = BaseClass()
+
+-- TODO 改成链表
+
+function EventManager:Construtor()
+    self.evt = {}
+end
+
+function EventManager:AddListener(type, func)
+    if self.evt[type] == nil then
+        self.evt[type] = {}
+    end
+    self.evt[type][func] = func
+end
+
+function EventManager:RemoveListener(type, func)
+    if self.evt[type] == nil then
+        return
+    else
+        self.evt[type][func] = nil
+    end
+end
+
+function EventManager:Clear(type)
+    if self.evt[type] == nil then
+        return
+    end
+    self.evt[type] = nil
+end
+
+function EventManager:ClearAll()
+    for k,v in pairs(self.evt) do
+        self.evt[k]=nil
+    end
+end
+
+function EventManager:Call(type, ...)
+    if self.evt[type] == nil then
+        return
+    end
+    for i, func in pairs(self.evt[type]) do
+        func(...)
+    end
+end
+
+
+
+

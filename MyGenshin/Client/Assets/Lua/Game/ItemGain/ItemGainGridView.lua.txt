@@ -1,0 +1,30 @@
+ItemGainGridView = BaseClass(UINode)
+function ItemGainGridView:Construtor(parent)
+    self.viewCfg.prefabName = "UIGainGrid"
+    self.viewCfg.prefabPath = "ui/itemGain/UIGainGrid.prefab"
+    self.viewCfg.parent = parent
+    self.viewCfg.isAutoDestroy = true
+    self.viewCfg.isDestroyOnClose = true
+end
+
+
+-- function ItemGainGridView:AddEvent()
+--     local onClick=function(btn)
+--         if self.Button_Close==btn  then
+--             UIManager:Close(self)
+--         end
+--     end
+--     self:AddClickEvent(self.Button_Close,onClick)
+-- end
+function ItemGainGridView:SetItemData(value, define)
+    self.define = define
+    self.Image_Icon.sprite = ResMgr.GetSprite(define.Name, define.Resource)
+    self.Image_Icon:SetNativeSize()
+    self:SetRare(define.Rare)
+    self.Text_Name.text = define.Name
+    self.Text_Text.text = value 
+end
+
+function ItemGainGridView:SetRare(n)
+    self.Image_Bg.sprite = ResMgr.GetSprite(n, UIConst.RareResource[n + 1])
+end

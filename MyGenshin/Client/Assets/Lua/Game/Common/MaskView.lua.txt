@@ -1,0 +1,28 @@
+MaskView = BaseClass(UINode)
+function MaskView:Construtor(parent,transform,isCloseOnClick)
+    self.iscloseOnClick=isCloseOnClick
+    self.viewCfg.prefabName = "UIMask"
+    self.viewCfg.prefabPath = "ui/common/UIMask.prefab"
+    self.viewCfg.parent = parent
+    self.viewCfg.parentTransform=transform
+    self.viewCfg.isDestroyOnClose=true
+end
+
+function MaskView:SetParent(parent)
+    self.viewCfg.parent=parent
+end
+
+
+function MaskView:SetColor(color)
+    local image =self.gameObject:GetComponent('Image')
+    image.Color=color
+end
+
+function MaskView:AddEvent()
+    local onClick=function(btn)
+        if self.Button_Mask==btn and self.iscloseOnClick  then
+            UIManager:Close(self.viewCfg.parent)
+        end
+    end
+    self:AddClickEvent(self.Button_Mask,onClick)
+end

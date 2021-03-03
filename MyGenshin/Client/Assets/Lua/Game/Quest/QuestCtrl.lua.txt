@@ -1,0 +1,62 @@
+require("Game.Quest.QuestView")
+require("Game.Quest.QuestTypeNodeView")
+require("Game.Quest.QuestChapterNodeView")
+require("Game.Quest.QuestSubNodeView")
+require("Game.Quest.QuestTargetNodeView")
+require("Game.Quest.QuestConst")
+QuestCtrl = {}
+
+function QuestCtrl:Init()
+    self.QuestView = QuestView:New()
+    self.Update = function()
+        while true do
+            coroutine.yield(WaitForEndOfFrame())
+            self:RebuildLayout()
+            if self.dirty == true then
+                self.dirty = false
+                LayoutRebuilder.ForceRebuildLayoutImmediate(self.QuestView.Transform_TargetContent)
+            end
+        end
+    end
+end
+
+function QuestCtrl:ShowQuest()
+    self.dirty = false
+    print("ShowQuest")
+    self.Quests = QuestMgr.Instance:GetQuestForShow()
+    UIManager:Show(self.QuestView)
+    self.gen=Cor.start(self.Update)
+    self.QuestView.Toggle_All.isOn = true
+end
+function QuestCtrl:CloseQuest()
+    self.currentQuest = nil
+    Cor.stop(self.gen)
+    print("CloseQuest")
+    UIManager:Close(self.QuestView)
+end
+
+function QuestCtrl:Mark(transform)
+    LayoutRebuilder.MarkLayoutForRebuild(transform)
+end
+
+function QuestCtrl:RebuildLayout()
+    self.QuestView:RebuildLayout()
+end
+function QuestCtrl:SetCurrentQuest(quest)
+    if quest == self.currentQuest then
+        return
+    end
+    self.currentQuest = quest
+    for type, typeNode in pairs(self.QuestView.Node) do
+        for chapter, chapterNode in pairs(typeNode.Node) do
+            chapterNode:SetSelect(chapter == quest.Chapter and type == quest.Type)
+            for questID, questNode in pairs(chapterNode.Node) do
+                questNode:SetSelect(quest.ID == questID)
+            end
+        end
+    end
+    self.dirty = true
+    self.QuestView:SetData(quest)
+end
+
+return QuestCtrl

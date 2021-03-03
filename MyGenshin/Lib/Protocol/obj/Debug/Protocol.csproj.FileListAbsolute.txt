@@ -1,0 +1,17 @@
+E:\VipSkillLearn\mmowork\Src\Lib\Protocol\bin\Debug\Protocol.dll
+E:\VipSkillLearn\mmowork\Src\Lib\Protocol\bin\Debug\Protocol.pdb
+E:\VipSkillLearn\mmowork\Src\Lib\Protocol\bin\Debug\protobuf-net.dll
+E:\VipSkillLearn\mmowork\Src\Lib\Protocol\bin\Debug\protobuf-net.xml
+E:\VipSkillLearn\mmowork\Src\Lib\Protocol\obj\Debug\Protocol.csprojAssemblyReference.cache
+E:\VipSkillLearn\mmowork\Src\Lib\Protocol\obj\Debug\Protocol.csproj.CoreCompileInputs.cache
+E:\VipSkillLearn\mmowork\Src\Lib\Protocol\obj\Debug\Protocol.csproj.CopyComplete
+E:\VipSkillLearn\mmowork\Src\Lib\Protocol\obj\Debug\Protocol.dll
+E:\VipSkillLearn\mmowork\Src\Lib\Protocol\obj\Debug\Protocol.pdb
+E:\VipSkillLearn\MyGenshinDemo\MyGenshin\Lib\Protocol\bin\Debug\Protocol.dll
+E:\VipSkillLearn\MyGenshinDemo\MyGenshin\Lib\Protocol\bin\Debug\Protocol.pdb
+E:\VipSkillLearn\MyGenshinDemo\MyGenshin\Lib\Protocol\bin\Debug\protobuf-net.dll
+E:\VipSkillLearn\MyGenshinDemo\MyGenshin\Lib\Protocol\bin\Debug\protobuf-net.xml
+E:\VipSkillLearn\MyGenshinDemo\MyGenshin\Lib\Protocol\obj\Debug\Protocol.csproj.CoreCompileInputs.cache
+E:\VipSkillLearn\MyGenshinDemo\MyGenshin\Lib\Protocol\obj\Debug\Protocol.csproj.CopyComplete
+E:\VipSkillLearn\MyGenshinDemo\MyGenshin\Lib\Protocol\obj\Debug\Protocol.dll
+E:\VipSkillLearn\MyGenshinDemo\MyGenshin\Lib\Protocol\obj\Debug\Protocol.pdb

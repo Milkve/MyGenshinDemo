@@ -1,0 +1,228 @@
+BagView = BaseClass(UINode)
+BagView.Singleton = true
+require("Game.Common.UIDetialView")
+function BagView:Construtor()
+    self.viewCfg.prefabName = "UIBag"
+    self.viewCfg.prefabPath = "ui/bag/UIBag.prefab"
+    self.viewCfg.canvasName = "Normal"
+    self.viewCfg.isEnterUIState = true
+    self.viewCfg.component = {
+        {UI.Fade, {alpha = 1, durtion = 0.5, delay = 0}},
+        -- {UI.CameraCtrl, {target = ChrSelectCtrl.pointsTrans["CreateCamera"], durtion = 0.7}},
+        {UI.HideAll, {}}
+        -- {UI.ShowState, {OnShowed = true, OnClosed = true}}
+    }
+    self.currentToggle = nil
+    self.gird = {}
+    self.goods = false
+    self.deleteView = BagDeleteView:New()
+end
+
+function BagView:OnDestroy()
+    UnBindCSEvent(ItemMgr.Instance, "OnGoldChange", self.onchange)
+end
+
+function BagView:AddEvent()
+    self.onchange = function(value)
+        self.Text_Money.text = value
+    end
+    BindCSEvent(ItemMgr.Instance, "OnGoldChange", self.onchange)
+    local OnClick = function(btn)
+        if self.Button_Close == btn then
+            BagCtrl:CloseBag()
+        elseif self.Button_Del == btn then
+            BagCtrl:SetMode(UIState.Multiple)
+        end
+    end
+    self:AddClickEvent(self.Button_Close, OnClick)
+    self:AddClickEvent(self.Button_Del, OnClick)
+    local onStateChange = function(old, new)
+        if new == UIState.Single then
+            UIManager:Close(self.deleteView)
+        elseif new == UIState.Multiple then
+            UIManager:Show(self.deleteView)
+        end
+    end
+    BagCtrl:GetGroup().State.OnValueChange:AddListener(onStateChange)
+
+    local OnValueChange = function(toggle, value)
+        if value then
+            self.currentToggle = toggle
+            self:InitScrollView()
+        end
+    end
+    self.Toggle_Avatar.onValueChanged:AddListener(
+        function(value)
+            OnValueChange(self.Toggle_Avatar, value)
+        end
+    )
+    self.Toggle_Food.onValueChanged:AddListener(
+        function(value)
+            OnValueChange(self.Toggle_Food, value)
+        end
+    )
+    self.Toggle_Material.onValueChanged:AddListener(
+        function(value)
+            OnValueChange(self.Toggle_Material, value)
+        end
+    )
+    self.Toggle_Quest.onValueChanged:AddListener(
+        function(value)
+            OnValueChange(self.Toggle_Quest, value)
+        end
+    )
+    self.Toggle_Consume.onValueChanged:AddListener(
+        function(value)
+            OnValueChange(self.Toggle_Consume, value)
+        end
+    )
+    self.Toggle_Weapon.onValueChanged:AddListener(
+        function(value)
+            OnValueChange(self.Toggle_Weapon, value)
+        end
+    )
+    self.Toggle_Equip.onValueChanged:AddListener(
+        function(value)
+            OnValueChange(self.Toggle_Equip, value)
+        end
+    )
+end
+
+function BagView:InitScrollView()
+    local toggle = self.currentToggle
+    self:ClearChild()
+    self.Text_Money.text = ItemMgr.Instance.Gold
+    local type = nil
+    if toggle == self.Toggle_Avatar then
+        type = ItemType.Avatar
+        self.Text_Title.text = "背包 / 角色"
+        self.Text_RightTag.text = "角色"
+    elseif toggle == self.Toggle_Food then
+        type = ItemType.Food
+        self.Text_Title.text = "背包 / 食物"
+        self.Text_RightTag.text = "食物"
+    elseif toggle == self.Toggle_Material then
+        type = ItemType.Material
+        self.Text_Title.text = "背包 / 材料"
+        self.Text_RightTag.text = "材料"
+    elseif toggle == self.Toggle_Quest then
+        type = ItemType.Quest
+        self.Text_Title.text = "背包 / 任务"
+        self.Text_RightTag.text = "任务"
+    elseif toggle == self.Toggle_Consume then
+        type = ItemType.Consume
+        self.Text_Title.text = "背包 / 贵重"
+        self.Text_RightTag.text = "贵重"
+    elseif toggle == self.Toggle_Weapon then
+        type = ItemType.Weapon
+        self.Text_Title.text = "背包 / 武器"
+        self.Text_RightTag.text = "武器"
+    elseif toggle == self.Toggle_Equip then
+        type = ItemType.Equip
+        self.Text_Title.text = "背包 / 装备"
+        self.Text_RightTag.text = "装备"
+    end
+    if Helper.Enum2Int(type) & 1 ~= 0 then
+        self:GenItemView(type)
+    else
+        self:GenEquipView(type)
+    end
+end
+
+function BagView:ClearChild()
+    -- 停止生成物品
+    if self.gen ~= nil then
+        Cor.stop(self.gen)
+    end
+    for i, v in pairs(self.gird) do
+        UIManager:Close(v)
+    end
+    self.gird = {}
+    self.UIGroup_Group:ClearSingle()
+end
+
+function BagView:SetInfo(item, equip)
+    require("Game.Common.UIDetialView")
+    if self.detial == nil then
+        self.detial = UIDetialView:New(self)
+        self.detial:Load()
+    end
+    self.detial:SetParent(self)
+    self.detial:SetInfo(item, equip)
+    UIManager:Show(self.detial)
+end
+
+function BagView:SetDelete(item, equip)
+    self.deleteView:Load()
+    self.deleteView:SetData(item ~= nil and item or equip)
+end
+
+function BagView:GenItemView(type)
+    local gen = function()
+        local n = 0
+        for i, v in pairs(BagModel.items) do
+            if v.Define.Type == type then
+                n = n + 1
+                local warp = WarpView:New(self, self.Transform_Content)
+                table.insert(self.gird, warp)
+                UIManager:Show(warp)
+                local grid = BagGridView:New(warp)
+                grid:Load()
+                grid:SetItemData(v, self.UIGroup_Group)
+                UIManager:Show(grid)
+                if self.goods == false then
+                    self.goods = true
+                    self.Transform_NoItem.gameObject:SetActive(false)
+                end
+            end
+            if n == 5 then
+                n = 0
+                coroutine.yield(WaitForSeconds(0.3))
+            end
+        end
+        if #self.gird == 0 then
+            self.goods = false
+            if self.detial ~= nil then
+                UIManager:Close(self.detial)
+            end
+            self.Transform_NoItem.gameObject:SetActive(true)
+        end
+    end
+
+    self.gen = Cor.start(gen)
+end
+
+function BagView:GenEquipView(type)
+    local gen = function()
+        local n = 0
+        for i, v in pairs(BagModel.equips) do
+            local define = v.Define
+            if Helper.Enum2Int(define.Type) & Helper.Enum2Int(type) ~= 0 then
+                n = n + 1
+                local warp = WarpView:New(self, self.Transform_Content)
+                table.insert(self.gird, warp)
+                UIManager:Show(warp)
+                local grid = BagGridView:New(warp)
+                grid:Load()
+                grid:SetEquipData(v, self.UIGroup_Group)
+                UIManager:Show(grid)
+                if self.goods == false then
+                    self.goods = true
+                    self.Transform_NoItem.gameObject:SetActive(false)
+                end
+            end
+            if n == 5 then
+                n = 0
+                coroutine.yield(WaitForSeconds(0.3))
+            end
+        end
+        if #self.gird == 0 then
+            self.goods = false
+            if self.detial ~= nil then
+                UIManager:Close(self.detial)
+            end
+            self.Transform_NoItem.gameObject:SetActive(true)
+        end
+    end
+    self.gen = Cor.start(gen)
+end

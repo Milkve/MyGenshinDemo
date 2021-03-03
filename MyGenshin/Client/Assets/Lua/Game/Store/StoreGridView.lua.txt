@@ -1,0 +1,106 @@
+require("Game.Common.UIConst")
+StoreGridView = BaseClass(UINode)
+
+function StoreGridView:Construtor(parent)
+    self.viewCfg.prefabName = "UIStoreGrid"
+    self.viewCfg.prefabPath = "ui/store/UIStoreGrid.prefab"
+    self.viewCfg.parent = parent
+    self.viewCfg.isAutoDestroy = true
+    self.viewCfg.isDestroyOnClose = true
+    self.viewCfg.component = {
+        {UI.Fade, {alpha = 1, durtion = 0.5, delay = 0}},
+        {UI.Move, {distance = 10, durtion = 0.3, dalay = 0.1, direction = Vector3.up}}
+    }
+end
+
+function StoreGridView:AddEvent()
+    self.Toggle_Select.onValueChanged:AddListener(
+        function(value)
+            if value then
+                StoreCtrl:SetInfo(self.goods,self.itemDefine,self.equipDefine)
+            end
+        end
+    )
+    self.onchange = function()
+        self:Refresh()
+    end
+end
+
+function StoreGridView:Refresh()
+    local str = "" .. self.limit.canBuy .. "/" .. self.limit.limit
+    if self.limit.type == GoodsLimitType.None then
+        str = ""
+    elseif self.limit.type == GoodsLimitType.Zone then
+        str = "副本限购" .. str
+    elseif self.limit.type == GoodsLimitType.Day then
+        str = "每日限购" .. str
+    elseif self.limit.type == GoodsLimitType.Week then
+        str = "每周限购" .. str
+    elseif self.limit.type == GoodsLimitType.Month then
+        str = "每月限购" .. str
+    elseif self.limit.type == GoodsLimitType.Always then
+        str = "限购" .. str
+    end
+    self.Text_Limit.text = str
+end
+
+function StoreGridView:SetLimit(limit)
+    if self.limit~=nil then
+        UnBindCSEvent(self.limit, "OnChange", self.onchange)
+    end
+    self.limit=limit
+    BindCSEvent(self.limit, "OnChange", self.onchange)
+end
+function StoreGridView:OnDestroy()
+    UnBindCSEvent(self.limit, "OnChange", self.onchange)
+end
+
+function StoreGridView:SetItemData(goodsDefine, itemDefine, group)
+    self.goods = goodsDefine
+    self.itemDefine = itemDefine
+    self.Toggle_Select.group = group
+    self.Image_Icon.sprite = ResMgr.GetSprite(itemDefine.Name, itemDefine.Resource)
+    self.Image_Icon.rectTransform.anchorMin = Vector2(0.5, 0.5)
+    self.Image_Icon.rectTransform.anchorMax = Vector2(0.5, 0.5)
+    local ration=Helper.AddAspectRatioFitter(self.Image_Icon.gameObject)
+    ration.aspectMode = AspectMode.None
+    self.Image_Icon:SetNativeSize()
+    self:SetRare(itemDefine.Rare)
+    self.Text_Count.text = "" .. goodsDefine.Count
+    self.Text_Name.text = itemDefine.Name
+    self.Text_Money.text = goodsDefine.Price
+    self:SetLimit(ItemMgr.Instance:GetGoodsLimit(goodsDefine.ID))
+    self:Refresh()
+end
+
+
+function StoreGridView:SetEquipData(goodsDefine, equipDefine, group)
+    self.goods = goodsDefine
+    self.equipDefine = equipDefine
+    self.Toggle_Select.group = group
+    self.Image_Icon.sprite = ResMgr.GetSprite(equipDefine.Name, equipDefine.Resource)
+    self.Image_Icon:SetNativeSize()
+    local ratio =  self.Image_Icon.rectTransform.sizeDelta.x/self.Image_Icon.rectTransform.sizeDelta.y
+    self.Image_Icon.rectTransform.anchorMin = Vector2(0.5, 0)
+    self.Image_Icon.rectTransform.anchorMax = Vector2(0.5, 1)
+    self.Image_Icon.rectTransform.offsetMin=Vector2(0,0)
+    self.Image_Icon.rectTransform.offsetMax=Vector2(0,0)
+    self.Image_Icon.rectTransform.anchoredPosition=Vector2(0,0)
+    local ration=Helper.AddAspectRatioFitter(self.Image_Icon.gameObject)
+    ration.aspectMode = AspectMode.HeightControlsWidth
+    ration.aspectRatio=ratio
+
+    self:SetRare(equipDefine.Rare)
+    self.Text_Count.text = "" .. goodsDefine.Count
+    self.Text_Name.text ='未鉴定的'..equipDefine.Name
+    self.Text_Money.text = goodsDefine.Price
+    self:SetLimit(ItemMgr.Instance:GetGoodsLimit(goodsDefine.ID))
+    self:Refresh()
+end
+
+function StoreGridView:SetRare(n)
+    -- StoreCtrl:AddStar(self.Transform_Star,n)
+    self.Image_Quality.sprite = ResMgr.GetSprite(n, UIConst.RareResource[n + 1])
+end
+
+

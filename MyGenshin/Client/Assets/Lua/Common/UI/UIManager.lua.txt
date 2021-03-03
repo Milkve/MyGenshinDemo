@@ -1,0 +1,100 @@
+require('Game.Common.UIConst')
+UIManager = BaseClass()
+
+function UIManager:Init()
+    self.views = {}
+    self.canvas = {}
+    local uicanvas = GameObject.Find("UICanvas").transform
+    assert(uicanvas, "UICanvas节点不存在")
+    for i = 0, uicanvas.childCount - 1 do
+        local canvas = uicanvas:GetChild(i)
+        self.canvas[canvas.gameObject.name] = canvas
+        self.views[canvas.gameObject.name] = {}
+    end
+end
+
+function UIManager:AddToCanvas(node, canvas_names)
+    if canvas_names and self.canvas[canvas_names] then
+        node.transform:SetParent(self.canvas[canvas_names], false)
+        return self.canvas[canvas_names]
+    end
+end
+function UIManager:GetCanvas(name)
+    if self.canvas then
+        return self.canvas[name]
+    end
+end
+
+function UIManager:Show(type)
+    assert(type.Show)
+    type:Show()
+end
+
+function UIManager:Hide(type)
+    assert(type.Hide)
+    type:Hide()
+end
+function UIManager:Close(type)
+    assert(type.Close)
+    type:Close()
+end
+
+function UIManager:PushInStack(type)
+    if type.viewCfg.parent == nil then
+        -- print('PushInStack'..type.viewCfg.prefabName)
+        table.insert(self.views[type.root.name], type)
+    end
+end
+
+function UIManager:PopOutStack(type)
+    if type.viewCfg.parent == nil then
+        -- print('PushOutStack'..type.viewCfg.prefabName)
+        table.remove(self.views[type.root.name], #self.views[type.root.name])
+    end
+end
+
+function UIManager:HideAll(root)
+    --隐藏其他
+    -- print('Stack:')
+    -- for i,v in pairs(self.views[root.name])do 
+    --     print(self.views[root.name][i].viewCfg.prefabName)
+    -- end
+    for i = #self.views[root.name], 1, -1 do
+        -- print('HideAll:'..self.views[root.name][i].viewCfg.prefabName)
+        self:Hide(self.views[root.name][i])
+        if self.views[root.name][i].isHideAll then
+            break
+        end 
+    end
+end
+
+function UIManager:Reappear(root)
+    -- print('Stack:'.. self.views[root.name][#self.views[root.name]].viewCfg.prefabName)
+    -- print('Stack:')
+    -- for i,v in pairs(self.views[root.name])do 
+    --     print(self.views[root.name][i].viewCfg.prefabName)
+    -- end
+    for i =#self.views[root.name] ,1,-1  do
+        -- print('Reappear:'..self.views[root.name][i].viewCfg.prefabName)
+        self:Show(self.views[root.name][i])
+        if self.views[root.name][i].isHideAll then
+            break
+        end
+    end
+end
+
+function UIManager:CloseAll(root)
+    for i = #self.views[root.name], 1, -1 do
+        self:Close(self.views[root.name][i])
+    end
+end
+
+function UIManager:ShowStats()
+    print("Stack:")
+    for k,v in pairs(self.views) do 
+        print("Root:"..k)
+        for i,d in pairs(self.views[k]) do 
+            print(d.viewCfg.prefabName,d.state)
+        end
+    end
+end

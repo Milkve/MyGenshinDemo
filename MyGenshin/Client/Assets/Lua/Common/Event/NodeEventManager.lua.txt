@@ -1,0 +1,72 @@
+NodeEventManager = BaseClass()
+
+
+function NodeEventManager:Construtor(owner)
+    self.owner=owner
+    self.evt = {}
+    self.num={}
+end
+
+function NodeEventManager:AddListener(type, func)
+    if self.evt[type] == nil then
+        self.evt[type] = {}
+        self.num[type]=0
+    end
+    self.evt[type][func] = func
+    self.num[type]=self.num[type]+1
+end
+
+function NodeEventManager:RemoveListener(type, func)
+    if self.evt[type] == nil then
+        return
+    else
+        self.evt[type][func] = nil
+        self.num[type]=self.num[type]-1
+    end
+end
+
+function NodeEventManager:Clear(type)
+    if self.evt[type] == nil then
+        return
+    end
+    self.evt[type] = nil
+    self.num[type]=0
+end
+
+function NodeEventManager:ClearAll()
+    for k,v in pairs(self.evt) do
+        self.evt[k]=nil
+    end
+    self.num={}
+end
+
+function NodeEventManager:Call(type, callback, ...)
+    
+    if callback==nil then
+        if self.evt[type] == nil then
+            return
+        end
+        for i, func in pairs(self.evt[type]) do
+        func(function() end ,...)
+        end
+        return
+    end
+    if self.evt[type] == nil then
+        callback()
+        return
+    end
+    local n_listener = self.num[type]
+    if n_listener == 0 then
+        callback()
+        return
+    end
+    local onComplete = function()
+        n_listener = n_listener - 1      
+        if n_listener == 0  then
+            callback()
+        end
+    end
+    for i, func in pairs(self.evt[type]) do
+        func(onComplete, ...)
+    end
+end

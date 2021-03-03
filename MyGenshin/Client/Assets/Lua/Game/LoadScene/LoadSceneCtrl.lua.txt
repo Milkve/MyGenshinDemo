@@ -1,0 +1,23 @@
+require("Game.LoadScene.LoadSceneView")
+LoadSceneCtrl = {}
+
+function LoadSceneCtrl:Init()
+    self:EventInit()
+end
+
+function LoadSceneCtrl:EventInit()
+    local OnLoad =function ()
+        self.LoadSceneView=LoadSceneView:New()
+        UIManager:Show(self.LoadSceneView)
+    end
+
+    local OnProgress= function (p)
+        self.LoadSceneView:SetFill(p)
+        if p>=1 then
+            UIManager:Close(self.LoadSceneView)
+        end
+    end
+    BindCSEvent(SceneMgr.Instance,'OnLoad',OnLoad)
+    BindCSEvent(SceneMgr.Instance,'OnProgress',OnProgress)
+end
+return LoadSceneCtrl

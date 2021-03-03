@@ -1,0 +1,131 @@
+ChrSelectView = BaseClass(UINode)
+ChrSelectView.Singleton = true
+
+function ChrSelectView:Construtor()
+    self.viewCfg.prefabName = "UIChrSelect"
+    self.viewCfg.prefabPath = "ui/chrSelect/UIChrSelect.prefab"
+    self.viewCfg.canvasName = "Normal"
+    self.viewCfg.isDestroyOnClose = true
+    self.viewCfg.component = {
+        {UI.Fade, {alpha = 1, durtion = 0.5, delay = 0}},
+        {UI.CameraCtrl,{target=ChrSelectCtrl.pointsTrans['SelectCamera'],durtion=0.7}}
+    }
+end
+
+function ChrSelectView:OnAwake()
+
+    self.currentTag = 0
+    self.Button_Adds = {}
+    self.Button_Selects = {}
+    self.Transforms={}
+    self.chrsObj={}
+    self.Toggles={}
+    for i = 1, 4 do
+        table.insert(self.Button_Adds, self["Button_Add" .. tostring(i)])
+        table.insert(self.Button_Selects, self["Button_Select" .. tostring(i)])
+        table.insert(self.Transforms, self["Transform_" .. tostring(i)])
+        table.insert(self.Toggles, self["Toggle_" .. tostring(i)])
+    end
+end
+
+function ChrSelectView:AddEvent()
+    local OnButtonClick = function(btn)
+        if btn == self.Button_Add1 then
+            ChrSelectCtrl:EnterCreateChr()
+        elseif btn == self.Button_Add2 then
+            ChrSelectCtrl:EnterCreateChr()
+        elseif btn == self.Button_Add3 then
+            ChrSelectCtrl:EnterCreateChr()
+        elseif btn == self.Button_Add4 then
+            ChrSelectCtrl:EnterCreateChr()
+        elseif btn == self.Button_Select1 then
+            self:SetSelect(1)
+        elseif btn == self.Button_Select2 then
+            self:SetSelect(2)
+        elseif btn == self.Button_Select3 then
+            self:SetSelect(3)
+        elseif btn == self.Button_Select4 then
+            self:SetSelect(4)
+        elseif btn == self.Button_Past then
+            if self.currentTag > 0 then
+                self.currentTag = self.currentTag - 1
+                self.Toggles[self.currentTag+1].isOn=true
+            end
+        elseif btn == self.Button_Next then
+            if self.currentTag < 3 then
+                self.currentTag = self.currentTag + 1
+                self.Toggles[self.currentTag+1].isOn=true
+            end
+        elseif btn == self.Button_Confirm then
+            ChrSelectCtrl:EnterGame()
+        end
+    end
+    local OnValueChange = function(toggle, value)
+        if value then
+            if toggle == self.Toggle_1 then
+                self.currentTag = 0
+            elseif toggle == self.Toggle_2 then
+                self.currentTag = 1
+            elseif toggle == self.Toggle_3 then
+                self.currentTag = 2
+            elseif toggle == self.Toggle_4 then
+                self.currentTag = 3
+            end
+            self:UpdateTag()
+        end
+    end
+    self:AddClickEvent(self.Button_Past, OnButtonClick)
+    self:AddClickEvent(self.Button_Next, OnButtonClick)
+    self:AddClickEvent(self.Button_Confirm, OnButtonClick)
+    for i = 1, 4 do
+        self:AddClickEvent(self.Button_Adds[i], OnButtonClick)
+        self:AddClickEvent(self.Button_Selects[i], OnButtonClick)
+        self.Toggles[i].onValueChanged:AddListener(
+            function(value)
+                OnValueChange(self.Toggles[i], value)
+            end
+        )
+    end
+end
+
+function ChrSelectView:SetSelect(index)
+    self.Image_Select.gameObject:SetActive(true)
+    self.Image_Select.transform:SetParent(self.Transforms[index].transform,false)
+    ChrSelectCtrl.currnetChrIndex=self.currentTag*4+index-1
+end
+
+function ChrSelectView:UpdateTag()
+    self.Image_Select.gameObject:SetActive(false)
+    ChrSelectCtrl.currnetChrIndex=-1
+    self.Image_Light.transform:SetParent(self.Toggles[self.currentTag+1].transform,false)
+    self.Image_Light.transform:SetAsFirstSibling()
+    for i=0,self.chars.Count-1 do
+        if self.chrsObj[i] then
+            self.chrsObj[i]:SetActive(false)
+        end
+    end
+    for i = 1, 4 do
+        self:UpdateButtons(i, self.currentTag * 4 + i-1)
+    end
+end
+
+function ChrSelectView:UpdateButtons(positionIndex, chrIndex)
+    if chrIndex < self.chars.Count then
+        self.Button_Selects[positionIndex].gameObject:SetActive(true)
+        self.Button_Adds[positionIndex].gameObject:SetActive(false)
+        if self.chrsObj[chrIndex] then
+            self.chrsObj[chrIndex]:SetActive(true)
+        else
+            self.chrsObj[chrIndex] =ChrSelectCtrl:ShowModelAt(self.chars[chrIndex].Class,ChrSelectCtrl.pointsTrans['SelectPoint'..tostring(positionIndex)])
+        end
+    else
+        self.Button_Selects[positionIndex].gameObject:SetActive(false)
+        self.Button_Adds[positionIndex].gameObject:SetActive(true)
+    end
+end
+
+function ChrSelectView:ChrSelectInit(chars)
+    self.chars = chars
+    self:UpdateTag()
+end
+

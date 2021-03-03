@@ -1,0 +1,97 @@
+MainSelectView = BaseClass(UINode)
+function MainSelectView:Construtor(parent)
+    self.viewCfg.parent = parent
+    self.viewCfg.prefabName = "UIMainSelect"
+    self.viewCfg.prefabPath = "ui/main/UIMainSelect.prefab"
+    self.viewCfg.isDestroyOnClose = true
+    self.viewCfg.component = {
+        {UI.Fade, {alpha = 1, durtion = 0.3, delay = 0.1, isHide = false}},
+        {UI.Move, {distance = 20, durtion = 0.3, dalay = 0.1, direction = Vector3.left}}
+    }
+    self.finalY = 0
+end
+
+local moveSpeed = 300
+
+-- 0 退出
+-- 1 谈话
+-- 2 打开商店
+-- 3 可接任务
+-- 4 可完成任务
+-- 5 接受
+-- 6 拒绝
+-- 7 其他
+local function SelectParse(talkDefine)
+    if talkDefine.Type == 0 then
+        MainTalkCtrl:ExitTalking()
+    elseif talkDefine.Type == 1 then
+        MainTalkCtrl:SetTalk(talkDefine)
+    elseif talkDefine.Type == 2 then
+        MainTalkCtrl:SetTalk(talkDefine)
+        StoreCtrl:ShowStore()
+    elseif talkDefine.Type == 3 then
+        MainTalkCtrl:SetTalk(talkDefine)
+        print(talkDefine.ID)
+        MainTalkCtrl.currentQuestID=MainTalkCtrl.talk2quest[talkDefine.ID]
+    elseif talkDefine.Type == 4 then
+        MainTalkCtrl:SetTalk(
+            talkDefine,
+            nil,
+            function()
+                QuestMgr.Instance:SendSubmit(MainTalkCtrl.talk2quest[talkDefine.ID])
+            end
+        )
+    elseif talkDefine.Type == 5 then
+        MainTalkCtrl:SetTalk(
+            talkDefine,
+            nil,
+            function()
+                print( 'id:'..MainTalkCtrl.currentQuestID)
+                QuestMgr.Instance:SendAccept(MainTalkCtrl.currentQuestID)
+            end
+        )
+    elseif talkDefine.Type == 6 then
+        MainTalkCtrl:SetTalk(talkDefine)
+    end
+end
+function MainSelectView:AddEvent()
+    self.onUpdateWarp = function()
+        self:OnUpdate()
+    end
+    GlobleEventManager:AddListener(GlobleEvent.Update, self.onUpdateWarp)
+    local onClick = function(btn)
+        if self.Button_Frame == btn then
+            if MainTalkCtrl.isTalking then
+                MainTalkCtrl:ClearDown()
+                SelectParse(self.talkDefine)
+            else
+                MainTalkCtrl:EnterTalking(self.talkDefine, self.npcDefine)
+            end
+        end
+    end
+    self:AddClickEvent(self.Button_Frame, onClick)
+end
+
+function MainSelectView:SetData(id, npcDefine)
+    self.id = id
+    self.npcDefine = npcDefine
+    self.talkDefine = DataMgr.Instance.Talks[id]
+    self.Image_Icon.sprite =
+        ResMgr.GetSprite(SelectIcon[self.talkDefine.Type + 1][1], SelectIcon[self.talkDefine.Type + 1][2])
+    self.Text_Text.text = self.talkDefine.Select
+end
+
+function MainSelectView:SetFinalPositon(y)
+    self.finalY = y
+end
+function MainSelectView:OnUpdate()
+    if math.abs(self.transform.localPosition.y - self.finalY) > 1 then
+        self.transform.localPosition =
+            self.transform.localPosition +
+            (self.transform.localPosition.y < self.finalY and Vector3.up or Vector3.down) * Time.deltaTime * moveSpeed
+    end
+end
+
+function MainSelectView:OnDestroy()
+    GlobleEventManager:RemoveListener(GlobleEvent.Update, self.onUpdateWarp)
+end
