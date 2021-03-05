@@ -41,6 +41,7 @@ public class LuaBehaviour : MonoSingleton<LuaBehaviour>
     void ScriptPathInit()
     {
         main = Application.dataPath + "/" + "Lua/";
+        //Debug.Log($"LuaMain:{main}");
     }
 
     public void LuaEnvInit()

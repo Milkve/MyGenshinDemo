@@ -21,6 +21,7 @@ namespace XLua
 {
     using System;
     using System.Collections.Generic;
+    using UnityEngine;
 
     public class LuaEnv : IDisposable
     {
@@ -438,7 +439,8 @@ namespace XLua
 
                 // A non-wrapped Lua error (best interpreted as a string) - wrap it and throw it
                 if (err == null) err = "Unknown Lua Error";
-                throw new LuaException(err.ToString());
+            Debug.LogError(err.ToString());
+                //throw new LuaException(err.ToString());
 #if THREAD_SAFE || HOTFIX_ENABLE
             }
 #endif

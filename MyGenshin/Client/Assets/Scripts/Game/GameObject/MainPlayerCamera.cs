@@ -108,7 +108,7 @@ public class MainPlayerCamera : MonoSingleton<MainPlayerCamera>
 
     public void InitGamePlaying()
     {
-        GameObject playModule = ResMgr.GetPrefab("playModule", "module/PlayModule.prefab");
+        GameObject playModule = ResMgr.GetPrefab("playModule", "module/common/PlayModule.prefab");
         
         playModule = Instantiate(playModule);
         cc = playModule.GetComponent<CharacterController>();

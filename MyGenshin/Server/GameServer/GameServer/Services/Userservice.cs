@@ -179,7 +179,7 @@ namespace GameServer.Services
         {
             
             if (sender.Session.TUser == null) return;
-            Log.InfoFormat("OnGameLeave Character TUser:{0} in Map{1}", sender.Session.TUser.ID, sender.Session.Character.Info.mapId);
+            //Log.InfoFormat("OnGameLeave Character TUser:{0} in Map{1}", sender.Session.TUser.ID, sender.Session.Character.Info.mapId);
             sender.Session.Response.gameLeave = new UserGameLeaveResponse()
             {
                 Result = Result.Success,

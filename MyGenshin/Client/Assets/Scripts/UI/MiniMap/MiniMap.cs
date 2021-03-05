@@ -21,6 +21,7 @@ public class MiniMap : MonoBehaviour
 
     private void OnEnterMap(MapDefine define)
     {
+        
         mapDefine = define;
         Sprite sp = ResMgr.GetSprite(System.IO.Path.GetFileNameWithoutExtension(define.MiniMap), define.MiniMap);
         Map.overrideSprite = sp;

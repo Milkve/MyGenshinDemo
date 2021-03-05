@@ -6,7 +6,7 @@ using System.Text;
 
 public class SysDefine
 {
-    public const string PATH_ASSETBUNDLE = "Assets/AssetBundles";
+    public const string PATH_ASSETBUNDLE = "AssetBundles";
     public const string PATH_ASSETBUNDLE_LOCAL = "Assets/AssetBundlesLocal";
     public const string PATH_ROOT_DEFINE = "DATA/";
     public const string PATH_DEFINE_MAP = PATH_ROOT_DEFINE + "MapDefine.txt";

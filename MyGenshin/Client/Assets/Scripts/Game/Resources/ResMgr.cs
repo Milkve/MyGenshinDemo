@@ -1,11 +1,12 @@
-﻿
+﻿//#undef UNITY_EDITOR
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-static class ResMgr
+public static class ResMgr
 {
     //TODO :异步加载
     static Dictionary<string, GameObject> allGameObject = new Dictionary<string, GameObject>();
@@ -14,9 +15,9 @@ static class ResMgr
     static Dictionary<string, GameObject> allPrefab = new Dictionary<string, GameObject>();
 
 #if UNITY_EDITOR
-    static string AssetBundlePath = "Assets/AssetBundlesLocal/";
+    static string AssetBundlePath = SysDefine.PATH_ASSETBUNDLE_LOCAL;
 #else
-    static string AssetBundlePath = "AssetBundles/";
+    static string AssetBundlePath = SysDefine.PATH_ASSETBUNDLE;
 #endif
 
 
@@ -54,18 +55,24 @@ static class ResMgr
     }
 
 
-    static void LoadAsset<T>(Dictionary<string, T> collections, string name, string path) where T : UnityEngine.Object
+    public static void LoadAsset<T>(Dictionary<string, T> collections, string name, string path) where T : UnityEngine.Object
     {
         //Debug.Log(string.Format("{0}:name={1} path={2}", System.Reflection.MethodBase.GetCurrentMethod().Name, name, AssetBundlePath + path));
         T obj = null;
 #if UNITY_EDITOR
-        obj = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(AssetBundlePath+path);
+        obj = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(AssetBundlePath+"/"+path);
 #else
-        if (!allAssetBundle.ContainsKey(path))
+
+        string asset_name = PackRule.PathToAssetBundleName(path);
+        Debug.Log($"asset_name:{asset_name}");
+        if (!allAssetBundle.ContainsKey(asset_name))
         {
-            allAssetBundle[path] = LoadAB(AssetBundlePath+path);
+            allAssetBundle[asset_name] = LoadAB(asset_name);
         }
-        obj =allAssetBundle[path].LoadAsset<T>(name);
+        Debug.Log($"path:{path}");
+        Debug.Log(allAssetBundle[asset_name]);
+        obj =allAssetBundle[asset_name].LoadAsset<T>(Path.GetFileName(path));
+        Debug.Log(obj);
 #endif
         if (obj != null)
         {
@@ -77,16 +84,17 @@ static class ResMgr
         }
 
     }
-    static AssetBundle LoadAB(string path)
+    public static AssetBundle LoadAB(string asset_name)
     {
-        AssetBundle assetBundle = AssetBundle.LoadFromFile(SysDefine.PATH_ASSETBUNDLE + "/" + path);
+        Debug.Log(SysDefine.PATH_ASSETBUNDLE + "/" + asset_name);
+        AssetBundle assetBundle = AssetBundle.LoadFromFile(SysDefine.PATH_ASSETBUNDLE + "/" + asset_name);
         if (assetBundle != null)
         {
             return assetBundle;
         }
         else
         {
-            throw new Exception($"Load AssetBundle {path} faild");
+            throw new Exception($"Load AssetBundle {asset_name} faild");
         }
     }
 

@@ -27,3 +27,17 @@ E:\VipSkillLearn\MyGenshinDemo\MyGenshin\Lib\Common\obj\Debug\Common.csproj.Core
 E:\VipSkillLearn\MyGenshinDemo\MyGenshin\Lib\Common\obj\Debug\Common.csproj.CopyComplete
 E:\VipSkillLearn\MyGenshinDemo\MyGenshin\Lib\Common\obj\Debug\Common.dll
 E:\VipSkillLearn\MyGenshinDemo\MyGenshin\Lib\Common\obj\Debug\Common.pdb
+E:\MMMMMMM\MyGenshinDemo\MyGenshin\Lib\Common\bin\Debug\Common.xml
+E:\MMMMMMM\MyGenshinDemo\MyGenshin\Lib\Common\bin\Debug\Common.dll
+E:\MMMMMMM\MyGenshinDemo\MyGenshin\Lib\Common\bin\Debug\Common.pdb
+E:\MMMMMMM\MyGenshinDemo\MyGenshin\Lib\Common\bin\Debug\log4net.dll
+E:\MMMMMMM\MyGenshinDemo\MyGenshin\Lib\Common\bin\Debug\protobuf-net.dll
+E:\MMMMMMM\MyGenshinDemo\MyGenshin\Lib\Common\bin\Debug\Protocol.dll
+E:\MMMMMMM\MyGenshinDemo\MyGenshin\Lib\Common\bin\Debug\Protocol.pdb
+E:\MMMMMMM\MyGenshinDemo\MyGenshin\Lib\Common\bin\Debug\log4net.xml
+E:\MMMMMMM\MyGenshinDemo\MyGenshin\Lib\Common\bin\Debug\protobuf-net.xml
+E:\MMMMMMM\MyGenshinDemo\MyGenshin\Lib\Common\obj\Debug\Common.csprojAssemblyReference.cache
+E:\MMMMMMM\MyGenshinDemo\MyGenshin\Lib\Common\obj\Debug\Common.csproj.CoreCompileInputs.cache
+E:\MMMMMMM\MyGenshinDemo\MyGenshin\Lib\Common\obj\Debug\Common.csproj.CopyComplete
+E:\MMMMMMM\MyGenshinDemo\MyGenshin\Lib\Common\obj\Debug\Common.dll
+E:\MMMMMMM\MyGenshinDemo\MyGenshin\Lib\Common\obj\Debug\Common.pdb

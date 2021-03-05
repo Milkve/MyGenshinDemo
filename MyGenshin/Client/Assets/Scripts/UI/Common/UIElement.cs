@@ -8,7 +8,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using XLua;
-using Sirenix.OdinInspector;
 using DG.Tweening;
 using static UI.Common.UIGroup;
 using Interface;

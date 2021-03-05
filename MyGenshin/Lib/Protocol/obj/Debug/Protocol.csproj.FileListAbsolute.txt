@@ -15,3 +15,12 @@ E:\VipSkillLearn\MyGenshinDemo\MyGenshin\Lib\Protocol\obj\Debug\Protocol.csproj.
 E:\VipSkillLearn\MyGenshinDemo\MyGenshin\Lib\Protocol\obj\Debug\Protocol.csproj.CopyComplete
 E:\VipSkillLearn\MyGenshinDemo\MyGenshin\Lib\Protocol\obj\Debug\Protocol.dll
 E:\VipSkillLearn\MyGenshinDemo\MyGenshin\Lib\Protocol\obj\Debug\Protocol.pdb
+E:\MMMMMMM\MyGenshinDemo\MyGenshin\Lib\Protocol\bin\Debug\Protocol.dll
+E:\MMMMMMM\MyGenshinDemo\MyGenshin\Lib\Protocol\bin\Debug\Protocol.pdb
+E:\MMMMMMM\MyGenshinDemo\MyGenshin\Lib\Protocol\bin\Debug\protobuf-net.dll
+E:\MMMMMMM\MyGenshinDemo\MyGenshin\Lib\Protocol\bin\Debug\protobuf-net.xml
+E:\MMMMMMM\MyGenshinDemo\MyGenshin\Lib\Protocol\obj\Debug\Protocol.csprojAssemblyReference.cache
+E:\MMMMMMM\MyGenshinDemo\MyGenshin\Lib\Protocol\obj\Debug\Protocol.csproj.CoreCompileInputs.cache
+E:\MMMMMMM\MyGenshinDemo\MyGenshin\Lib\Protocol\obj\Debug\Protocol.csproj.CopyComplete
+E:\MMMMMMM\MyGenshinDemo\MyGenshin\Lib\Protocol\obj\Debug\Protocol.dll
+E:\MMMMMMM\MyGenshinDemo\MyGenshin\Lib\Protocol\obj\Debug\Protocol.pdb

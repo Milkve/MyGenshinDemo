@@ -7,10 +7,13 @@ using Network;
 using Services;
 using Managers;
 using DG.Tweening;
+using System.IO;
+using System.Configuration;
+using UnityEngine.EventSystems;
 
 public class GameStart : MonoSingleton<GameStart>
 {
-    
+
     public enum State
     {
         GameTips,             //开场
@@ -36,7 +39,11 @@ public class GameStart : MonoSingleton<GameStart>
     public UILoadingSliderView sliderView;
     public UITip uiTip;
     protected override void OnStart()
-    {    
+    {
+
+        var a = log4net.Config.XmlConfigurator.Configure(new FileInfo("log4net.xml"));
+        Common.Log.Init("Unity");
+        Common.Log.Info("Log4Net");
         UnityLogger.Init();
         Debug.Log("GameStart");
         this.gameObject.AddComponent<LuaBehaviour>();
@@ -50,9 +57,24 @@ public class GameStart : MonoSingleton<GameStart>
         //JumpToState(State.Playing);
     }
 
+    private void LateUpdate()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
 
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit,100))
+            {
+                print(hit.transform.name);
+            }
+        }
+
+    }
     void Update()
     {
+
+
         if (currentState == State.Playing) return;
         switch (currentState)
         {
@@ -71,6 +93,7 @@ public class GameStart : MonoSingleton<GameStart>
                         {
                             uiTip.Hide(() =>
                             {
+                                uiTip.gameObject.SetActive(false);
                                 sliderView.gameObject.SetActive(true);
                                 sliderView.ShowSlider();
                             });
@@ -136,7 +159,7 @@ public class GameStart : MonoSingleton<GameStart>
                         sliderView.OnSliderHided += () =>
                         {
                             LuaBehaviour.Instance.CallLuaEvent("EnterLogin");
-                            
+
                             //sliderView.Hide();
                         };
                         sliderView.HideSlider();
@@ -152,7 +175,7 @@ public class GameStart : MonoSingleton<GameStart>
 
     void JumpToState(State state)
     {
-        
+
         currentState = state;
         currentSubState = SubState.Enter;
         Debug.Log($"GameState jump to {currentState}");

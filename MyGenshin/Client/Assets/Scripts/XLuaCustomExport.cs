@@ -26,7 +26,7 @@ public static class XLuaCustomExport
         typeof(Action<int,int>),
         typeof(Action<long>),
         typeof(Action<NpcQuestStatus,NpcQuestStatus>),
-        typeof(Action<UIState,UIState>),  
+        typeof(Action<UIState,UIState>),
         typeof(Dictionary<UIState, Action<PointerEventData>>),
         typeof(UnityAction),
         typeof(UnityAction<Result,string>),
@@ -145,6 +145,10 @@ public static class XLuaCustomExport
                 new List<string>(){"System.IO.DirectoryInfo", "CreateSubdirectory", "System.String", "System.Security.AccessControl.DirectorySecurity"},
                 new List<string>(){"System.IO.DirectoryInfo", "Create", "System.Security.AccessControl.DirectorySecurity"},
                 new List<string>(){"UnityEngine.MonoBehaviour", "runInEditMode"},
+                new List<string>(){"UnityEngine.Light", "shadowRadius"},
+ new List<string>(){"UnityEngine.Light", "shadowAngle"},
+  new List<string>(){"UnityEngine.Light", "SetLightDirty"},
+
             };
 
 
