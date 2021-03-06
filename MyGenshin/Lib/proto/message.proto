@@ -33,10 +33,8 @@ enum CHARACTER_STATE
 enum ENTITY_EVENT
 {
 	NONE = 0;
-	IDLE = 1;
-	MOVE_FWD = 2;
-	MOVE_BACK = 3;
-	JUMP = 4;
+	BATTLE=1;
+	JUMP = 2;
 }
 enum ITEM_TYPE{
 	Avatar=1;  		//	00001
@@ -129,9 +127,13 @@ message NEntity {
 
 message NEntitySync {
 	int32 id = 1;
-	ENTITY_EVENT event = 2;
+	NEntityEvent event = 2;
 	NEntity entity = 3;
 	
+}
+message NEntityEvent{
+	ENTITY_EVENT type=1;
+	int32 value=2;
 }
 
 

@@ -110,7 +110,7 @@ namespace Services
                 Debug.LogErrorFormat("EnterMap: Map {0} not existed", mapId);
         }
 
-        public void SendMapEntitySync(EntityEvent entityEvent, Character character)
+        public void SendMapEntitySync(NEntityEvent entityEvent, Character character)
         {
 
 
@@ -139,7 +139,6 @@ namespace Services
 
         private void OnMapEntitySync(object sender, MapEntitySyncResponse message)
         {
-            return;
             foreach (NEntitySync nEntitySync in message.entitySyncs)
             {
 

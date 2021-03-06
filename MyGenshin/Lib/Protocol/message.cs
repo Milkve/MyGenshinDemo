@@ -201,10 +201,25 @@ namespace SkillBridge.Message
         public int Id { get; set; }
 
         [global::ProtoBuf.ProtoMember(2, Name = @"event")]
-        public EntityEvent Event { get; set; }
+        public NEntityEvent Event { get; set; }
 
         [global::ProtoBuf.ProtoMember(3, Name = @"entity")]
         public NEntity Entity { get; set; }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class NEntityEvent : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1, Name = @"type")]
+        public EntityEvent Type { get; set; }
+
+        [global::ProtoBuf.ProtoMember(2, Name = @"value")]
+        public int Value { get; set; }
 
     }
 
@@ -863,14 +878,10 @@ namespace SkillBridge.Message
     {
         [global::ProtoBuf.ProtoEnum(Name = @"NONE")]
         None = 0,
-        [global::ProtoBuf.ProtoEnum(Name = @"IDLE")]
-        Idle = 1,
-        [global::ProtoBuf.ProtoEnum(Name = @"MOVE_FWD")]
-        MoveFwd = 2,
-        [global::ProtoBuf.ProtoEnum(Name = @"MOVE_BACK")]
-        MoveBack = 3,
+        [global::ProtoBuf.ProtoEnum(Name = @"BATTLE")]
+        Battle = 1,
         [global::ProtoBuf.ProtoEnum(Name = @"JUMP")]
-        Jump = 4,
+        Jump = 2,
     }
 
     [global::ProtoBuf.ProtoContract(Name = @"ITEM_TYPE")]

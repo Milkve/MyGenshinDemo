@@ -17,7 +17,7 @@ public class EntityController : MonoBehaviour, EntityManager.IEntityNotify
     Vector3 position;
     Vector3 direction;
     Quaternion rotation;
-
+    float speed;
     public Vector3 lastPosition;
     Quaternion lastRotation;
     public bool isPlayer = false;
@@ -28,11 +28,13 @@ public class EntityController : MonoBehaviour, EntityManager.IEntityNotify
             UpdateTransform();
             EntityManager.Instance.RegisterEntityNotify(entity, this);
             EntityManager.Instance.AddEnity(entity);
+
         }
+        anim = GetComponent<Animator>();
         if (isPlayer)
         {
            
-            MainPlayerCamera.Instance.InitGamePlaying();
+            //MainPlayerCamera.Instance.SetCurrentPlayer();
             
         }
 
@@ -40,16 +42,21 @@ public class EntityController : MonoBehaviour, EntityManager.IEntityNotify
 
     void FixedUpdate()
     {
-        return;
+        //return;
         if (this.entity == null)
             return;
 
         this.entity.OnUpdate(Time.fixedDeltaTime);
 
+    }
+    void LateUpdate()
+    {
+
         if (!this.isPlayer)
         {
             this.UpdateTransform();
         }
+        UpdateAnmi();
     }
 
     void OnDestroy()
@@ -69,29 +76,29 @@ public class EntityController : MonoBehaviour, EntityManager.IEntityNotify
     {
         position = GameObjectTool.LogicToWorld(entity.position);
         direction = GameObjectTool.LogicToWorld(entity.direction);
-
         transform.position = position;
         transform.forward = direction;
         lastPosition = position;
         lastRotation = rotation;
     }
 
+    void UpdateAnmi()
+    {
+        speed = GameObjectTool.LogicToWorld(entity.speed);
+        anim.SetFloat("Speed", speed);
+    }
 
 
-    public void OnEntityEvent(EntityEvent entityEvent)
+
+    public void OnEntityEvent(NEntityEvent nEntityEvent)
     {
         //Debug.Log("OnEVENT");
+
+        var entityEvent = nEntityEvent.Type; 
         switch (entityEvent)
         {
-            case EntityEvent.Idle:
-                anim.SetBool("Move", false);
-                anim.SetTrigger("Idle");
-                break;
-            case EntityEvent.MoveFwd:
-                anim.SetBool("Move", true);
-                break;
-            case EntityEvent.MoveBack:
-                anim.SetBool("Move", true);
+            case EntityEvent.Battle:
+                anim.SetBool("Battle",nEntityEvent.Value>0);
                 break;
             case EntityEvent.Jump:
                 anim.SetTrigger("Jump");
@@ -107,10 +114,8 @@ public class EntityController : MonoBehaviour, EntityManager.IEntityNotify
     public void OnEntityChanged(NEntity nEntity)
     {
         //Debug.LogFormat("Postion{0}", GameObjectTool.LogicToWorld(nEntity.Position));
+        this.transform.position = GameObjectTool.LogicToWorld(nEntity.Position);
 
-
-        //this.transform.position =GameObjectTool.LogicToWorld(nEntity.Position) ;
-
-        //this.transform.rotation= Quaternion.Euler((GameObjectTool.LogicToWorld(nEntity.Direction))) ; 
+        this.transform.rotation = Quaternion.Euler((GameObjectTool.LogicToWorld(nEntity.Direction)));
     }
 }

@@ -106,19 +106,12 @@ public class MainPlayerCamera : MonoSingleton<MainPlayerCamera>
         RotateTo(LastDirection, 0.5f, null, callback);
     }
 
-    public void InitGamePlaying()
+    public void SetCurrentPlayer(Transform player,GameObject playModule, CharacterController cc)
     {
-        GameObject playModule = ResMgr.GetPrefab("playModule", "module/common/PlayModule.prefab");
-        
-        playModule = Instantiate(playModule);
-        cc = playModule.GetComponent<CharacterController>();
-        DontDestroyOnLoad(playModule);
-        player = User.Instance.CurrentCharacterObject.transform;
-        playModule.transform.position = player.position;
-        playModule.transform.rotation = player.rotation;
-        player.SetParent(playModule.transform);
-        player.localPosition = Vector3.zero;
+        //TODO 以后整理
+        this.player = player;
         transform.SetParent(playModule.transform);
+        this.cc = cc;
         transform.position = cc.center * 2 + player.position;
         //transform.RotateAround(cc.center * 2 + player.position, transform.TransformVector(Vector3.left), 30);
         transform.rotation =  player.rotation;

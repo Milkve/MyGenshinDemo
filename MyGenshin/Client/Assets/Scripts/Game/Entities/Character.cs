@@ -40,34 +40,15 @@ namespace Entities
             this.Define = DataManager.Instance.Characters[info.Tid];
         }
 
-        public void MoveForward()
 
-        { 
-            this.speed = this.Define.Speed;
-        }
 
-        public void MoveBack()
+
+
+        public void SetEntityData(Vector3 position,Vector3 direction,float speed)
         {
-            //Debug.LogFormat("MoveBack");
-            this.speed = -this.Define.Speed;
-        }
-
-        public void Stop()
-        {
-            //Debug.LogFormat("Stop");
-            this.speed = 0;
-        }
-
-        public void SetDirection(Vector3Int direction)
-        {
-            //Debug.LogFormat("SetDirection:{0}", direction);
-            this.direction = direction;
-        }
-
-        public void SetPosition(Vector3Int position)
-        {
-            //Debug.LogFormat("SetPosition:{0}", position);
-            this.position = position;
+            this.position = GameObjectTool.WorldToLogic(position);
+            this.direction = GameObjectTool.WorldToLogic(direction);
+            this.speed = GameObjectTool.WorldToLogic(speed);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Managers
         {
             void OnEntityRemoved();
             void OnEntityChanged(NEntity nEntity);
-            void OnEntityEvent(EntityEvent entityEvent);
+            void OnEntityEvent(NEntityEvent entityEvent);
         }
         Dictionary<int, Entity> entities = new Dictionary<int, Entity>();
 
@@ -66,7 +66,7 @@ namespace Managers
                 }
                 if (notifies.ContainsKey(nEntitySync.Id))
                 {
-                    notifies[nEntitySync.Id].OnEntityChanged(nEntitySync.Entity);
+                    //notifies[nEntitySync.Id].OnEntityChanged(nEntitySync.Entity);
                     notifies[nEntitySync.Id].OnEntityEvent(nEntitySync.Event);
                 }
 

@@ -21,7 +21,7 @@ namespace Managers
             CharacterManager.Instance.OnCharacterEnter = this.OnCharacterEnter;
             CharacterManager.Instance.OnCharacterLeave = this.OnCharacterLeave;
         }
- 
+
         private void OnCharacterLeave(int characterId)
         {
             Debug.LogFormat("OnCharacterLeave:characterId{0}", characterId);
@@ -58,7 +58,7 @@ namespace Managers
         {
             if (!GameObects.ContainsKey(character.entityId) || GameObects[character.entityId] == null)
             {
-                UnityEngine.Object obj = ResMgr.GetPrefab(character.Define.Name,character.Define.Resource);
+                UnityEngine.Object obj = ResMgr.GetPrefab(character.Define.Name, character.Define.Resource);
 
                 if (obj == null)
                 {
@@ -69,7 +69,7 @@ namespace Managers
                 go.name = "Character_" + character.Info.Id + "_" + character.Info.Name;
                 GameObects[character.Info.Entity.Id] = go;
                 //UIWorldElementsManager.Instance.AddCharacter(go.transform, character);
-                
+
                 InitGameObject(character, go);
 
             }
@@ -78,6 +78,7 @@ namespace Managers
 
         private void InitGameObject(Character character, GameObject go)
         {
+
 
             go.transform.position = GameObjectTool.LogicToWorld(character.position);
             go.transform.forward = GameObjectTool.LogicToWorld(character.direction);
@@ -95,7 +96,17 @@ namespace Managers
                 if (character.Info.Id == User.Instance.CurrentCharacter.Id)
                 {
                     User.Instance.CurrentCharacterObject = go;
+                    pc.ec = ec;
                     pc.character = character;
+                    GameObject playModule = ResMgr.GetPrefab("playModule", "module/common/PlayModule.prefab");
+                    playModule = Instantiate(playModule);
+                    DontDestroyOnLoad(playModule);
+                    Transform player = go.transform;
+                    playModule.transform.position = player.position;
+                    playModule.transform.rotation = player.rotation;
+                    player.SetParent(playModule.transform);
+                    player.localPosition = Vector3.zero;
+                    MainPlayerCamera.Instance.SetCurrentPlayer(player,playModule,playModule.GetComponent<CharacterController>());
                 }
             }
         }

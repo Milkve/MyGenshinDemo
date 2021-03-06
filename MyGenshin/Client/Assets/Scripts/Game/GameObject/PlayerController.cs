@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
     public Character character;
     [HideInInspector]
     public CharacterController cc;
+    public EntityController ec;
     public float moveSpeed;
     public float jumpSpeed;
     public float G = 10f;
@@ -23,18 +24,33 @@ public class PlayerController : MonoBehaviour
     bool battle = false;
     bool sprint = false;
     bool run = false;
+   float lasttime;
+    Vector3 lastV;
     Vector3 vector;
     Vector3 Velocity = Vector3.zero;
     MainPlayerCamera mainPlayerCamera;
-
+    Vector3 lastPosition;
     Animator animator;
+
+    public bool Battle
+    {
+        get => battle; set
+        {
+
+            if (battle != value)
+            {
+                Debug.Log("battle");
+                SendSync(EntityEvent.Battle, value ? 1 : -1);
+            }
+            battle = value;
+        }
+    }
 
     void Start()
     {
         animator = GetComponent<Animator>();
         mainPlayerCamera = Camera.main.GetComponent<MainPlayerCamera>();
         GlobalManager.Instance.OnGamePlayStateChanged += OnGamePlayStateChanged;
-
     }
 
     private void OnGamePlayStateChanged(GamePlayState gamePlayState)
@@ -54,7 +70,7 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetButtonDown("Tab"))
         {
-            battle = !battle;
+            Battle = !Battle;
 
         }
         if (Input.GetButtonDown("L"))
@@ -87,14 +103,49 @@ public class PlayerController : MonoBehaviour
         if (jumpPressed && cc.isGrounded)
         {
             Velocity.y = jumpSpeed;
-            animator.SetTrigger("Jump");
+            Debug.Log("Jump");
+            SendSync(EntityEvent.Jump);
         }
         jumpPressed = false;
-        animator.SetBool("Battle", battle);
-        animator.SetFloat("Speed", vector.magnitude / moveSpeed);
         cc.Move(Velocity * Time.deltaTime);
+        character.SetEntityData(this.transform.position, this.transform.forward, cc.velocity.magnitude/moveSpeed);
+        if (lastV == null) lastV = Velocity;
+        if (Velocity != lastV)
+        {
+            SendSync(EntityEvent.None);
+            lastV = Velocity;
+        }
+        if (lastPosition == null) lastPosition = this.transform.position;
+        else
+        {
+            //float offset = Vector3.Distance(lastPosition, this.transform.position);
+            //if (offset > 0.2f)
+            //{
+            //    SendSync(EntityEvent.None);
+            //    lastPosition = this.transform.position;
+            //}
+        }
+        //if (Time.time - lasttime > 0.5f)
+        //{
+        //    SendSync(EntityEvent.None);
+        //}
     }
 
+    public void SendSync(EntityEvent type, int value = 0)
+    {
+        SendSync(new NEntityEvent() { Type = type, Value = value });
+    }
+
+    public void SendSync(NEntityEvent nEntityEvent)
+    {
+        if (ec != null)
+        {
+            ec.OnEntityEvent(nEntityEvent);
+        }
+        lasttime = Time.time;
+        MapService.Instance.SendMapEntitySync(nEntityEvent, character);
+
+    }
 
     private void OnTriggerEnter(Collider other)
     {
