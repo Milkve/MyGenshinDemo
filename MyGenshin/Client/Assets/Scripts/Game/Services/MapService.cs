@@ -25,7 +25,7 @@ namespace Services
 
         public MapService()
         {
-            
+
             MessageDistributer.Instance.Subscribe<MapCharacterEnterResponse>(this.OnMapCharacterEnter);
             MessageDistributer.Instance.Subscribe<MapCharacterLeaveResponse>(this.OnMapCharacterLeave);
             MessageDistributer.Instance.Subscribe<MapEntitySyncResponse>(this.OnMapEntitySync);
@@ -34,7 +34,7 @@ namespace Services
 
 
         public void Dispose()
-        {   
+        {
             MessageDistributer.Instance.Unsubscribe<MapCharacterEnterResponse>(this.OnMapCharacterEnter);
             MessageDistributer.Instance.Unsubscribe<MapCharacterLeaveResponse>(this.OnMapCharacterLeave);
         }
@@ -47,7 +47,7 @@ namespace Services
             foreach (NCharacterInfo nCharacter in response.Characters)
             {
                 Debug.Log($"nCharacterID:{nCharacter.Id}");
-                if (nCharacter.Id == User.Instance.CurrentCharacter.Id)
+                if (User.Instance.CurrentCharacter == null || (nCharacter.Type == CharacterType.Player && nCharacter.Id == User.Instance.CurrentCharacter.Id))
                 {
                     User.Instance.CurrentCharacter = nCharacter;
                 }
@@ -64,13 +64,9 @@ namespace Services
 
         private void OnMapCharacterLeave(object sender, MapCharacterLeaveResponse response)
         {
-            Debug.LogFormat("OnMapCharacterLeave:{0}]", response.characterId);
-            if (response.characterId == User.Instance.CurrentCharacter.Entity.Id)
+            Debug.LogFormat("OnMapCharacterLeave:{0}]", response.entityId);
+            if (response.entityId == User.Instance.CurrentCharacter.EntityId)
             {
-                //if (GobelManager.Instance.isBack2Select)
-                //{
-                //    Back2Select();
-                //}
                 if (OnLevelMap != null)
                 {
                     OnLevelMap();
@@ -79,17 +75,10 @@ namespace Services
             }
             else
             {
-                CharacterManager.Instance.RemoveCharacter(response.characterId);
+                CharacterManager.Instance.RemoveCharacter(response.entityId);
             }
         }
 
-        private void Back2Select()
-        {
-            this.currentMapId = 0;
-            User.Instance.Reset();
-            //GobelManager.Instance.isBack2Select = false;
-            SceneManager.Instance.LoadScene("CharacterSelect");
-        }
 
 
         private void EnterMap(int mapId)
@@ -114,7 +103,7 @@ namespace Services
         {
 
 
-            Debug.LogFormat("SendMapEntityData {0}", GameObjectTool.LogicToWorld(character.EntityData.Position));
+            //Debug.LogFormat("SendMapEntityData {0}", GameObjectTool.LogicToWorld(character.EntityData.Position));
             NetMessage netMessage = new NetMessage()
             {
                 Request = new NetMessageRequest()

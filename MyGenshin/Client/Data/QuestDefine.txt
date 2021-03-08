@@ -52,8 +52,8 @@
         "Value": 0
       }
     ],
-    "AcceptTalk": 5001,
-    "SubmitTalk": 5002,
+    "AcceptTalk": 5101,
+    "SubmitTalk": 5102,
     "PreQuests": [],
     "PostQuests": null,
     "AcceptNpc": 1,

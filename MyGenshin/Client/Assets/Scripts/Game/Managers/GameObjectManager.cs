@@ -22,13 +22,13 @@ namespace Managers
             CharacterManager.Instance.OnCharacterLeave = this.OnCharacterLeave;
         }
 
-        private void OnCharacterLeave(int characterId)
+        private void OnCharacterLeave(int entityId)
         {
-            Debug.LogFormat("OnCharacterLeave:characterId{0}", characterId);
-            if (GameObects.ContainsKey(characterId))
+            Debug.LogFormat("OnCharacterLeave:characterId{0}", entityId);
+            if (GameObects.ContainsKey(entityId))
             {
-                DestroyCharacter(GameObects[characterId]);
-                GameObects.Remove(characterId);
+                DestroyCharacter(GameObects[entityId]);
+                GameObects.Remove(entityId);
             }
         }
         private void DestroyCharacter(GameObject character)
@@ -67,7 +67,7 @@ namespace Managers
                 }
                 GameObject go = (GameObject)Instantiate(obj, this.transform);
                 go.name = "Character_" + character.Info.Id + "_" + character.Info.Name;
-                GameObects[character.Info.Entity.Id] = go;
+                GameObects[character.entityId] = go;
                 //UIWorldElementsManager.Instance.AddCharacter(go.transform, character);
 
                 InitGameObject(character, go);
@@ -85,30 +85,29 @@ namespace Managers
             EntityController ec = go.GetComponent<EntityController>();
             if (ec != null)
             {
-                ec.isPlayer = character.IsPlayer;
+                ec.isCurrentPlayer = character.IsCurrentPlayer;
                 ec.entity = character;
                 ec.enabled = true;
             }
 
             PlayerController pc = go.GetComponent<PlayerController>();
-            if (pc != null)
+            if (character.IsCurrentPlayer && pc != null)
             {
-                if (character.Info.Id == User.Instance.CurrentCharacter.Id)
-                {
-                    User.Instance.CurrentCharacterObject = go;
-                    pc.ec = ec;
-                    pc.character = character;
-                    GameObject playModule = ResMgr.GetPrefab("playModule", "module/common/PlayModule.prefab");
-                    playModule = Instantiate(playModule);
-                    DontDestroyOnLoad(playModule);
-                    Transform player = go.transform;
-                    playModule.transform.position = player.position;
-                    playModule.transform.rotation = player.rotation;
-                    player.SetParent(playModule.transform);
-                    player.localPosition = Vector3.zero;
-                    MainPlayerCamera.Instance.SetCurrentPlayer(player,playModule,playModule.GetComponent<CharacterController>());
-                }
+
+                User.Instance.CurrentCharacterObject = go;
+                pc.ec = ec;
+                pc.character = character;
+                GameObject playModule = ResMgr.GetPrefab("playModule", "module/common/PlayModule.prefab");
+                playModule = Instantiate(playModule);
+                DontDestroyOnLoad(playModule);
+                Transform player = go.transform;
+                playModule.transform.position = player.position;
+                playModule.transform.rotation = player.rotation;
+                player.SetParent(playModule.transform);
+                player.localPosition = Vector3.zero;
+                MainPlayerCamera.Instance.SetCurrentPlayer(player, playModule, playModule.GetComponent<CharacterController>());
             }
+
         }
 
 

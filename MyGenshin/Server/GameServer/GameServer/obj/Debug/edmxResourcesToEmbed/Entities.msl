@@ -33,6 +33,7 @@
           <ScalarProperty Name="Gold" ColumnName="Gold" />
           <ScalarProperty Name="Equiped" ColumnName="Equiped" />
           <ScalarProperty Name="Level" ColumnName="Level" />
+          <ScalarProperty Name="Exp" ColumnName="Exp" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
@@ -77,6 +78,36 @@
           <ScalarProperty Name="Target2" ColumnName="Target2" />
           <ScalarProperty Name="Target3" ColumnName="Target3" />
           <ScalarProperty Name="Status" ColumnName="Status" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Friends">
+      <EntityTypeMapping TypeName="IsTypeOf(ExtremeWorldModel.TFriend)">
+        <MappingFragment StoreEntitySet="Friends">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="FriendID" ColumnName="FriendID" />
+          <ScalarProperty Name="FriendName" ColumnName="FriendName" />
+          <ScalarProperty Name="FriendClass" ColumnName="FriendClass" />
+          <ScalarProperty Name="FriendLevel" ColumnName="FriendLevel" />
+          <ScalarProperty Name="TCharacterID" ColumnName="TCharacterID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Messages">
+      <EntityTypeMapping TypeName="IsTypeOf(ExtremeWorldModel.TMessage)">
+        <MappingFragment StoreEntitySet="Messages">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Type" ColumnName="Type" />
+          <ScalarProperty Name="TCharacterID" ColumnName="TCharacterID" />
+          <ScalarProperty Name="FromID" ColumnName="FromID" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="Title" ColumnName="Title" />
+          <ScalarProperty Name="Message" ColumnName="Message" />
+          <ScalarProperty Name="Items" ColumnName="Items" />
+          <ScalarProperty Name="Equips" ColumnName="Equips" />
+          <ScalarProperty Name="Gold" ColumnName="Gold" />
+          <ScalarProperty Name="Exp" ColumnName="Exp" />
+          <ScalarProperty Name="Time" ColumnName="Time" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

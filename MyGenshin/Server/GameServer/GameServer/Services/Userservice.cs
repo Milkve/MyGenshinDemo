@@ -15,7 +15,7 @@ using SkillBridge.Message;
 
 namespace GameServer.Services
 {
-    class UserService : Singleton<UserService>
+    class UserService : Singleton<UserService>,IDisposable
     {
 
         public UserService()
@@ -28,7 +28,14 @@ namespace GameServer.Services
 
         }
 
-
+        public void Dispose()
+        {
+            MessageDistributer<NetConnection<NetSession>>.Instance.Unsubscribe<UserLoginRequest>(this.OnLogin);
+            MessageDistributer<NetConnection<NetSession>>.Instance.Unsubscribe<UserRegisterRequest>(this.OnRegister);
+            MessageDistributer<NetConnection<NetSession>>.Instance.Unsubscribe<UserCreateCharacterRequest>(this.OnCharacterCreate);
+            MessageDistributer<NetConnection<NetSession>>.Instance.Unsubscribe<UserGameEnterRequest>(this.OnGameEnter);
+            MessageDistributer<NetConnection<NetSession>>.Instance.Unsubscribe<UserGameLeaveRequest>(this.OnGameLeave);
+        }
         public void Init()
         {
 
@@ -69,7 +76,9 @@ namespace GameServer.Services
                         Id = character.ID,
                         Name = character.Name,
                         Class = character.Class,
-                        Level = character.Level
+                        Level = character.Level,
+                        ConfigId = character.TID
+                        
                     };
                     sender.Session.Response.userLogin.Userinfo.Player.Characters.Add(nCharacterInfo);
                 }
@@ -166,19 +175,18 @@ namespace GameServer.Services
                 Errormsg = "None",
                 Character = character.Info
             };
-
-
-
+            SessionManager.Instance.AddSession(character.Id, sender);
             sender.SendResponse();
             Log.InfoFormat("OnGameEnter CharacterId: {0}", character.Id);
             MapManager.Instance[tchr.MapID].CharacterEnter(sender, character);
             sender.Session.Character = character;
-            character.equipManager.EqiupTest();
+            sender.Session.postProcesser = character;
+
         }
         private void OnGameLeave(NetConnection<NetSession> sender, UserGameLeaveRequest request)
         {
             
-            if (sender.Session.TUser == null) return;
+            if (sender.Session.Character == null) return;
             //Log.InfoFormat("OnGameLeave Character TUser:{0} in Map{1}", sender.Session.TUser.ID, sender.Session.Character.Info.mapId);
             sender.Session.Response.gameLeave = new UserGameLeaveResponse()
             {
@@ -186,17 +194,12 @@ namespace GameServer.Services
                 Errormsg = "None"
 
             };
-
+            SessionManager.Instance.RemoveSession(sender.Session.Character.Id);
             sender.SendResponse();
-            if (sender.Session.Character != null)
-            {
-                MapManager.Instance[sender.Session.Character.Info.mapId].CharacterLeave(sender.Session.Character);
-
-                sender.Session.Character = null;
-            }
-            //sender.Session.Character.Data.MapPosX=
-            //DBService.Instance.Entities.SaveChanges();
-
+            MapManager.Instance[sender.Session.Character.Info.mapId].CharacterLeave(sender.Session.Character);
+            CharacterManager.Instance.RemoveCharacter(sender.Session.Character.Id);
+            sender.Session.Character = null;
+            
 
         }
 
@@ -204,8 +207,9 @@ namespace GameServer.Services
         {
             Log.InfoFormat("CharacterLeave： characterID:{0}:{1}", character.Id, character.Info.Name);
             CharacterManager.Instance.RemoveCharacter(character.Data.ID);
-            //character.Clear();
             MapManager.Instance[character.Info.mapId].CharacterLeave(character);
         }
+
+
     }
 }

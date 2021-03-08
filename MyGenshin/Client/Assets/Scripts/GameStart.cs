@@ -57,20 +57,20 @@ public class GameStart : MonoSingleton<GameStart>
         //JumpToState(State.Playing);
     }
 
-    private void LateUpdate()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
+    //private void LateUpdate()
+    //{
+    //    if (Input.GetMouseButtonDown(0))
+    //    {
 
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit,100))
-            {
-                print(hit.transform.name);
-            }
-        }
+    //        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+    //        RaycastHit hit;
+    //        if (Physics.Raycast(ray, out hit,100))
+    //        {
+    //            print(hit.transform.name);
+    //        }
+    //    }
 
-    }
+    //}
     void Update()
     {
 

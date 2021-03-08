@@ -109,22 +109,27 @@
     <Compile Include="Entities\Equip.cs" />
     <Compile Include="Entities\GoodsLimit.cs" />
     <Compile Include="Entities\Item.cs" />
+    <Compile Include="Entities\Message.cs" />
     <Compile Include="Entities\Monster.cs" />
     <Compile Include="Entities\Quest.cs" />
     <Compile Include="GameServer.cs" />
+    <Compile Include="Interface\IPostProcess.cs" />
     <Compile Include="Managers\CharacterManager.cs" />
     <Compile Include="Managers\DataManager.cs" />
     <Compile Include="Managers\EntityManager.cs" />
     <Compile Include="Managers\EquipManager.cs" />
+    <Compile Include="Managers\FriendManager.cs" />
     <Compile Include="Managers\GoodsLimitManager.cs" />
     <Compile Include="Managers\ItemManager.cs" />
     <Compile Include="Managers\MapManager.cs" />
+    <Compile Include="Managers\MessageManager.cs" />
+    <Compile Include="Managers\MonsterManager.cs" />
     <Compile Include="Managers\QuestManager.cs" />
     <Compile Include="Managers\StatusManager.cs" />
     <Compile Include="Managers\StoreManager.cs" />
     <Compile Include="Models\Map.cs" />
     <Compile Include="Network\ExtensionMethods.cs" />
-    <Compile Include="Network\INetSession.cs" />
+    <Compile Include="Interface\INetSession.cs" />
     <Compile Include="Network\NetConnection.cs" />
     <Compile Include="Network\NetEventArgs.cs" />
     <Compile Include="Network\NetService.cs" />
@@ -139,6 +144,7 @@
     </Compile>
     <Compile Include="Services\ItemService.cs" />
     <Compile Include="Services\MapService.cs" />
+    <Compile Include="Services\MessageService.cs" />
     <Compile Include="Services\QuestService.cs" />
     <Compile Include="Services\UserService.cs" />
     <Compile Include="Services\DBService.cs" />
@@ -153,7 +159,13 @@
     <Compile Include="TCharacterItem.cs">
       <DependentUpon>Entities.tt</DependentUpon>
     </Compile>
+    <Compile Include="TFriend.cs">
+      <DependentUpon>Entities.tt</DependentUpon>
+    </Compile>
     <Compile Include="TGoodsLimit.cs">
+      <DependentUpon>Entities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TMessage.cs">
       <DependentUpon>Entities.tt</DependentUpon>
     </Compile>
     <Compile Include="TPlayer.cs">
@@ -178,6 +190,7 @@
     <None Include="Entities.edmx.diagram">
       <DependentUpon>Entities.edmx</DependentUpon>
     </None>
+    <Compile Include="Managers\SessionManager.cs" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>PublicSettingsSingleFileGenerator</Generator>

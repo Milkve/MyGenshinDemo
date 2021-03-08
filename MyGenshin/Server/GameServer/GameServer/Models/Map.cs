@@ -98,18 +98,18 @@ namespace GameServer.Models
 
             foreach (var kv in this.MapCharacters)
             {
-                SendCharacterLeaveMap(kv.Value.connection, character.Id);
+                SendCharacterLeaveMap(kv.Value.connection, character.entityId);
             }
             this.MapCharacters.Remove(character.Id);
         }
 
-        void SendCharacterLeaveMap(NetConnection<NetSession> conn, int CharacterId)
+        void SendCharacterLeaveMap(NetConnection<NetSession> conn, int entityId)
         {
-            Log.InfoFormat("SendCharacterLeave:characterId:{0}", CharacterId);
+            Log.InfoFormat("SendCharacterLeave:characterId:{0}", entityId);
 
             conn.Session.Response.mapCharacterLeave = new MapCharacterLeaveResponse()
             {
-                characterId = CharacterId
+                entityId = entityId
             };
 
             conn.SendResponse();

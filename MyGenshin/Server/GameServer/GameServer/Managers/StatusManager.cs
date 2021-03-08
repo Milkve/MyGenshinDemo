@@ -1,4 +1,5 @@
 ﻿using GameServer.Entities;
+using Interface;
 using SkillBridge.Message;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace GameServer.Managers
 {
-    class StatusManager
+    class StatusManager:IPostProcess
     {
         Character Owner;
         List<NStatus> Statuses;
@@ -121,6 +122,14 @@ namespace GameServer.Managers
             }
             Statuses.Clear();
             Dirty = false;
+        }
+
+        public void PostProcess(NetMessage message)
+        {
+            if (this.Dirty)
+            {
+              ApplyResponse(message.Response);
+            }
         }
     }
 }

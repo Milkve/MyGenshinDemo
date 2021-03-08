@@ -14,6 +14,8 @@ namespace Entities
 
         public Common.Data.CharacterDefine Define;
 
+        public int ID => this.Info.Id;
+        public int ConfigID => this.Info.ConfigId;
         public string Name
         {
             get
@@ -24,27 +26,37 @@ namespace Entities
                     return this.Define.Name;
             }
         }
-        
+
         /// <summary>
         /// 判断此角色是否为当前玩家
         /// </summary>
         public bool IsPlayer
         {
-            
-            get { return this.Info.Id == Models.User.Instance.CurrentCharacter.Id; }
+
+            get { return this.Info.Type == CharacterType.Player; }
+        }
+
+        public bool IsCurrentPlayer
+        {
+            get
+            {
+                if (!IsPlayer) return false;
+                return this.Info.Id == Models.User.Instance.CurrentCharacter.Id;
+
+            }
         }
 
         public Character(NCharacterInfo info) : base(info.Entity)
         {
             this.Info = info;
-            this.Define = DataManager.Instance.Characters[info.Tid];
+            this.Define = DataManager.Instance.Characters[info.ConfigId];
         }
 
 
 
 
 
-        public void SetEntityData(Vector3 position,Vector3 direction,float speed)
+        public void SetEntityData(Vector3 position, Vector3 direction, float speed)
         {
             this.position = GameObjectTool.WorldToLogic(position);
             this.direction = GameObjectTool.WorldToLogic(direction);

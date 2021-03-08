@@ -7,7 +7,6 @@ require("Game.Quest.QuestConst")
 QuestCtrl = {}
 
 function QuestCtrl:Init()
-    self.QuestView = QuestView:New()
     self.Update = function()
         while true do
             coroutine.yield(WaitForEndOfFrame())
@@ -22,16 +21,16 @@ end
 
 function QuestCtrl:ShowQuest()
     self.dirty = false
-    print("ShowQuest")
     self.Quests = QuestMgr.Instance:GetQuestForShow()
+    self.QuestView = QuestView:New()
     UIManager:Show(self.QuestView)
     self.gen=Cor.start(self.Update)
-    self.QuestView.Toggle_All.isOn = true
+    self.QuestView:GenTreeList("All")
 end
 function QuestCtrl:CloseQuest()
     self.currentQuest = nil
     Cor.stop(self.gen)
-    print("CloseQuest")
+    
     UIManager:Close(self.QuestView)
 end
 
@@ -39,12 +38,16 @@ function QuestCtrl:Mark(transform)
     LayoutRebuilder.MarkLayoutForRebuild(transform)
 end
 
+
 function QuestCtrl:RebuildLayout()
     self.QuestView:RebuildLayout()
 end
 function QuestCtrl:SetCurrentQuest(quest)
-    if quest == self.currentQuest then
-        return
+    -- if quest == self.currentQuest then
+    --     return
+    -- end
+    if quest==nil then
+        quest=self.currentQuest
     end
     self.currentQuest = quest
     for type, typeNode in pairs(self.QuestView.Node) do

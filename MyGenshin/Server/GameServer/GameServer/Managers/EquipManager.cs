@@ -40,7 +40,9 @@ namespace GameServer.Managers
             }
 
         }
-        public void GetEquipInfo(List<NEquipInfo> equips)
+
+
+        public void GetEquipInfos(List<NEquipInfo> equips)
         {
             foreach (var item in this.Equips)
             {
@@ -53,22 +55,36 @@ namespace GameServer.Managers
                 equips.Add(info);
             }
         }
-        public void EqiupTest()
+
+
+        public static NEquipInfo GetEquipInfo(int equipId)
         {
-
-            //AddEquip(1, 1);
-            //DBService.Instance.Save();
-            //foreach (var item in Equips)
-            //{
-            //    Console.WriteLine("------------");
-            //    for (int i = 0; i < 6; i++)
-            //    {
-            //        var kv = PointerUtil.ReadKShortVInt(item.Value.Property, i);
-            //        Console.WriteLine($@"{kv.Key} {kv.Value}");
-            //    }
-
-            //}
+            TCharacterEquip tequip = DBService.Instance.Entities.CharacterEquip.Where(x => x.Id == equipId).FirstOrDefault();
+            if (tequip != null)
+            {
+                return GetEquipInfo(tequip);
+            }
+            return default;
         }
+        public static NEquipInfo GetEquipInfo(TCharacterEquip tequip)
+        {
+            return new NEquipInfo()
+            {
+                Id = tequip.Id,
+                Property = tequip.Property,
+                templateId = tequip.TemplateID
+            };
+        }
+        public static NEquipInfo GetEquipInfo(Equip equip)
+        {
+            return new NEquipInfo()
+            {
+                Id = equip.Id,
+                Property = equip.Property,
+                templateId = equip.Define.ID
+            };
+        }
+
         public bool AddEquip(int templateID, int count)
         {
             EquipDefine define = null;

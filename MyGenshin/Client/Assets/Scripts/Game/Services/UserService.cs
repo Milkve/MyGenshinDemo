@@ -235,6 +235,7 @@ namespace Services
             ItemManager.Instance.Init(response.Character);
             EquipManager.Instance.Init(response.Character);
             QuestManager.Instance.QuestInit(response.Character);
+            FriendManager.Instance.Init(response.Character.Friends);
         }
 
 

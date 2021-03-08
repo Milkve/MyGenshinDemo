@@ -20,7 +20,7 @@ public class EntityController : MonoBehaviour, EntityManager.IEntityNotify
     float speed;
     public Vector3 lastPosition;
     Quaternion lastRotation;
-    public bool isPlayer = false;
+    public bool isCurrentPlayer = false;
     void Start()
     {
         if (entity != null)
@@ -31,12 +31,6 @@ public class EntityController : MonoBehaviour, EntityManager.IEntityNotify
 
         }
         anim = GetComponent<Animator>();
-        if (isPlayer)
-        {
-           
-            //MainPlayerCamera.Instance.SetCurrentPlayer();
-            
-        }
 
     }
 
@@ -52,7 +46,7 @@ public class EntityController : MonoBehaviour, EntityManager.IEntityNotify
     void LateUpdate()
     {
 
-        if (!this.isPlayer)
+        if (!this.isCurrentPlayer)
         {
             this.UpdateTransform();
         }

@@ -1168,7 +1168,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 300844563843523685}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -1488,7 +1488,7 @@ GameObject:
   - component: {fileID: 6907115524219556853}
   - component: {fileID: 9203843365141401860}
   m_Layer: 5
-  m_Name: Button_Confirm
+  m_Name: Button_Delete
   m_TagString: LuaUI
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1820,4 +1820,4 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u67E5\u770B\u8BE6\u60C5"
+  m_Text: "\u5220\u9664\u597D\u53CB"

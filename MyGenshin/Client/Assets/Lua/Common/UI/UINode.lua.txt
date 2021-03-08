@@ -47,10 +47,10 @@ function UINode:Load()
     self.gameObject.layer = CS.UnityEngine.LayerMask.NameToLayer("UI")
     --UI生命周期事件管理器
     self.eventMgr = NodeEventManager:New(self)
-    --是否点击销毁
-    if self.viewCfg.parent and (self.viewCfg.parent.viewCfg.isDestroyOnClose or self.viewCfg.isDestroyOnClose) then
-        self.viewCfg.isDestroyOnClose = true
-    end
+    -- --是否点击销毁
+    -- if self.viewCfg.parent and (self.viewCfg.parent.viewCfg.isDestroyOnClose or self.viewCfg.isDestroyOnClose) then
+    --     self.viewCfg.isDestroyOnClose = true
+    -- end
     --自动销毁机制
     if self.viewCfg.parent and (self.viewCfg.parent.viewCfg.isAutoDestroy or self.viewCfg.isAutoDestroy) then
         self.viewCfg.isAutoDestroy = true

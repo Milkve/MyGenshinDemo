@@ -89,19 +89,22 @@ message NGoodsLimit {
 }
 message NCharacterInfo {
 	int32 id = 1;
-	int32 tid = 2;
-	string name = 3;
-	CHARACTER_TYPE type = 4;
-	int32 class = 5;
-	int32 level = 6;
-	int32 mapId = 7;
-	NEntity entity = 8;
-	int64 gold =9;
-	bytes equiped =10; 
-	repeated NItemInfo items=11;
-	repeated NEquipInfo equips=12;	
-	repeated NGoodsLimit goodsLimit=13;
-	repeated NQuestInfo quests=14;
+	int32 config_id = 2;
+	int32 entity_id = 3;
+	string name = 4;
+	CHARACTER_TYPE type = 5;
+	int32 class = 6;
+	int32 level = 7;
+	int32 mapId = 8;
+	NEntity entity = 9;
+	int64 gold =10;
+	bytes equiped =11; 
+	repeated NItemInfo items=12;
+	repeated NEquipInfo equips=13;	
+	repeated NGoodsLimit goodsLimit=14;
+	repeated NQuestInfo quests=15;
+	repeated NMessageInfo messages=16;
+	repeated NFriendInfo friends=17;
 }
 
 message NVector3
@@ -167,6 +170,15 @@ message NetMessageRequest{
 	QuestListRequest questListRequest = 13;
 	QuestAcceptRequest questAcceptRequest = 14;
 	QuestSubmitRequest questSubmitRequest = 15;
+
+	MessageSendRequest messageSendRequest=16;
+	MessageAcceptRequest messageAcceptRequest=17;
+	MessageDeleteRequest messageDeleteRequest=18;
+	MessageListRequest messageListRequest =19;
+	MessageTargetInfoRequest messageTargetInfoRequest =20;
+
+	FriendListRequest friendList=21;
+	FriendRemoveRequest friendRemove=22;
 }
 
 
@@ -187,11 +199,21 @@ message NetMessageResponse{
 	StatusNotify statusNotify=11;
 	EquipWearResponse equipResponse=12;
 
-
 	QuestListResponse questListResponse = 13;
 	QuestAcceptResponse questAcceptResponse = 14;
 	QuestSubmitResponse questSubmitResponse = 15;
 
+
+
+	MessageSendResponse messageSendResponse=16;
+	MessageAcceptResponse messageAcceptResponse=17;
+	MessageDeleteResponse messageDeleteResponse=18;
+	MessageListResponse messageListResponse =19;
+	MessageTargetInfoResponse messageTargetInfoResponse =20;
+	
+	FriendListResponse friendList=21;
+	FriendRemoveResponse friendRemove=22;
+	FriendAddResponse friendAdd=23;
 }
 
 
@@ -265,7 +287,7 @@ message MapCharacterEnterResponse
 
 message MapCharacterLeaveResponse
 {
-	int32 characterId = 1;
+	int32 entityId = 1;
 }
 
 
@@ -422,4 +444,132 @@ message QuestAbandonResponse
 {
 	RESULT result = 1;
 	string errormsg = 2;
+}
+
+
+
+// Message
+
+enum MessageType{
+
+	Friend=1;
+	Mail=2;
+	Global=3;
+}
+message NMessageCharInfo{
+	int32 id=1;
+	string name=2;
+	int32 class=3;
+	int32 level=4;
+}
+
+
+
+message NMessageInfo{
+	int32 id=1;	
+	MessageType	 type=2	;		//信息表TID
+	NMessageCharInfo FromInfo=3;		//来源信息
+	int32 status=4;	
+	string title=5;
+	string message=6;
+	repeated NItemInfo items=7;
+	repeated NEquipInfo equips=8;
+	int32 gold =9;
+	int32 exp =10;
+
+}
+//邮件发送/好友添加 请求
+message MessageSendRequest{
+	int32 to_id =1;
+	MessageType type=2;
+	NMessageInfo messageInfo=3;
+}
+//邮件发送/好友添加 响应
+message MessageSendResponse{
+	RESULT result=1;
+	string errormsg=2;
+	MessageType type=3;
+}
+//消息列表刷新 请求
+message MessageListRequest{
+}
+
+//消息列表刷新 响应
+message MessageListResponse{
+	repeated NMessageInfo messages=1;
+}
+// 邮件收取/好友接受 请求
+message MessageAcceptRequest{
+	int32 id=1;
+	// MessageType type=2;
+}
+//邮件接受/好友接受 响应
+message MessageAcceptResponse{
+	int32 id=1;
+	Result result=2;
+	string errormsg=3;
+	MessageType type=4;
+}
+//邮件删除/好友拒绝 请求
+message MessageDeleteRequest{
+	int32 id=1;
+	MessageType type=2;
+}
+//邮件删除/好友拒绝 响应
+message MessageDeleteResponse{
+	RESULT result=1;
+	string errormsg=2;
+	MessageType type=3;	
+}
+
+
+//请求发送目标
+message MessageTargetInfoRequest{
+	int32 id=1;
+	string name=2;
+}
+//返回目标信息
+message MessageTargetInfoResponse{
+	RESULT result=1;
+	string errormsg=2;
+	NMessageCharInfo info=3;
+}
+
+
+
+
+// Friends
+
+//好友信息
+message NFriendInfo{
+	int32 id=1;						//好友表TID
+	NMessageCharInfo friendInfo=2;	//好友信息
+	int32 status=3;					//好友状态
+}
+//
+
+
+message FriendAddResponse{
+	Result result=1;
+	string errormsg=2;
+}	
+//好友列表刷新 请求
+message FriendListRequest{
+
+}
+//好友列表刷新 响应
+message FriendListResponse{
+	RESULT result=1;
+	string errormsg=2;
+	repeated NFriendInfo Friends=3;
+}
+//好友删除 请求
+message FriendRemoveRequest{
+	int32 friendId=2;
+}
+//好友删除响应
+message FriendRemoveResponse{
+	RESULT result=1;
+	string errormsg=2;
+	int32 friendId=3;
 }

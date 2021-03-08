@@ -39,12 +39,24 @@ namespace GameServer.Managers
             return character;
         }
 
+        public bool GetCharacter(int characterID,out Character character)
+        {
+           return Characters.TryGetValue(characterID, out character);
+           
+        }
+
 
         public void RemoveCharacter(int characterId)
         {
-            var character = Characters[characterId];
-            EntityManager.Instance.RemoveEntity(character.Data.MapID,character);
-            this.Characters.Remove(characterId);
+
+            Character character = null;
+            if (Characters.TryGetValue(characterId,out character))
+            {        
+                EntityManager.Instance.RemoveEntity(character.Data.MapID, character);
+                this.Characters.Remove(characterId);
+                character.Clear();
+            }
+
         }
     }
 }

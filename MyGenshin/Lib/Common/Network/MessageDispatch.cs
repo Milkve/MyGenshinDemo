@@ -22,6 +22,14 @@ namespace Network
             if (message.questAcceptResponse != null) { MessageDistributer<T>.Instance.RaiseEvent(sender, message.questAcceptResponse); }
             if (message.questListResponse!= null) { MessageDistributer<T>.Instance.RaiseEvent(sender, message.questListResponse); }
             if (message.questSubmitResponse != null) { MessageDistributer<T>.Instance.RaiseEvent(sender, message.questSubmitResponse); }
+            if (message.messageAcceptResponse != null) { MessageDistributer<T>.Instance.RaiseEvent(sender, message.messageAcceptResponse); }
+            if (message.messageDeleteResponse != null) { MessageDistributer<T>.Instance.RaiseEvent(sender, message.messageDeleteResponse); }
+            if (message.messageListResponse != null) { MessageDistributer<T>.Instance.RaiseEvent(sender, message.messageListResponse); }
+            if (message.messageSendResponse != null) { MessageDistributer<T>.Instance.RaiseEvent(sender, message.messageSendResponse); }
+            if (message.messageTargetInfoResponse != null) { MessageDistributer<T>.Instance.RaiseEvent(sender, message.messageTargetInfoResponse); }
+            if (message.friendAdd != null) { MessageDistributer<T>.Instance.RaiseEvent(sender, message.friendAdd); }
+            if (message.friendList!= null) { MessageDistributer<T>.Instance.RaiseEvent(sender, message.friendList); }
+            if (message.friendRemove != null) { MessageDistributer<T>.Instance.RaiseEvent(sender, message.friendRemove); }
         }
 
         public void Dispatch(T sender, SkillBridge.Message.NetMessageRequest message)
@@ -40,6 +48,13 @@ namespace Network
             if (message.questAcceptRequest != null) { MessageDistributer<T>.Instance.RaiseEvent(sender, message.questAcceptRequest); }
             if (message.questListRequest != null) { MessageDistributer<T>.Instance.RaiseEvent(sender, message.questListRequest); }
             if (message.questSubmitRequest != null) { MessageDistributer<T>.Instance.RaiseEvent(sender, message.questSubmitRequest); }
+            if (message.messageAcceptRequest != null) { MessageDistributer<T>.Instance.RaiseEvent(sender, message.messageAcceptRequest); }
+            if (message.messageDeleteRequest != null) { MessageDistributer<T>.Instance.RaiseEvent(sender, message.messageDeleteRequest); }
+            if (message.messageListRequest != null) { MessageDistributer<T>.Instance.RaiseEvent(sender, message.messageListRequest); }
+            if (message.messageSendRequest != null) { MessageDistributer<T>.Instance.RaiseEvent(sender, message.messageSendRequest); }
+            if (message.messageTargetInfoRequest != null) { MessageDistributer<T>.Instance.RaiseEvent(sender, message.messageTargetInfoRequest); }
+            if (message.friendList != null) { MessageDistributer<T>.Instance.RaiseEvent(sender, message.friendList); }
+            if (message.friendRemove != null) { MessageDistributer<T>.Instance.RaiseEvent(sender, message.friendRemove); }
         }
     }
 }

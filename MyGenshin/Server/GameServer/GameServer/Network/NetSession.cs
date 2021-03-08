@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Interface;
 using GameServer;
 using GameServer.Entities;
 using GameServer.Services;
@@ -17,8 +17,10 @@ namespace Network
         public Character Character { get; set; }
         public NEntity NEntity { get; set; }
 
+        public IPostProcess postProcesser { get; set; }
         public void Disconnected()
         {
+            this.postProcesser = null;
             if (this.Character != null)
             {
                 UserService.Instance.CharacterLeave(Character);
@@ -52,9 +54,9 @@ namespace Network
         {
             if (response != null)
             {
-                if (Character!=null && Character.statusManager.Dirty)
+                if (postProcesser != null)
                 {
-                    Character.statusManager.ApplyResponse(Response);
+                    postProcesser.PostProcess(response);
                 }
                 byte[] data = PackageHandler.PackMessage(response);
                 response = null;

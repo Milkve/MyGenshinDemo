@@ -2,8 +2,8 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 02/28/2021 18:08:40
--- Generated from EDMX file: E:\VipSkillLearn\MyGenshinDemo\MyGenshin\Server\GameServer\GameServer\Entities.edmx
+-- Date Created: 03/08/2021 15:47:55
+-- Generated from EDMX file: E:\MMMMMMM\MyGenshinDemo\MyGenshin\Server\GameServer\GameServer\Entities.edmx
 -- --------------------------------------------------
 
 SET QUOTED_IDENTIFIER OFF;
@@ -35,6 +35,12 @@ GO
 IF OBJECT_ID(N'[dbo].[FK_TCharacterTQuest]', 'F') IS NOT NULL
     ALTER TABLE [dbo].[Quests] DROP CONSTRAINT [FK_TCharacterTQuest];
 GO
+IF OBJECT_ID(N'[dbo].[FK_TCharacterTFriend]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[Friends] DROP CONSTRAINT [FK_TCharacterTFriend];
+GO
+IF OBJECT_ID(N'[dbo].[FK_TCharacterTMessage]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[Messages] DROP CONSTRAINT [FK_TCharacterTMessage];
+GO
 
 -- --------------------------------------------------
 -- Dropping existing tables
@@ -60,6 +66,12 @@ IF OBJECT_ID(N'[dbo].[CharacterEquip]', 'U') IS NOT NULL
 GO
 IF OBJECT_ID(N'[dbo].[Quests]', 'U') IS NOT NULL
     DROP TABLE [dbo].[Quests];
+GO
+IF OBJECT_ID(N'[dbo].[Friends]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[Friends];
+GO
+IF OBJECT_ID(N'[dbo].[Messages]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[Messages];
 GO
 
 -- --------------------------------------------------
@@ -96,6 +108,7 @@ CREATE TABLE [dbo].[Characters] (
     [Gold] bigint  NOT NULL,
     [Equiped] varbinary(max)  NOT NULL,
     [Level] int  NOT NULL,
+    [Exp] bigint  NOT NULL,
     [Player_ID] int  NOT NULL
 );
 GO
@@ -138,6 +151,34 @@ CREATE TABLE [dbo].[Quests] (
     [Target2] int  NOT NULL,
     [Target3] int  NOT NULL,
     [Status] int  NOT NULL
+);
+GO
+
+-- Creating table 'Friends'
+CREATE TABLE [dbo].[Friends] (
+    [Id] int IDENTITY(1,1) NOT NULL,
+    [FriendID] int  NOT NULL,
+    [FriendName] nvarchar(max)  NOT NULL,
+    [FriendClass] int  NOT NULL,
+    [FriendLevel] int  NOT NULL,
+    [TCharacterID] int  NOT NULL
+);
+GO
+
+-- Creating table 'Messages'
+CREATE TABLE [dbo].[Messages] (
+    [Id] int IDENTITY(1,1) NOT NULL,
+    [Type] int  NOT NULL,
+    [TCharacterID] int  NOT NULL,
+    [FromID] int  NOT NULL,
+    [Status] int  NOT NULL,
+    [Title] nvarchar(max)  NOT NULL,
+    [Message] nvarchar(max)  NOT NULL,
+    [Items] varbinary(max)  NOT NULL,
+    [Equips] varbinary(max)  NOT NULL,
+    [Gold] int  NOT NULL,
+    [Exp] int  NOT NULL,
+    [Time] datetime  NOT NULL
 );
 GO
 
@@ -184,6 +225,18 @@ GO
 -- Creating primary key on [Id] in table 'Quests'
 ALTER TABLE [dbo].[Quests]
 ADD CONSTRAINT [PK_Quests]
+    PRIMARY KEY CLUSTERED ([Id] ASC);
+GO
+
+-- Creating primary key on [Id] in table 'Friends'
+ALTER TABLE [dbo].[Friends]
+ADD CONSTRAINT [PK_Friends]
+    PRIMARY KEY CLUSTERED ([Id] ASC);
+GO
+
+-- Creating primary key on [Id] in table 'Messages'
+ALTER TABLE [dbo].[Messages]
+ADD CONSTRAINT [PK_Messages]
     PRIMARY KEY CLUSTERED ([Id] ASC);
 GO
 
@@ -278,6 +331,36 @@ GO
 -- Creating non-clustered index for FOREIGN KEY 'FK_TCharacterTQuest'
 CREATE INDEX [IX_FK_TCharacterTQuest]
 ON [dbo].[Quests]
+    ([TCharacterID]);
+GO
+
+-- Creating foreign key on [TCharacterID] in table 'Friends'
+ALTER TABLE [dbo].[Friends]
+ADD CONSTRAINT [FK_TCharacterTFriend]
+    FOREIGN KEY ([TCharacterID])
+    REFERENCES [dbo].[Characters]
+        ([ID])
+    ON DELETE NO ACTION ON UPDATE NO ACTION;
+GO
+
+-- Creating non-clustered index for FOREIGN KEY 'FK_TCharacterTFriend'
+CREATE INDEX [IX_FK_TCharacterTFriend]
+ON [dbo].[Friends]
+    ([TCharacterID]);
+GO
+
+-- Creating foreign key on [TCharacterID] in table 'Messages'
+ALTER TABLE [dbo].[Messages]
+ADD CONSTRAINT [FK_TCharacterTMessage]
+    FOREIGN KEY ([TCharacterID])
+    REFERENCES [dbo].[Characters]
+        ([ID])
+    ON DELETE NO ACTION ON UPDATE NO ACTION;
+GO
+
+-- Creating non-clustered index for FOREIGN KEY 'FK_TCharacterTMessage'
+CREATE INDEX [IX_FK_TCharacterTMessage]
+ON [dbo].[Messages]
     ([TCharacterID]);
 GO
 

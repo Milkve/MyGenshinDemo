@@ -62,12 +62,36 @@ function QuestSubNodeView:SetSelect(bool)
     self.animator:SetBool("Selected", self.select)
 end
 
+-- function QuestSubNodeView:OnChange(quest)
+--     self.onchange = function(old, new)
+--         if (new == NpcQuestStatus.Visible) then
+--             self.Text_SubTitle.text = "<color=#FF989E>需要等级 " .. quest.LimitLevel .. "</color>"
+--         elseif (new == NpcQuestStatus.Acceptable) then
+--             self.Text_SubTitle.text = "可接受"
+--         elseif (new == NpcQuestStatus.Incomplete) then
+--             self.Text_SubTitle.text = "进行中"
+--         elseif (new == NpcQuestStatus.Complete) then
+--             self.Text_SubTitle.text = "可完成"
+--         elseif (new == NpcQuestStatus.None) then
+--             self.viewCfg.isDestroyOnClose=true
+--             QuestCtrl:Refash()
+--         end
+--     end
+--     quest.NpcStatus.OnValueChange:AddListener(self.onchange)
+-- end
+
 function QuestSubNodeView:SetData(quest)
     self.quest = quest
     self.Text_Title.text = quest.Define.Name
     if (quest.NpcStatus.Value == NpcQuestStatus.Visible) then
         self.Text_SubTitle.text = "<color=#FF989E>需要等级 " .. quest.LimitLevel .. "</color>"
-    else
-        self.Text_SubTitle.text = ""
+    elseif (quest.NpcStatus.Value == NpcQuestStatus.Acceptable) then
+        self.Text_SubTitle.text = "可接受"
+    elseif (quest.NpcStatus.Value == NpcQuestStatus.Incomplete) then
+        self.Text_SubTitle.text = "进行中"
+    elseif (quest.NpcStatus.Value == NpcQuestStatus.Complete) then
+        self.Text_SubTitle.text = "可完成"
     end
+    -- self:OnChange(quest)
 end
+

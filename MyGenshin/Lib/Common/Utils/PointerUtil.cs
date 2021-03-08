@@ -42,11 +42,33 @@ namespace Common.Utils
             {
                 short* ptype = (short*)(p + n * (sizeof(short) + sizeof(int)));
                 *ptype = type;
-                //int* pvalue = (int*)(ptype + sizeof(short));
                 int* pvalue = (int*)(p + n * (sizeof(short) + sizeof(int)) + sizeof(short));
                 *pvalue = value;
             }
 
+        }
+
+
+        public unsafe static KeyValuePair<int, int> ReadKIntVInt(byte[] data, int n)
+        {
+
+            fixed (byte* p = data)
+            {
+                int* ptype = (int*)(p + n * (sizeof(int) + sizeof(int)));
+                int* pvalue = (int*)(p + n * (sizeof(int) + sizeof(int)) + sizeof(int));
+                return new KeyValuePair<int, int>(*ptype, *pvalue);
+            }
+        }
+
+        public unsafe static void WriteKIntVInt(byte[] data, int n, int type, int value)
+        {
+            fixed (byte* p = data)
+            {
+                int* ptype = (int*)(p + n * (sizeof(int) + sizeof(int)));
+                *ptype = type;
+                int* pvalue = (int*)(p + n * (sizeof(int) + sizeof(int)) + sizeof(int));
+                *pvalue = value;
+            }
         }
     }
 }

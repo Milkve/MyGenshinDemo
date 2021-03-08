@@ -8,6 +8,8 @@
     <EntitySet Name="GoodsLimits" EntityType="ExtremeWorldModel.Store.GoodsLimits" store:Type="Tables" Schema="dbo" />
     <EntitySet Name="CharacterEquip" EntityType="ExtremeWorldModel.Store.CharacterEquip" store:Type="Tables" Schema="dbo" />
     <EntitySet Name="Quests" EntityType="ExtremeWorldModel.Store.Quests" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Friends" EntityType="ExtremeWorldModel.Store.Friends" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Messages" EntityType="ExtremeWorldModel.Store.Messages" store:Type="Tables" Schema="dbo" />
     <AssociationSet Name="UserPlayer" Association="ExtremeWorldModel.Store.UserPlayer">
       <End Role="User" EntitySet="Users" />
       <End Role="Player" EntitySet="Players" />
@@ -31,6 +33,14 @@
     <AssociationSet Name="TCharacterTQuest" Association="ExtremeWorldModel.Store.TCharacterTQuest">
       <End Role="TCharacter" EntitySet="Characters" />
       <End Role="TQuest" EntitySet="Quests" />
+    </AssociationSet>
+    <AssociationSet Name="TCharacterTFriend" Association="ExtremeWorldModel.Store.TCharacterTFriend">
+      <End Role="TCharacter" EntitySet="Characters" />
+      <End Role="TFriend" EntitySet="Friends" />
+    </AssociationSet>
+    <AssociationSet Name="TCharacterTMessage" Association="ExtremeWorldModel.Store.TCharacterTMessage">
+      <End Role="TCharacter" EntitySet="Characters" />
+      <End Role="TMessage" EntitySet="Messages" />
     </AssociationSet>
   </EntityContainer>
   <EntityType Name="Users">
@@ -65,6 +75,7 @@
     <Property Name="Gold" Type="bigint" Nullable="false" />
     <Property Name="Equiped" Type="varbinary(max)" Nullable="false" />
     <Property Name="Level" Type="int" Nullable="false" />
+    <Property Name="Exp" Type="bigint" Nullable="false" />
     <Property Name="Player_ID" Type="int" Nullable="false" />
   </EntityType>
   <EntityType Name="CharacterItems">
@@ -107,6 +118,34 @@
     <Property Name="Target2" Type="int" Nullable="false" />
     <Property Name="Target3" Type="int" Nullable="false" />
     <Property Name="Status" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Friends">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="FriendID" Type="int" Nullable="false" />
+    <Property Name="FriendName" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="FriendClass" Type="int" Nullable="false" />
+    <Property Name="FriendLevel" Type="int" Nullable="false" />
+    <Property Name="TCharacterID" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Messages">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Type" Type="int" Nullable="false" />
+    <Property Name="TCharacterID" Type="int" Nullable="false" />
+    <Property Name="FromID" Type="int" Nullable="false" />
+    <Property Name="Status" Type="int" Nullable="false" />
+    <Property Name="Title" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Message" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Items" Type="varbinary(max)" Nullable="false" />
+    <Property Name="Equips" Type="varbinary(max)" Nullable="false" />
+    <Property Name="Gold" Type="int" Nullable="false" />
+    <Property Name="Exp" Type="int" Nullable="false" />
+    <Property Name="Time" Type="datetime" Nullable="false" />
   </EntityType>
   <Association Name="UserPlayer">
     <End Role="User" Type="ExtremeWorldModel.Store.Users" Multiplicity="*" />
@@ -176,6 +215,30 @@
         <PropertyRef Name="ID" />
       </Principal>
       <Dependent Role="TQuest">
+        <PropertyRef Name="TCharacterID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="TCharacterTFriend">
+    <End Role="TCharacter" Type="ExtremeWorldModel.Store.Characters" Multiplicity="1" />
+    <End Role="TFriend" Type="ExtremeWorldModel.Store.Friends" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="TCharacter">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="TFriend">
+        <PropertyRef Name="TCharacterID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="TCharacterTMessage">
+    <End Role="TCharacter" Type="ExtremeWorldModel.Store.Characters" Multiplicity="1" />
+    <End Role="TMessage" Type="ExtremeWorldModel.Store.Messages" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="TCharacter">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="TMessage">
         <PropertyRef Name="TCharacterID" />
       </Dependent>
     </ReferentialConstraint>

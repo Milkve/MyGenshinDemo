@@ -32,5 +32,7 @@ namespace GameServer
         public virtual DbSet<TGoodsLimit> GoodsLimits { get; set; }
         public virtual DbSet<TCharacterEquip> CharacterEquip { get; set; }
         public virtual DbSet<TQuest> Quests { get; set; }
+        public virtual DbSet<TFriend> Friends { get; set; }
+        public virtual DbSet<TMessage> Messages { get; set; }
     }
 }

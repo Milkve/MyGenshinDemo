@@ -38,28 +38,29 @@ function QuestChapterNodeView:ChangeContent()
     self.freezing = true
     if self.content == true then
         self.content = false
-        for quest, subNode in pairs(self.Node) do
-            subNode:SetCallback(
-                UINode.event.OnClosed,
-                function()
-                    self.Transform_Content.gameObject:SetActive(false)
-                    self.freezing = false
-                end
-            )
-            UIManager:Close(subNode)
-        end
+        -- for quest, subNode in pairs(self.Node) do
+        --     subNode:SetCallback(
+        --         UINode.event.OnClosed,
+        --         function()
+        --             self.Transform_Content.gameObject:SetActive(false)
+        --             self.freezing = false
+        --         end
+        --     )
+        --     UIManager:Close(subNode)
+        -- end
+        self.Transform_Content.gameObject:SetActive(false)
     else
         self.content = true
         self.Transform_Content.gameObject:SetActive(true)
-        for quest, subNode in pairs(self.Node) do
-            subNode:SetCallback(
-                UINode.event.OnShowed,
-                function()
-                    self.freezing = false
-                end
-            )
-            UIManager:Show(subNode)
-        end
+        -- for quest, subNode in pairs(self.Node) do
+        --     subNode:SetCallback(
+        --         UINode.event.OnShowed,
+        --         function()
+        --             self.freezing = false
+        --         end
+        --     )
+        --     UIManager:Show(subNode)
+        -- end
     end
 end
 

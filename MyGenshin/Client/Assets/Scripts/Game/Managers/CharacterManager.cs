@@ -28,7 +28,7 @@ namespace Managers
         {
             Debug.Log($"CharacterManager.AddCharacter ID:{ nCharacterInfo.Id}");
             Character character = new Character(nCharacterInfo);
-            this.Characters.Add(nCharacterInfo.Entity.Id, character);
+            this.Characters.Add(nCharacterInfo.EntityId, character);
 
             if (OnCharacterEnter != null)
             {
@@ -36,13 +36,13 @@ namespace Managers
             }
         }
 
-        internal void RemoveCharacter(int characterId)
+        internal void RemoveCharacter(int entityID)
         {
-           if (this.Characters.ContainsKey(characterId)){
-                this.Characters.Remove(characterId);
+           if (this.Characters.ContainsKey(entityID)){
+                this.Characters.Remove(entityID);
                 if (OnCharacterLeave != null)
                 {
-                    OnCharacterLeave(characterId);
+                    OnCharacterLeave(entityID);
                 }
             }
         }

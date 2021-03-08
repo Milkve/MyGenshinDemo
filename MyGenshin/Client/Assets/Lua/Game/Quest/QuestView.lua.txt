@@ -6,6 +6,7 @@ function QuestView:Construtor()
     self.viewCfg.prefabPath = "ui/quest/UIQuest.prefab"
     self.viewCfg.canvasName = "Normal"
     self.viewCfg.isEnterUIState = true
+    self.viewCfg.isDestroyOnClose=true
     self.viewCfg.component = {
         {UI.Fade, {alpha = 1, durtion = 0.5, delay = 0}},
         {UI.HideAll, {}}
@@ -71,12 +72,7 @@ function QuestView:AddEvent()
     )
 end
 
-function QuestView:Clear()
-    for k, v in pairs(self.Node) do
-        UIManager:Close(v)
-    end
-    self.current = nil
-end
+
 
 function QuestView:SetData(quest)
     self.Text_ShowTitle.text = quest.Define.Name
@@ -120,42 +116,14 @@ function QuestView:GenReward(quest)
     end
     QuestCtrl.dirty=true
 end
-
+function QuestView:Clear()
+    for k, v in pairs(self.Node) do
+        UIManager:Close(v)
+    end
+    self.current = nil
+end
 function QuestView:GenTreeList(type)
     self:Clear()
-    -- local quests = QuestMgr.Instance:GetQuestByStatusAndChapter()
-    -- for questType, TypeGroup in pairs(quests) do
-    --     if type == "All" or questType == type then
-    --         for Chapter, ChapterGroup in pairs(TypeGroup) do
-    --             for QuestID, Quest in pairs(ChapterGroup) do
-    --                 if self.Node[questType] == nil then
-    --                     self.Node[questType] = QuestTypeNodeView:New(self, self.Transform_Content)
-    --                     self.Node[questType]:Load()
-    --                     self.Node[questType]:SetData(questType)
-    --                 end
-    --                 UIManager:Show(self.Node[questType])
-
-    --                 local TypeNode = self.Node[questType]
-    --                 if TypeNode.Node[Chapter] == nil then
-    --                     TypeNode.Node[Chapter] = QuestChapterNodeView:New(TypeNode, TypeNode.Transform_Content)
-    --                     TypeNode.Node[Chapter]:Load()
-    --                     TypeNode.Node[Chapter]:SetData(Chapter)
-    --                 end
-    --                 UIManager:Show(TypeNode.Node[Chapter])
-    --                 local ChapterNode = TypeNode.Node[Chapter]
-    --                 if ChapterNode.Node[QuestID] == nil then
-    --                     ChapterNode.Node[QuestID] = QuestSubNodeView:New(ChapterNode, ChapterNode.Transform_Content)
-    --                     ChapterNode.Node[QuestID]:Load()
-    --                     ChapterNode.Node[QuestID]:SetData(Quest)
-    --                 end
-    --                 UIManager:Show(ChapterNode.Node[QuestID])
-    --                 if QuestCtrl.currentQuest == nil then
-    --                     ChapterNode.Node[QuestID].OnClick()
-    --                 end
-    --             end
-    --         end
-    --     end
-    -- end
     for QuestID, quest in pairs(QuestCtrl.Quests) do
         if type == "All" or quest.Type== type then
             if self.Node[quest.Type] == nil then
@@ -164,7 +132,6 @@ function QuestView:GenTreeList(type)
                 self.Node[quest.Type]:SetData(quest.Type)
             end
             UIManager:Show(self.Node[quest.Type])
-
             local TypeNode = self.Node[quest.Type]
             if TypeNode.Node[quest.Chapter] == nil then
                 TypeNode.Node[quest.Chapter] = QuestChapterNodeView:New(TypeNode, TypeNode.Transform_Content)
@@ -181,19 +148,14 @@ function QuestView:GenTreeList(type)
             UIManager:Show(ChapterNode.Node[QuestID])
             if self.current == nil then
                 ChapterNode.Node[QuestID].OnClick()
+                self.current=ChapterNode.Node[QuestID]
             end
         end
     end
-    -- QuestCtrl:RebuildLayout()
+    -- QuestCtrl:SetCurrentQuest()
 end
 
 
 function QuestView:RebuildLayout()
-    -- print('rebuilt')
--- 
-    -- LayoutRebuilder.ForceRebuildLayoutImmediate(self.Transform_TargetContent)
-    -- LayoutRebuilder.ForceRebuildLayoutImmediate(self.Transform_DescriptionArea) 
-    LayoutRebuilder.ForceRebuildLayoutImmediate(self.Transform_Content)
-     
-    
+    LayoutRebuilder.ForceRebuildLayoutImmediate(self.Transform_Content) 
 end
