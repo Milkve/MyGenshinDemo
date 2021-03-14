@@ -8,7 +8,8 @@ local ctrl=
 'Game.Store.StoreCtrl',
 'Game.ItemGain.ItemGainCtrl',
 'Game.Quest.QuestCtrl',
-'Game.Friends.FriendsCtrl',
+'Game.Friends.FriendCtrl',
+'Game.Mail.MailCtrl',
 'Game.WorldElement.WorldElementCtrl'
 }
 return ctrl

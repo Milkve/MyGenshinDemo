@@ -1,0 +1,11 @@
+FriendConst={
+    Color={
+
+        Online=Color(0.5990, 0.7075, 0.0300),
+        Offline=Color(0.4150,0.4150,0.4150),
+
+    }
+
+
+
+}

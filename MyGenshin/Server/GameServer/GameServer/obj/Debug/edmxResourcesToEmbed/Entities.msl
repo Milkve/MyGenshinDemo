@@ -34,6 +34,7 @@
           <ScalarProperty Name="Equiped" ColumnName="Equiped" />
           <ScalarProperty Name="Level" ColumnName="Level" />
           <ScalarProperty Name="Exp" ColumnName="Exp" />
+          <ScalarProperty Name="CGMsgID" ColumnName="CGMsgID" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
@@ -90,6 +91,7 @@
           <ScalarProperty Name="FriendClass" ColumnName="FriendClass" />
           <ScalarProperty Name="FriendLevel" ColumnName="FriendLevel" />
           <ScalarProperty Name="TCharacterID" ColumnName="TCharacterID" />
+          <ScalarProperty Name="IsDelete" ColumnName="IsDelete" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
@@ -108,6 +110,31 @@
           <ScalarProperty Name="Gold" ColumnName="Gold" />
           <ScalarProperty Name="Exp" ColumnName="Exp" />
           <ScalarProperty Name="Time" ColumnName="Time" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="GlobalMessages">
+      <EntityTypeMapping TypeName="IsTypeOf(ExtremeWorldModel.TGlobalMessage)">
+        <MappingFragment StoreEntitySet="GlobalMessages">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Title" ColumnName="Title" />
+          <ScalarProperty Name="Message" ColumnName="Message" />
+          <ScalarProperty Name="Items" ColumnName="Items" />
+          <ScalarProperty Name="Equips" ColumnName="Equips" />
+          <ScalarProperty Name="Gold" ColumnName="Gold" />
+          <ScalarProperty Name="Exp" ColumnName="Exp" />
+          <ScalarProperty Name="FromID" ColumnName="FromID" />
+          <ScalarProperty Name="Time" ColumnName="Time" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="CharacterGlobalStatus">
+      <EntityTypeMapping TypeName="IsTypeOf(ExtremeWorldModel.TCharacterGlobalStatus)">
+        <MappingFragment StoreEntitySet="CharacterGlobalStatus">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="TCharacterID" ColumnName="TCharacterID" />
+          <ScalarProperty Name="MessageID" ColumnName="MessageID" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

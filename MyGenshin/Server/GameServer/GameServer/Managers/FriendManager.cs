@@ -26,8 +26,9 @@ namespace GameServer.Managers
 
         private void FriendInit()
         {
+            Log.Info($"Character{ Owner.Id} FriendInit");
             AllFriends.Clear();
-            foreach (var friend in Owner.Data.Friends)
+            foreach (var friend in Owner.Data.Friends.Where(x=>x.IsDelete==false))
             {
                 AllFriends.Add(friend.FriendID, GetFriendInfo(friend));
             }
@@ -36,6 +37,11 @@ namespace GameServer.Managers
         public bool HasFriend(int friendID)
         {
             return AllFriends.ContainsKey(friendID);
+        }
+
+        public static bool HasFriend(int OwnerID, int friendID)
+        {
+            return DBService.Instance.Entities.Friends.Where(x => x.FriendID == friendID && x.TCharacterID == OwnerID &&x.IsDelete==false).Count() != 0;
         }
         public void GetFriendsInfo(List<NFriendInfo> Friends)
         {
@@ -80,6 +86,8 @@ namespace GameServer.Managers
             return nFriendInfo;
         }
 
+
+
         private void UpdateFriendInfo(NCharacterInfo info, int status)
         {
             if (AllFriends.ContainsKey(info.Id))
@@ -89,56 +97,126 @@ namespace GameServer.Managers
             Dirty = true;
         }
 
-
-        internal static Result AddFriend(NetConnection<NetSession> sender, int id1, int id2)
+        public static TFriend GetTFriend(int ownerID, NMessageCharInfo friendInfo)
         {
-
-            Result res = Result.Success;
-            try
+            TFriend friend = new TFriend()
             {
-                NMessageCharInfo info1 = MessageManager.GetMessageCharInfo(id1);
-                TFriend friend1 = new TFriend()
-                {
-                    FriendID = id1,
-                    TCharacterID = id2,
-                    FriendClass = info1.Class,
-                    FriendLevel = info1.Level,
-                    FriendName = info1.Name,
-                };
-               
-
-                NMessageCharInfo info2 = MessageManager.GetMessageCharInfo(id2);
-                TFriend friend2 = new TFriend()
-                {
-                    FriendID = id2,
-                    TCharacterID = id1,
-                    FriendClass = info2.Class,
-                    FriendLevel = info2.Level,
-                    FriendName = info2.Name,
-                };
-                DBService.Instance.Entities.Friends.Add(friend1);
-                DBService.Instance.Entities.Friends.Add(friend2);
-                NetConnection<NetSession> session;
-                if (SessionManager.Instance.GetSession(id1, out session)){
-                    session.Session.Character.friendManager.SetDirty();
-                    MessageService.Instance.SendAddFriendResponse(session, Result.Success, info1);
-                }
-                if (SessionManager.Instance.GetSession(id2, out session))
-                {
-                    session.Session.Character.friendManager.SetDirty();
-                    MessageService.Instance.SendAddFriendResponse(session, Result.Success, info2);
-                }
-            }
-            catch (Exception e)
-            {
-                sender.Session.Response.messageAcceptResponse.Errormsg = e.Message;
-                res = Result.Failed;
-            }
-            return res;
+                FriendID = friendInfo.Id,
+                TCharacterID = ownerID,
+                FriendClass = friendInfo.Class,
+                FriendLevel = friendInfo.Level,
+                FriendName = friendInfo.Name,
+            };
+            return friend;
         }
 
 
+        //public void SetFriendInfo(int friendID,int status)
+        //{
+        //    if (AllFriends.ContainsKey(friendID))
+        //    {
+        //        AllFriends[friendID].Status = status;
+        //        SetDirty();
+        //    }
+        //}
 
+        internal void OfflineNoisy()
+        {
+            foreach (var friend in AllFriends)
+            {
+                if (friend.Value.Status == 1)
+                {
+                    NetConnection<NetSession> session;
+                    if(SessionManager.Instance.GetSession(friend.Value.friendInfo.Id, out session))
+                    {
+                        session.Session.Character.friendManager.SetDirty();
+                        MessageService.Instance.SendUpdate(session);
+                    }
+                }
+            }
+        }
+
+        internal static void AddFriend(int id1, int id2, NMessageCharInfo info1, NMessageCharInfo info2)
+        {
+
+            TFriend friend1 = DBService.Instance.Entities.Friends.Where(x => x.FriendID == id2 && x.TCharacterID == id1).FirstOrDefault();
+            if (friend1 == null)
+            {
+                friend1 = GetTFriend(id1, info2);
+                DBService.Instance.Entities.Friends.Add(friend1);
+            }
+            else
+            {
+                friend1.IsDelete = false;
+            }
+            TFriend friend2 = DBService.Instance.Entities.Friends.Where(x => x.FriendID == id1 && x.TCharacterID == id2).FirstOrDefault();
+            if (friend2 == null)
+            {
+                friend2 = GetTFriend(id2, info1);
+                DBService.Instance.Entities.Friends.Add(friend2);
+            }
+            else
+            {
+                friend2.IsDelete = false;
+            }
+
+
+        }
+
+        internal static Result RemoveFriend(int id, int friendId)
+        {
+            try
+            {
+                TFriend friendship1 = DBService.Instance.Entities.Friends.Where(x => x.TCharacterID == id && x.FriendID == friendId).First();
+                friendship1.IsDelete = true;               
+                TFriend friendship2 = DBService.Instance.Entities.Friends.Where(x => x.TCharacterID == friendId && x.FriendID == id).First();
+                friendship2.IsDelete = true;
+                return Result.Success;
+            }
+            catch (Exception e)
+            {
+                Log.Error(e);
+                return Result.Failed;
+            }
+        }
+
+
+        public static void FriendAddNoisy(int owner, NMessageCharInfo info, Result result, bool isSender)
+        {
+            NetConnection<NetSession> session;
+            if (SessionManager.Instance.GetSession(owner, out session))
+            {
+                Log.Info($@"OwnerID:{owner} FriendID{info.Id} Reuslt:{result} IsSender:{isSender}");
+                session.Session.Character.friendManager.SetDirty();
+                string msg;
+                if (isSender && result == Result.Success)
+                {
+                    msg = $"玩家[{info.Name}](UID:{info.Id})接受了你的好友请求";
+                }
+                else if (isSender && result == Result.Failed)
+                {
+                    msg = $"玩家[{info.Name}](UID:{info.Id})拒绝了你的好友请求";
+                }
+                else if (!isSender && result == Result.Success)
+                {
+                    msg = $"已玩家[{info.Name}](UID:{info.Id})成为好友";
+                }
+                else
+                {
+                    msg = $"已拒绝玩家[{info.Name}](UID:{info.Id})的好友请求";
+                }
+                MessageService.Instance.SendAddFriendResponse(session, result, msg);
+
+            }
+        }
+        public static void FriendRemoveNoisy(int owner)
+        {
+            NetConnection<NetSession> session;
+            if (SessionManager.Instance.GetSession(owner, out session))
+            {
+                session.Session.Character.friendManager.SetDirty();
+            }
+        }
         public void SetDirty()
         {
             Dirty = true;
@@ -147,11 +225,12 @@ namespace GameServer.Managers
         {
             if (Dirty)
             {
-                if (message.Response.friendList == null)
+                if (message.Response.friendList == null )
                 {
                     FriendInit();
                     message.Response.friendList = new FriendListResponse();
                     message.Response.friendList.Friends.AddRange(AllFriends.Select(x => x.Value));
+                    message.Response.friendList.Result = Result.Success;
                     Dirty = false;
                 }
             }
@@ -165,6 +244,10 @@ namespace GameServer.Managers
                 friendship.FriendName = Owner.Data.Name;
                 friendship.FriendClass = Owner.Data.Class;
             }
+            DBService.Instance.Save();
+
+
+            
         }
     }
 }

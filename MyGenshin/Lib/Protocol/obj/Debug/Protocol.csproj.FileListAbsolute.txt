@@ -23,3 +23,4 @@ E:\MMMMMMM\MyGenshinDemo\MyGenshin\Lib\Protocol\obj\Debug\Protocol.csproj.CoreCo
 E:\MMMMMMM\MyGenshinDemo\MyGenshin\Lib\Protocol\obj\Debug\Protocol.csproj.CopyComplete
 E:\MMMMMMM\MyGenshinDemo\MyGenshin\Lib\Protocol\obj\Debug\Protocol.dll
 E:\MMMMMMM\MyGenshinDemo\MyGenshin\Lib\Protocol\obj\Debug\Protocol.pdb
+E:\MMMMMMM\MyGenshinDemo\MyGenshin\Lib\Protocol\obj\Debug\Protocol.csprojAssemblyReference.cache

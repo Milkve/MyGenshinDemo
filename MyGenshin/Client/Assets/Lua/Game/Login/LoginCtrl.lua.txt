@@ -2,7 +2,6 @@ require("Game.Login.LoginBGView")
 require("Game.Login.LoginView")
 require("Game.Login.LoginConfirmView")
 require("Game.Login.LoginConst")
-require("Game.Login.LoginTipView")
 require("Game.Login.LoginRegisterView")
 LoginCtrl = {}
 

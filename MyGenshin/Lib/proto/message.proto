@@ -172,8 +172,7 @@ message NetMessageRequest{
 	QuestSubmitRequest questSubmitRequest = 15;
 
 	MessageSendRequest messageSendRequest=16;
-	MessageAcceptRequest messageAcceptRequest=17;
-	MessageDeleteRequest messageDeleteRequest=18;
+	MessageReplyRequest messageReplyRequest=17;
 	MessageListRequest messageListRequest =19;
 	MessageTargetInfoRequest messageTargetInfoRequest =20;
 
@@ -206,17 +205,19 @@ message NetMessageResponse{
 
 
 	MessageSendResponse messageSendResponse=16;
-	MessageAcceptResponse messageAcceptResponse=17;
-	MessageDeleteResponse messageDeleteResponse=18;
+	MessageReplyResponse messageReplyResponse=17;
+	MessageReceive messageReceive=18;
 	MessageListResponse messageListResponse =19;
 	MessageTargetInfoResponse messageTargetInfoResponse =20;
 	
 	FriendListResponse friendList=21;
 	FriendRemoveResponse friendRemove=22;
 	FriendAddResponse friendAdd=23;
+
+	StatusUpdate  update=24;
 }
 
-
+message StatusUpdate{}
 // User Protocol
 message UserLoginRequest {
 	string user = 1;
@@ -456,6 +457,12 @@ enum MessageType{
 	Mail=2;
 	Global=3;
 }
+
+enum MessageReply{
+	Refuse=0;
+	Accept=1;
+	Delete=2;
+}
 message NMessageCharInfo{
 	int32 id=1;
 	string name=2;
@@ -476,7 +483,7 @@ message NMessageInfo{
 	repeated NEquipInfo equips=8;
 	int32 gold =9;
 	int32 exp =10;
-
+	int64 time=11;
 }
 //邮件发送/好友添加 请求
 message MessageSendRequest{
@@ -498,41 +505,34 @@ message MessageListRequest{
 message MessageListResponse{
 	repeated NMessageInfo messages=1;
 }
+
+message MessageReceive{
+
+}
 // 邮件收取/好友接受 请求
-message MessageAcceptRequest{
+message MessageReplyRequest{
 	int32 id=1;
-	// MessageType type=2;
+	MessageReply reply=2;
+	MessageType type= 3;
 }
 //邮件接受/好友接受 响应
-message MessageAcceptResponse{
-	int32 id=1;
+message MessageReplyResponse{
 	Result result=2;
 	string errormsg=3;
-	MessageType type=4;
 }
-//邮件删除/好友拒绝 请求
-message MessageDeleteRequest{
-	int32 id=1;
-	MessageType type=2;
-}
-//邮件删除/好友拒绝 响应
-message MessageDeleteResponse{
-	RESULT result=1;
-	string errormsg=2;
-	MessageType type=3;	
-}
-
 
 //请求发送目标
 message MessageTargetInfoRequest{
 	int32 id=1;
 	string name=2;
+	MessageType type= 3;
 }
 //返回目标信息
 message MessageTargetInfoResponse{
 	RESULT result=1;
 	string errormsg=2;
-	NMessageCharInfo info=3;
+	MessageType type= 3;
+	NMessageCharInfo info=4;
 }
 
 
@@ -572,4 +572,14 @@ message FriendRemoveResponse{
 	RESULT result=1;
 	string errormsg=2;
 	int32 friendId=3;
+}
+
+
+
+
+//Team
+
+message TeamInviteRequest{
+
+	
 }

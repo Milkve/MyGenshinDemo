@@ -7,26 +7,42 @@ using System.Threading.Tasks;
 using Network;
 using SkillBridge.Message;
 using UnityEngine;
+using Managers;
 
 namespace Services
 {
     class MessageService : Singleton<MessageService>, IDisposable
     {
 
+        
         public MessageService()
         {
+            MessageDistributer.Instance.Subscribe<MessageReplyResponse>(this.OnMessageReply);
+            MessageDistributer.Instance.Subscribe<MessageSendResponse>(this.OnMessageSend);
             MessageDistributer.Instance.Subscribe<MessageListResponse>(this.OnMessageList);
+            MessageDistributer.Instance.Subscribe<MessageTargetInfoResponse>(this.OnMessageTarget);
 
+            MessageDistributer.Instance.Subscribe<MessageReceive>(this.OnMessageReceive);
+        }
 
+        private void OnMessageReceive(object sender, MessageReceive message)
+        {
+            MessageManager.Instance.MessageReceive();
+        }
 
+        private void OnMessageReply(object sender, MessageReplyResponse message)
+        {
+            MessageManager.Instance.OnMessageReply(message);
+        }
+
+        private void OnMessageSend(object sender, MessageSendResponse message)
+        {
+            MessageManager.Instance.OnMessageSend( message);
         }
 
         private void OnMessageList(object sender, MessageListResponse message)
         {
-            foreach (var item in message.Messages)
-            {
-
-            }  
+            MessageManager.Instance.MessageInit(message.Messages);
         }
 
         public void Dispose()
@@ -34,90 +50,51 @@ namespace Services
 
         }
 
-
-        public void SendFriendAddRequest(int friendID)
+        internal void SendMessageReply(int id,MessageType type,MessageReply reply)
         {
             NetMessage message = new NetMessage()
             {
+
                 Request = new NetMessageRequest()
                 {
-                    messageSendRequest=new MessageSendRequest()
+                    messageReplyRequest = new MessageReplyRequest()
                     {
-                        Type=MessageType.Friend,
-                        ToId=friendID,
-                        messageInfo=new NMessageInfo()
-                        {
-                            FromInfo =new NMessageCharInfo()
-                            {
-                                Id=Models.User.Instance.CurrentCharacter.Id,
-                                Name= Models.User.Instance.CurrentCharacter.Name,
-                                Level= Models.User.Instance.CurrentCharacter.Level,
-                                Class= Models.User.Instance.CurrentCharacter.Class
-                            }
-                        }
+                        Id = id,
+                        Type = type,
+                        Reply = reply
                     }
                 }
             };
             NetClient.Instance.SendMessage(message);
         }
 
-
-
-
-        //public void SendFriendAddResponse(bool accept, FriendAddRequest request)
-        //{
-        //    NetMessage message = new NetMessage()
-        //    {
-        //        Request = new NetMessageRequest()
-        //        {
-        //            friendAddResponse = new FriendAddResponse()
-        //            {
-        //                Result = accept ? Result.Success : Result.Failed,
-        //                Errormsg = accept ? "对方同意了你的好友申请" : "对方拒绝了你的请求",
-        //                Request = request
-        //            }
-        //        }
-        //    };
-        //    NetClient.Instance.SendMessage(message);
-        //}
-
-        public void SendFriendRemove(int friendID)
+        internal void SendMessageTarget(MessageType type, int id, string name)
         {
             NetMessage message = new NetMessage()
             {
+
                 Request = new NetMessageRequest()
                 {
-                    friendRemove = new FriendRemoveRequest()
+                    messageTargetInfoRequest = new MessageTargetInfoRequest()
                     {
-                        friendId = friendID
+                        Id = id,
+                        Name = name,
+                        Type = type
                     }
                 }
             };
-
+            NetClient.Instance.SendMessage(message);
         }
 
-
-
-
-
-        private void OnFriendList(object sender, FriendListResponse message)
+        private void OnMessageTarget(object sender, MessageTargetInfoResponse message)
         {
 
+
+            if (message.Type == MessageType.Friend)
+            {
+                FriendManager.Instance.ShowTargetInfo(message);
+            }
         }
 
-        private void OnFriendRemove(object sender, FriendRemoveResponse message)
-        {
-
-        }
-
-        private void OnFriendAddResponse(object sender, FriendAddResponse message)
-        {
-            Debug.Log(message.Errormsg);
-        }
-
-        //private void OnFriendAddRequest(object sender, FriendAddRequest message)
-        //{
-            
-        //}
     }
 }

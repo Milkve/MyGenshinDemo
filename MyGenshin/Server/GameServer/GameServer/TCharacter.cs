@@ -24,6 +24,7 @@ namespace GameServer
             this.Quests = new HashSet<TQuest>();
             this.Friends = new HashSet<TFriend>();
             this.Messages = new HashSet<TMessage>();
+            this.CharacterGlobalStatus = new HashSet<TCharacterGlobalStatus>();
         }
     
         public int ID { get; set; }
@@ -39,6 +40,7 @@ namespace GameServer
         public byte[] Equiped { get; set; }
         public int Level { get; set; }
         public long Exp { get; set; }
+        public int CGMsgID { get; set; }
     
         public virtual TPlayer Player { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
@@ -53,5 +55,7 @@ namespace GameServer
         public virtual ICollection<TFriend> Friends { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TMessage> Messages { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TCharacterGlobalStatus> CharacterGlobalStatus { get; set; }
     }
 }

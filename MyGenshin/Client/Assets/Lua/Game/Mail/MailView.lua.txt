@@ -1,0 +1,129 @@
+MailView = BaseClass(UINode)
+MailView.Singleton = true
+
+function MailView:Construtor()
+    self.viewCfg.prefabName = "UIMail"
+    self.viewCfg.prefabPath = "ui/Mail/UIMail.prefab"
+    self.viewCfg.canvasName = "Normal"
+    self.viewCfg.isEnterUIState = true
+    self.viewCfg.component = {
+        {UI.Fade, {alpha = 1, durtion = 0.5, delay = 0}},
+        {UI.HideAll, {}}
+    }
+    self.mails = {}
+    self.rewards = {}
+end
+
+function MailView:AddEvent()
+    local OnClick = function(btn)
+        if self.Button_Close == btn then
+            MailCtrl:CloseMail()
+        elseif self.Button_Confirm == btn then
+            MailCtrl:Confirm(self.current)
+        end
+    end
+    self:AddClickEvent(self.Button_Close, OnClick)
+    self:AddClickEvent(self.Button_Confirm, OnClick)
+end
+
+function MailView:Clear()
+    for i, v in pairs(self.mails) do
+        UIManager:Close(v)
+    end
+    self.mails = {}
+end
+
+function MailView:ClearReward()
+    for i, v in pairs(self.rewards) do
+        UIManager:Close(v)
+    end
+    self.rewards = {}
+end
+
+function MailView:SetCurrentMail(mail)
+    self.current = mail
+    for k, v in pairs(self.mails) do
+        v:SetSelect(v.mailinfo == mail)
+    end
+
+    self.Text_Title.text = mail.Title
+    self.Text_Sender.text = mail.FromInfo.Name
+    self.Text_Time.text = os.date("%Y年%m月%d日 %H:%M", mail.Time)
+    self.Text_Main.text = mail.Message
+    if mail.Status == 0 then
+        self.Text_Confirm.text = "收取邮件"
+    elseif mail.Status == 1 then
+        self.Text_Confirm.text = "删除邮件"
+    end
+    self:GenReward(mail)
+
+end
+
+function MailView:MessageUpdate()
+    self:GenMessages()
+end
+
+function MailView:GenMessages()
+    self:Clear()
+    self.current = nil
+    local messages = MessageMgr.Instance:GetMailMessage()
+    for i, v in pairs(messages) do
+        local grid = MailGridView:New(self, self.Transform_Content)
+        table.insert(self.mails, grid)
+        UIManager:Show(grid)
+        grid:SetData(v)
+        if self.current == nil then
+            self.current = v
+            grid:SetCurrent()
+        end
+    end
+    self.Text_Count.text="邮件数 "..messages.Count.." / 100"
+    if self.current==nil then
+        self.Transform_NoItem.gameObject:SetActive(true)
+        self.Transform_Detial.gameObject:SetActive(false)
+    else
+        self.Transform_NoItem.gameObject:SetActive(false)
+        self.Transform_Detial.gameObject:SetActive(true)
+    end
+end
+
+function MailView:GenReward(mail)
+    self:ClearReward()
+    require("Game.Common.UIInfoGrid")
+    self.canvasGroup =  self.Transform_RewardContent.gameObject:GetComponent("CanvasGroup")
+    if mail.Status==0 then
+        self.canvasGroup.alpha = 1
+    else
+        self.canvasGroup.alpha=0.5
+    end
+
+    for i, v in pairs(mail.Items) do
+        self.rewards[i] = UIInfoGridView:New(self, self.Transform_RewardContent)
+        UIManager:Show(self.rewards[i])
+        local temp = {}
+        temp.Define = DataMgr.Instance.Items[v.Id]
+        temp.Rare = temp.Define.Rare
+        temp.SelectCount = v.Count
+        self.rewards[i]:SetData(temp)
+    end
+    if mail.Gold > 0 then
+        local grid = UIInfoGridView:New(self, self.Transform_RewardContent)
+        table.insert(self.rewards, grid)
+        UIManager:Show(grid)
+        local temp = {}
+        temp.Define = DataMgr.Instance.Specials[1]
+        temp.Rare = temp.Define.Rare
+        temp.SelectCount = mail.Gold
+        grid:SetData(temp)
+    end
+    if mail.Exp > 0 then
+        local grid = UIInfoGridView:New(self, self.Transform_RewardContent)
+        table.insert(self.rewards, grid)
+        UIManager:Show(grid)
+        local temp = {}
+        temp.Define = DataMgr.Instance.Specials[2]
+        temp.Rare = temp.Define.Rare
+        temp.SelectCount = mail.Exp
+        grid:SetData(temp)
+    end
+end

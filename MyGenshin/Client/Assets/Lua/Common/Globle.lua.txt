@@ -41,6 +41,9 @@ QuestStatus = CS.SkillBridge.Message.QuestStatus
 QuestType = CS.Common.Data.QuestDefine.QuestType
 QuestTargetType = CS.Common.Data.QuestDefine.QuestTargetType
 RewardType = CS.Common.Data.QuestDefine.RewardType
+MessageType=CS.SkillBridge.Message.MessageType
+MessageReply=CS.SkillBridge.Message.MessageReply
+
 --Manager
 GlobalMgr = CS.Managers.GlobalManager
 GamePlayState = CS.Managers.GamePlayState
@@ -50,6 +53,8 @@ SceneMgr = CS.SceneManager
 ItemMgr = CS.Managers.ItemManager
 EquipMgr = CS.Managers.EquipManager
 QuestMgr = CS.Managers.QuestManager
+MessageMgr=CS.Managers.MessageManager
+FriendMgr=CS.Managers.FriendManager
 --Service
 UserService = CS.Services.UserService
 ItemService = CS.Services.ItemService

@@ -217,7 +217,29 @@ namespace XLua
 #endif
 		}
         
-		public void __Gen_Delegate_Imp9(SkillBridge.Message.Result p0, string p1)
+		public void __Gen_Delegate_Imp9(SkillBridge.Message.Result p0)
+		{
+#if THREAD_SAFE || HOTFIX_ENABLE
+            lock (luaEnv.luaEnvLock)
+            {
+#endif
+                RealStatePtr L = luaEnv.rawL;
+                int errFunc = LuaAPI.pcall_prepare(L, errorFuncRef, luaReference);
+                ObjectTranslator translator = luaEnv.translator;
+                translator.PushSkillBridgeMessageResult(L, p0);
+                
+                PCall(L, 1, 0, errFunc);
+                
+                
+                
+                LuaAPI.lua_settop(L, errFunc - 1);
+                
+#if THREAD_SAFE || HOTFIX_ENABLE
+            }
+#endif
+		}
+        
+		public void __Gen_Delegate_Imp10(SkillBridge.Message.Result p0, string p1)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -240,7 +262,7 @@ namespace XLua
 #endif
 		}
         
-		public void __Gen_Delegate_Imp10(bool p0)
+		public void __Gen_Delegate_Imp11(bool p0)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -262,7 +284,7 @@ namespace XLua
 #endif
 		}
         
-		public void __Gen_Delegate_Imp11(SkillBridge.Message.Result p0, string p1, System.Collections.Generic.List<SkillBridge.Message.NCharacterInfo> p2)
+		public void __Gen_Delegate_Imp12(SkillBridge.Message.Result p0, string p1, System.Collections.Generic.List<SkillBridge.Message.NCharacterInfo> p2)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -286,7 +308,7 @@ namespace XLua
 #endif
 		}
         
-		public void __Gen_Delegate_Imp12(SkillBridge.Message.Result p0, string p1, SkillBridge.Message.NCharacterInfo p2)
+		public void __Gen_Delegate_Imp13(SkillBridge.Message.Result p0, string p1, SkillBridge.Message.NCharacterInfo p2)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -310,7 +332,7 @@ namespace XLua
 #endif
 		}
         
-		public void __Gen_Delegate_Imp13(Managers.GamePlayState p0)
+		public void __Gen_Delegate_Imp14(Managers.GamePlayState p0)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -332,7 +354,7 @@ namespace XLua
 #endif
 		}
         
-		public void __Gen_Delegate_Imp14(float p0)
+		public void __Gen_Delegate_Imp15(float p0)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -418,34 +440,39 @@ namespace XLua
 			    return new System.Action<UI.Common.UIGroup.UIState, UI.Common.UIGroup.UIState>(__Gen_Delegate_Imp8);
 			}
 		
+		    if (type == typeof(System.Action<SkillBridge.Message.Result>))
+			{
+			    return new System.Action<SkillBridge.Message.Result>(__Gen_Delegate_Imp9);
+			}
+		
 		    if (type == typeof(UnityEngine.Events.UnityAction<SkillBridge.Message.Result, string>))
 			{
-			    return new UnityEngine.Events.UnityAction<SkillBridge.Message.Result, string>(__Gen_Delegate_Imp9);
+			    return new UnityEngine.Events.UnityAction<SkillBridge.Message.Result, string>(__Gen_Delegate_Imp10);
 			}
 		
 		    if (type == typeof(UnityEngine.Events.UnityAction<bool>))
 			{
-			    return new UnityEngine.Events.UnityAction<bool>(__Gen_Delegate_Imp10);
+			    return new UnityEngine.Events.UnityAction<bool>(__Gen_Delegate_Imp11);
 			}
 		
 		    if (type == typeof(UnityEngine.Events.UnityAction<SkillBridge.Message.Result, string, System.Collections.Generic.List<SkillBridge.Message.NCharacterInfo>>))
 			{
-			    return new UnityEngine.Events.UnityAction<SkillBridge.Message.Result, string, System.Collections.Generic.List<SkillBridge.Message.NCharacterInfo>>(__Gen_Delegate_Imp11);
+			    return new UnityEngine.Events.UnityAction<SkillBridge.Message.Result, string, System.Collections.Generic.List<SkillBridge.Message.NCharacterInfo>>(__Gen_Delegate_Imp12);
 			}
 		
 		    if (type == typeof(UnityEngine.Events.UnityAction<SkillBridge.Message.Result, string, SkillBridge.Message.NCharacterInfo>))
 			{
-			    return new UnityEngine.Events.UnityAction<SkillBridge.Message.Result, string, SkillBridge.Message.NCharacterInfo>(__Gen_Delegate_Imp12);
+			    return new UnityEngine.Events.UnityAction<SkillBridge.Message.Result, string, SkillBridge.Message.NCharacterInfo>(__Gen_Delegate_Imp13);
 			}
 		
 		    if (type == typeof(System.Action<Managers.GamePlayState>))
 			{
-			    return new System.Action<Managers.GamePlayState>(__Gen_Delegate_Imp13);
+			    return new System.Action<Managers.GamePlayState>(__Gen_Delegate_Imp14);
 			}
 		
 		    if (type == typeof(UnityEngine.Events.UnityAction<float>))
 			{
-			    return new UnityEngine.Events.UnityAction<float>(__Gen_Delegate_Imp14);
+			    return new UnityEngine.Events.UnityAction<float>(__Gen_Delegate_Imp15);
 			}
 		
 		    return null;

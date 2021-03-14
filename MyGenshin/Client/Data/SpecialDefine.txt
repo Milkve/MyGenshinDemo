@@ -4,13 +4,13 @@
     "Name": "金币",
     "Description": "大陆通用的金币",
     "Resource": "sprite/special/1.png",
-    "Rare": 4
+    "Rare": 2
   },
   "2": {
     "ID": 2,
     "Name": "冒险经验值",
     "Description": "冒险中获得的经验值",
     "Resource": "sprite/special/2.png",
-    "Rare": 4
+    "Rare": 2
   }
 }

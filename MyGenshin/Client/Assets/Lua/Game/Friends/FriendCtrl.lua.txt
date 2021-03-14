@@ -1,0 +1,135 @@
+require("Game.Friends.FriendView")
+require("Game.Friends.FriendGridAddView")
+require("Game.Friends.FriendInfoView")
+require("Game.Friends.FriendConst")
+require("Game.Friends.FriendGridView")
+FriendCtrl = {}
+
+function FriendCtrl:Init()
+    self:AddEvent()
+end
+
+function FriendCtrl:AddEvent()
+    local OnTargetInfo = function(message)
+        if message.Result == Result.Success then
+            self:ShowInfo(message.Info, "NotFriend")
+        else
+            local tip = UIDelayTipView:New(self.friend)
+            UIManager:Show(tip)
+            tip:SetData(message.Errormsg)
+        end
+    end
+    FriendMgr.Instance.OnTargetInfo:AddListener(OnTargetInfo)
+
+    local OnFriendUpdate = function()
+        self:FriendUpdate()
+    end
+
+    FriendMgr.Instance.OnFriendUpdate:AddListener(OnFriendUpdate)
+
+    local OnMessageUpdate = function()
+        self:MessageUpdate()
+    end
+
+    MessageMgr.Instance.OnMessageUpdate:AddListener(OnMessageUpdate)
+
+    local OnMessageUpdate = function()
+    end
+
+    local OnFriendMessageSend = function(msg)
+        if msg.Result == Result.Success then
+            UIManager:ShowDaleyTip("好友请求已发送")
+        else
+            UIManager:ShowDaleyTip(msg.Errormsg)
+        end
+    end
+    MessageMgr.Instance.OnFriendMessageSend:AddListener(OnFriendMessageSend)
+    local OnMessageReceive = function()
+        UIManager:ShowDaleyTip("收到新消息")
+    end
+    MessageMgr.Instance.OnMessageReceive:AddListener(OnMessageReceive)
+
+    local OnFriendAdd = function(msg)
+        UIManager:ShowDaleyTip(msg)
+    end
+    FriendMgr.Instance.OnFriendAddResponse:AddListener(OnFriendAdd)
+
+    local OnFriendRemove = function(msg)
+        if msg == Result.Success then
+            UIManager:ShowDaleyTip("好友删除成功")
+        else
+            UIManager:ShowDaleyTip("好友删除失败")
+        end
+    end
+    FriendMgr.Instance.OnFriendRemoveResponse:AddListener(OnFriendRemove)
+end
+
+function FriendCtrl:ShowFriends()
+    self.friend = FriendView:New()
+    UIManager:Show(self.friend)
+    self.friend.Toggle_List.isOn = false
+    self.friend.Toggle_List.isOn = true
+end
+
+function FriendCtrl:CloseFriends()
+    UIManager:Close(self.friend)
+end
+
+function FriendCtrl:FriendUpdate()
+    if self.friend == nil or self.friend.state ~= "Show" then
+        return
+    end
+    self.friend:FriendUpdate()
+end
+function FriendCtrl:MessageUpdate()
+    if self.friend == nil or self.friend.state ~= "Show" then
+        return
+    end
+    self.friend:MessageUpdate()
+end
+
+function FriendCtrl:ShowInfo(info, status)
+    self.friendInfo = FriendInfoView:New()
+    UIManager:Show(self.friendInfo)
+    self.friendInfo:SetData(info, status)
+end
+
+function FriendCtrl:AddFriend(id)
+    if id == User.Instance.CurrentID then
+        UIManager:ShowDaleyTip("这是你自己")
+        return
+    end
+    if FriendMgr.Instance:IsFriend(id) then
+        UIManager:ShowDaleyTip("已存在的好友")
+        return
+    end
+    FriendMgr.Instance:SendAddFriend(id)
+end
+
+function FriendCtrl:DeleteFriend(id)
+    if id == User.Instance.CurrentID then
+        UIManager:ShowDaleyTip("这是你自己")
+        return
+    end
+    if FriendMgr.Instance:IsFriend(id) ==false then
+        UIManager:ShowDaleyTip("不存在的好友")
+        return
+    end
+    FriendMgr.Instance:SendDeleteFriend(id)
+end
+function FriendCtrl:AcceptFriend(id)
+    MessageMgr.Instance:SendMessageReply(id, MessageReply.Accept,MessageType.Friend)
+end
+function FriendCtrl:RefuseFriend(id)
+    MessageMgr.Instance:SendMessageReply(id, MessageReply.Refuse,MessageType.Friend)
+end
+
+function FriendCtrl:Search(id)
+    if id == User.Instance.CurrentID then
+        UIManager:ShowDaleyTip("这是你自己")
+        return
+    end
+    MessageMgr.Instance:SendMessageTarget(MessageType.Friend, id)
+end
+
+return FriendCtrl

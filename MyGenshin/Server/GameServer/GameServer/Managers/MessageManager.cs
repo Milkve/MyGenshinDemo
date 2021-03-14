@@ -1,4 +1,5 @@
-﻿using Common.Utils;
+﻿using Common;
+using Common.Utils;
 using GameServer.Entities;
 using GameServer.Services;
 using Interface;
@@ -17,7 +18,7 @@ namespace GameServer.Managers
     {
         Character Owner;
         private bool Dirty;
-        Dictionary<int, NMessageInfo> AllMessages = new Dictionary<int, NMessageInfo>();
+        List<NMessageInfo> AllMessages = new List<NMessageInfo>();
         public MessageManager(Character character)
         {
 
@@ -30,16 +31,66 @@ namespace GameServer.Managers
         {
             AllMessages.Clear();
 
-            foreach (var Tmessage in Owner.Data.Messages.Where(x=>x.Status<2))
+            foreach (var Tmessage in Owner.Data.Messages.Where(x => x.Status < 2))
             {
-                AllMessages.Add(Tmessage.Id, GetMessageInfo(Tmessage));
+
+                AllMessages.Add(GetMessageInfo(Tmessage));
             }
+            UpdateGloBalMessage();
+            foreach (var TGlobalMessageStatus in Owner.Data.CharacterGlobalStatus.Where(x => x.Status < 2))
+            {
+                TGlobalMessage message = DBService.Instance.Entities.GlobalMessages.Where(x => x.Id == TGlobalMessageStatus.MessageID).FirstOrDefault();
+                AllMessages.Add(GetMessageInfo(message, TGlobalMessageStatus.Status));
+            }
+
+        }
+
+
+        public void UpdateGloBalMessage()
+        {
+            int count = DBService.Instance.Entities.GlobalMessages.Count();
+            while (Owner.Data.CGMsgID <count )
+            {
+                Owner.Data.CGMsgID += 1;
+                TCharacterGlobalStatus status = new TCharacterGlobalStatus()
+                {
+                    MessageID = Owner.Data.CGMsgID,
+                    Status = 0
+                };
+                Owner.Data.CharacterGlobalStatus.Add(status);
+            }
+            DBService.Instance.Save(false);
         }
         public void GetMessageInfos(List<NMessageInfo> messages)
         {
 
-            messages.AddRange(AllMessages.Select(x => x.Value));
+            messages.AddRange(AllMessages);
 
+        }
+
+        public static void AddGolbalTest()
+        {
+
+            NMessageInfo nMessageInfo = new NMessageInfo()
+            {
+                Title = "新手福利",
+                Message = "这是新手福利",
+                Exp = 200,
+                Gold = 10000,
+
+            };
+            nMessageInfo.Items.Add(new NItemInfo() { Id = 1, Count = 10 });
+            nMessageInfo.Items.Add(new NItemInfo() { Id = 2, Count = 10 });
+            TGlobalMessage tmessage = GetTGlobalMessage(nMessageInfo, 0);
+            DBService.Instance.Entities.GlobalMessages.Add(tmessage);
+            DBService.Instance.Save(false);
+
+            SessionManager.Instance.ForeachSession(session =>
+            {
+                session.Session.Character.messageManager.SetDirty();
+                MessageService.Instance.SendMessageReceive(session);
+            });
+            Log.Info("SendGlobalCompleted");
         }
 
         private NMessageInfo GetMessageInfo(TMessage tmessage)
@@ -49,15 +100,36 @@ namespace GameServer.Managers
                 Id = tmessage.Id,
                 Type = (MessageType)tmessage.Type,
                 Status = tmessage.Status,
-                Title = tmessage.Title,
-                Message = tmessage.Message,
-                Gold = tmessage.Gold,
-                Exp = tmessage.Exp,
+                Title = tmessage.Title ?? "",
+                Message = tmessage.Message ?? "",
+                Gold = tmessage.Gold ?? 0,
+                Exp = tmessage.Exp ?? 0,
+                Time = tmessage.Time
 
             };
             info.FromInfo = GetMessageCharInfo(tmessage.FromID);
-            GetBinary2Items(info.Items, tmessage.Items);
-            GetBinary2Equips(info.Equips, tmessage.Equips);
+            GetBinary2Items(info.Items, tmessage.Items ?? new byte[0]);
+            GetBinary2Equips(info.Equips, tmessage.Equips ?? new byte[0]);
+
+            return info;
+        }
+        private NMessageInfo GetMessageInfo(TGlobalMessage tmessage, int Status)
+        {
+            NMessageInfo info = new NMessageInfo()
+            {
+                Id = tmessage.Id,
+                Type = MessageType.Global,
+                Status = Status,
+                Title = tmessage.Title ?? "",
+                Message = tmessage.Message ?? "",
+                Gold = tmessage.Gold ?? 0,
+                Exp = tmessage.Exp ?? 0,
+                Time = tmessage.Time
+
+            };
+            info.FromInfo = GetMessageCharInfo(tmessage.FromID, MessageType.Global);
+            GetBinary2Items(info.Items, tmessage.Items ?? new byte[0]);
+            GetBinary2Equips(info.Equips, tmessage.Equips ?? new byte[0]);
 
             return info;
         }
@@ -89,44 +161,12 @@ namespace GameServer.Managers
             for (int i = 0; i < bitems.Length / 2 / sizeof(int); i++)
             {
                 var kvp = PointerUtil.ReadKIntVInt(bitems, i);
-                items.Add(new NItemInfo() { Id = kvp.Key, Count = kvp.Value });
-            }
-        }
-
-        internal Result OnMessageAccept(NetConnection<NetSession> sender, MessageAcceptRequest message)
-        {
-            NMessageInfo nMessageInfo;
-            if (AllMessages.TryGetValue(message.Id, out nMessageInfo))
-            {
-                if (nMessageInfo.Type == MessageType.Friend)
+                if (kvp.Key != 0 && kvp.Value != 0)
                 {
-                    if (Result.Success == FriendManager.AddFriend(sender, Owner.Id, nMessageInfo.FromInfo.Id))
-                    {
-                        SetMessageState(message.Id, 2);
-                        return Result.Success;
-                    }
-                    return Result.Failed;
-                }
-                else if (nMessageInfo.Type == MessageType.Mail)
-                {
-                    //TODO:邮件接受
-                }
-                else if (nMessageInfo.Type == MessageType.Global)
-                {
-
+                    items.Add(new NItemInfo() { Id = kvp.Key, Count = kvp.Value });
                 }
 
             }
-
-
-            sender.Session.Response.messageAcceptResponse.Errormsg = "找不到消息";
-            return Result.Failed;
-        }
-
-        private void SetMessageState(int id, int v)
-        {
-            var tmes = Owner.Data.Messages.Where(x => x.Id == id).FirstOrDefault();
-            tmes.Status = v;
         }
 
         private static void GetItems2Binary(List<NItemInfo> items, byte[] bitems)
@@ -136,30 +176,72 @@ namespace GameServer.Managers
                 PointerUtil.WriteKIntVInt(bitems, i, items[i].Id, items[i].Count);
             }
         }
-
-        public static NMessageCharInfo GetMessageCharInfo(int charid)
+        public bool HasManager(int Id, out NMessageInfo nMessageInfo, MessageType type)
         {
-            //如果在线
-            Character character; ;
-            if (CharacterManager.Instance.GetCharacter(charid, out character))
-            {
-                return new NMessageCharInfo()
-                {
-                    Id = character.Id,
-                    Class = character.Data.Class,
-                    Level = character.Data.Level,
-                    Name = character.Data.Name
-                };
 
-            }
-            var tchar = DBService.Instance.Entities.Characters.Where(x => x.ID == charid).FirstOrDefault();
-            if (tchar != null) return new NMessageCharInfo()
+            nMessageInfo = AllMessages.Where(x => x.Id == Id && x.Type == type).FirstOrDefault();
+
+            if (nMessageInfo == null)
             {
-                Id = tchar.ID,
-                Class = tchar.Class,
-                Level = tchar.Level,
-                Name = tchar.Name
-            };
+                return false;
+            }
+            return true;
+        }
+
+
+        public void SetMessageState(int id, MessageType type, int status)
+        {
+            if (type == MessageType.Global)
+            {
+                Owner.Data.CharacterGlobalStatus.Where(x => x.MessageID == id).FirstOrDefault().Status = status;
+            }
+            else
+            {
+                Owner.Data.Messages.Where(x => x.Id == id).FirstOrDefault().Status = status;
+            }
+
+            SetDirty();
+        }
+
+
+
+        public static NMessageCharInfo GetMessageCharInfo(int charid, MessageType type = MessageType.Friend)
+        {
+            if (type == MessageType.Friend || type == MessageType.Mail)
+            {
+                Character character; ;
+                if (CharacterManager.Instance.GetCharacter(charid, out character))
+                {
+                    return new NMessageCharInfo()
+                    {
+                        Id = character.Id,
+                        Class = character.Data.Class,
+                        Level = character.Data.Level,
+                        Name = character.Data.Name
+                    };
+
+                }
+                var tchar = DBService.Instance.Entities.Characters.Where(x => x.ID == charid).FirstOrDefault();
+                if (tchar != null) return new NMessageCharInfo()
+                {
+                    Id = tchar.ID,
+                    Class = tchar.Class,
+                    Level = tchar.Level,
+                    Name = tchar.Name
+                };
+            }
+            else
+            {
+                if (charid == 0)
+                {
+                    return new NMessageCharInfo()
+                    {
+                        Id = 0,
+                        Name = "系统管理员"
+                    };
+                }
+            }
+
             return default;
         }
 
@@ -181,6 +263,17 @@ namespace GameServer.Managers
                         sender.Session.Response.messageSendResponse.Errormsg = "已经是好友";
                         return Result.Failed;
                     }
+                    if (IsExsistFriendApply(message.ToId, sender.Session.Character.Id))
+                    {
+                        sender.Session.Response.messageSendResponse.Errormsg = "已经在申请列表了";
+                        return Result.Failed;
+                    }
+                    if (Owner.Id == message.ToId)
+                    {
+                        sender.Session.Response.messageSendResponse.Errormsg = "不能添加自己";
+                        return Result.Failed;
+                    }
+
                     tmessage = GetTMessage(Owner.Id, message.ToId);
                     break;
 
@@ -192,22 +285,44 @@ namespace GameServer.Managers
             }
 
             tmessage.Status = 0;
-            DBService.Instance.Entities.Messages.Add(tmessage);
+            DBService.Instance.Entities.Characters.Where(x => x.ID == message.ToId).FirstOrDefault().Messages.Add(tmessage);
+            DBService.Instance.Save(false);
+            Log.Info($"tmessage{tmessage.Id}");
             //如果目标在线
-            Character target;
-            if (CharacterManager.Instance.GetCharacter(message.ToId, out target))
+
+            NetConnection<NetSession> session;
+            if (SessionManager.Instance.GetSession(message.ToId, out session))
             {
-                target.messageManager.SetDirty();
+
+                session.Session.Character.messageManager.SetDirty();
+                MessageService.Instance.SendMessageReceive(session);
             }
+
+
+
 
             return Result.Success;
         }
+
+        private static bool IsExsistFriendApply(int toId, int id)
+        {
+            Log.Info($"IsExsist to{toId} from{id}");
+            NetConnection<NetSession> session;
+            if (SessionManager.Instance.GetSession(toId, out session))
+            {
+                return session.Session.Character.messageManager.AllMessages
+                    .Where(x => x.FromInfo.Id == id).Count() != 0;
+            }
+            return DBService.Instance.Entities.Messages
+                .Where(x => x.FromID == id && x.Type == (int)MessageType.Friend && x.TCharacterID == toId).Count() != 0;
+
+        }
+
 
         private static TMessage GetTMessage(NMessageInfo messageInfo, int id, int toId)
         {
             TMessage tmessage = new TMessage()
             {
-                Id = messageInfo.Id,
                 Type = (int)messageInfo.Type,
                 Title = messageInfo.Title,
                 Message = messageInfo.Message,
@@ -220,6 +335,24 @@ namespace GameServer.Managers
             GetEquips2Binary(messageInfo.Equips, tmessage.Equips);
             tmessage.FromID = id;
             tmessage.TCharacterID = toId;
+            tmessage.Time = Time.GetTimeStamp();
+            return tmessage;
+        }
+        private static TGlobalMessage GetTGlobalMessage(NMessageInfo messageInfo, int id)
+        {
+            TGlobalMessage tmessage = new TGlobalMessage()
+            {
+                Title = messageInfo.Title,
+                Message = messageInfo.Message,
+                Gold = messageInfo.Gold,
+                Exp = messageInfo.Exp,
+            };
+            tmessage.Items = new byte[sizeof(int) * 20];
+            GetItems2Binary(messageInfo.Items, tmessage.Items);
+            tmessage.Equips = new byte[sizeof(int) * 10];
+            GetEquips2Binary(messageInfo.Equips, tmessage.Equips);
+            tmessage.FromID = id;
+            tmessage.Time = Time.GetTimeStamp();
             return tmessage;
         }
         private static TMessage GetTMessage(int id, int toId)
@@ -227,7 +360,7 @@ namespace GameServer.Managers
             TMessage tmessage = new TMessage();
             tmessage.Type = (int)MessageType.Friend;
             tmessage.FromID = id;
-            tmessage.TCharacterID = toId;
+            //tmessage.TCharacterID = toId;
             return tmessage;
         }
 
@@ -243,7 +376,7 @@ namespace GameServer.Managers
                 {
                     MessageInit();
                     message.Response.messageListResponse = new MessageListResponse();
-                    message.Response.messageListResponse.Messages.AddRange(AllMessages.Select(x => x.Value));
+                    message.Response.messageListResponse.Messages.AddRange(AllMessages);
                     Dirty = false;
                 }
             }

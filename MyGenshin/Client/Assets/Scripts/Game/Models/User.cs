@@ -28,6 +28,7 @@ namespace Models
         public GameObject CurrentCharacterObject { get; set; }
 
 
+        public int CurrentID { get => CurrentCharacter.Id; }
         public int CharacterLv { get => CurrentCharacter.Level; set => CurrentCharacter.Level = value; }
         public void Reset()
         {

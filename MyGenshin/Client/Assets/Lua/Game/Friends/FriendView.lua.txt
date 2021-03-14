@@ -1,0 +1,123 @@
+FriendView = BaseClass(UINode)
+FriendView.Singleton = true
+
+function FriendView:Construtor()
+    self.viewCfg.prefabName = "UIQuest"
+    self.viewCfg.prefabPath = "ui/friend/UIFriend.prefab"
+    self.viewCfg.canvasName = "Normal"
+    self.viewCfg.isEnterUIState = true
+    -- self.viewCfg.isDestroyOnClose = true
+    self.viewCfg.component = {
+        {UI.Fade, {alpha = 1, durtion = 0.5, delay = 0}},
+        {UI.HideAll, {}}
+    }
+    self.friends = {}
+    self.friendAdds = {}
+end
+
+function FriendView:AddEvent()
+    local OnClick = function(btn)
+        if btn == self.Button_Close then
+            FriendCtrl:CloseFriends()
+        elseif btn == self.Button_Search then
+            FriendCtrl:Search(tonumber(self.InputField_ID.text))
+        end
+    end
+    self:AddClickEvent(self.Button_Close, OnClick)
+    self:AddClickEvent(self.Button_Search, OnClick)
+
+    local OnValueChange = function(toggle, value)
+        if value then
+            self.currentToggle=toggle
+            self:SwitchToggle()
+        end
+    end
+    self.Toggle_List.onValueChanged:AddListener(
+        function(value)
+            OnValueChange(self.Toggle_List, value)
+        end
+    )
+    self.Toggle_Add.onValueChanged:AddListener(
+        function(value)
+            OnValueChange(self.Toggle_Add, value)
+        end
+    )
+end
+
+function FriendView:SwitchToggle()
+    if self.currentToggle == self.Toggle_List then
+        self.Transform_List.gameObject:SetActive(true)
+        self.Transform_AddFriend.gameObject:SetActive(false)
+        self:GenFriends()
+    elseif self.currentToggle == self.Toggle_Add then
+        self.Transform_List.gameObject:SetActive(false)
+        self.Transform_AddFriend.gameObject:SetActive(true)
+        self:GenFriendAdds()
+    end
+end
+
+function FriendView:Clear()
+    if self.gen ~= nil then
+        Cor.stop(self.gen)
+    end
+    for i, v in pairs(self.friends) do
+        UIManager:Close(v)
+    end
+    self.friends = {}
+    for i, v in pairs(self.friendAdds) do
+        UIManager:Close(v)
+    end
+    self.friendAdds = {}
+end
+
+function FriendView:FriendUpdate()
+    if self.currentToggle == self.Toggle_List then
+        self:GenFriends()
+    end
+end
+
+function FriendView:MessageUpdate()
+    if self.currentToggle == self.Toggle_Add then
+        self:GenFriendAdds()
+    end
+end
+
+function FriendView:GenFriends()
+    self:Clear()
+
+    local gen = function()
+        local flag = true
+        local friends = FriendMgr.Instance:GetFriends()
+        if friends.Count == 0 then
+            self.Transform_NoItem.gameObject:SetActive(true)
+        else
+            self.Transform_NoItem.gameObject:SetActive(false)
+            for i, v in pairs(friends) do        
+                local grid = FriendGridView:New(self, self.Transform_Content)
+                table.insert(self.friends, grid)
+                UIManager:Show(grid)
+                grid:SetData(v)
+                coroutine.yield(WaitForSeconds(0.1))
+            end
+        end
+    end
+    self.gen = Cor.start(gen)
+end
+
+function FriendView:GenFriendAdds()
+    self:Clear()
+
+    local gen = function()
+        local flag = true
+        for i, v in pairs(MessageMgr.Instance:GetFriendMessage()) do
+            
+
+            local grid = FriendGridAddView:New(self, self.Transform_ContentAdd)
+            table.insert(self.friendAdds, grid)
+            UIManager:Show(grid)
+            grid:SetData(v)
+            coroutine.yield(WaitForSeconds(0.1))
+        end
+    end
+    self.gen = Cor.start(gen)
+end

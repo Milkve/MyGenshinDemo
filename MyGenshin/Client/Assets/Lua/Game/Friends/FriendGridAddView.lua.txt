@@ -1,0 +1,31 @@
+FriendGridAddView = BaseClass(UINode)
+
+function FriendGridAddView:Construtor(parent,transform)
+    self.viewCfg.prefabName = "UIQuest"
+    self.viewCfg.prefabPath = "ui/friend/UIFriendGridAdd.prefab"
+    self.viewCfg.parent=parent
+    self.viewCfg.parentTransform=transform
+    self.viewCfg.isDestroyOnClose=true
+    self.viewCfg.component = {
+        -- {UI.Fade, {alpha = 1,durtion = 0.5, delay = 0,isHide =false}},
+    }
+end
+
+function FriendGridAddView:AddEvent()
+    local OnClick=function (btn)
+        if btn==self.Button_Accept then
+            FriendCtrl:AcceptFriend(self.Info.Id)
+        elseif btn==self.Button_Refuse then
+            FriendCtrl:RefuseFriend(self.Info.Id)
+        end
+    end
+    self:AddClickEvent(self.Button_Accept,OnClick)
+    self:AddClickEvent(self.Button_Refuse,OnClick)
+end
+
+
+function  FriendGridAddView:SetData(info)
+    self.Info=info
+    self.Text_Name.text=info.FromInfo.Name
+    self.Text_Level.text='Lv.'..info.FromInfo.Level
+end

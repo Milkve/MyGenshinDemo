@@ -53,6 +53,8 @@ public class GameStart : MonoSingleton<GameStart>
         MapService.Instance.Init();
         StatusService.Instance.Init();
         QuestService.Instance.Init();
+        MessageService.Instance.Init();
+        FriendService.Instance.Init();
         JumpToState(State.GameTips);
         //JumpToState(State.Playing);
     }

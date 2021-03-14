@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 03/08/2021 15:47:55
+-- Date Created: 03/14/2021 20:51:48
 -- Generated from EDMX file: E:\MMMMMMM\MyGenshinDemo\MyGenshin\Server\GameServer\GameServer\Entities.edmx
 -- --------------------------------------------------
 
@@ -41,6 +41,9 @@ GO
 IF OBJECT_ID(N'[dbo].[FK_TCharacterTMessage]', 'F') IS NOT NULL
     ALTER TABLE [dbo].[Messages] DROP CONSTRAINT [FK_TCharacterTMessage];
 GO
+IF OBJECT_ID(N'[dbo].[FK_TCharacterTCharacterGlobalStatus]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[CharacterGlobalStatus] DROP CONSTRAINT [FK_TCharacterTCharacterGlobalStatus];
+GO
 
 -- --------------------------------------------------
 -- Dropping existing tables
@@ -72,6 +75,12 @@ IF OBJECT_ID(N'[dbo].[Friends]', 'U') IS NOT NULL
 GO
 IF OBJECT_ID(N'[dbo].[Messages]', 'U') IS NOT NULL
     DROP TABLE [dbo].[Messages];
+GO
+IF OBJECT_ID(N'[dbo].[GlobalMessages]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[GlobalMessages];
+GO
+IF OBJECT_ID(N'[dbo].[CharacterGlobalStatus]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[CharacterGlobalStatus];
 GO
 
 -- --------------------------------------------------
@@ -109,6 +118,7 @@ CREATE TABLE [dbo].[Characters] (
     [Equiped] varbinary(max)  NOT NULL,
     [Level] int  NOT NULL,
     [Exp] bigint  NOT NULL,
+    [CGMsgID] int  NOT NULL,
     [Player_ID] int  NOT NULL
 );
 GO
@@ -161,7 +171,8 @@ CREATE TABLE [dbo].[Friends] (
     [FriendName] nvarchar(max)  NOT NULL,
     [FriendClass] int  NOT NULL,
     [FriendLevel] int  NOT NULL,
-    [TCharacterID] int  NOT NULL
+    [TCharacterID] int  NOT NULL,
+    [IsDelete] bit  NOT NULL
 );
 GO
 
@@ -172,13 +183,36 @@ CREATE TABLE [dbo].[Messages] (
     [TCharacterID] int  NOT NULL,
     [FromID] int  NOT NULL,
     [Status] int  NOT NULL,
-    [Title] nvarchar(max)  NOT NULL,
-    [Message] nvarchar(max)  NOT NULL,
-    [Items] varbinary(max)  NOT NULL,
-    [Equips] varbinary(max)  NOT NULL,
-    [Gold] int  NOT NULL,
-    [Exp] int  NOT NULL,
-    [Time] datetime  NOT NULL
+    [Title] nvarchar(max)  NULL,
+    [Message] nvarchar(max)  NULL,
+    [Items] varbinary(max)  NULL,
+    [Equips] varbinary(max)  NULL,
+    [Gold] int  NULL,
+    [Exp] int  NULL,
+    [Time] bigint  NOT NULL
+);
+GO
+
+-- Creating table 'GlobalMessages'
+CREATE TABLE [dbo].[GlobalMessages] (
+    [Id] int IDENTITY(1,1) NOT NULL,
+    [Title] nvarchar(max)  NULL,
+    [Message] nvarchar(max)  NULL,
+    [Items] varbinary(max)  NULL,
+    [Equips] varbinary(max)  NULL,
+    [Gold] int  NULL,
+    [Exp] int  NULL,
+    [FromID] int  NOT NULL,
+    [Time] bigint  NOT NULL
+);
+GO
+
+-- Creating table 'CharacterGlobalStatus'
+CREATE TABLE [dbo].[CharacterGlobalStatus] (
+    [Id] int IDENTITY(1,1) NOT NULL,
+    [TCharacterID] int  NOT NULL,
+    [MessageID] int  NOT NULL,
+    [Status] int  NOT NULL
 );
 GO
 
@@ -237,6 +271,18 @@ GO
 -- Creating primary key on [Id] in table 'Messages'
 ALTER TABLE [dbo].[Messages]
 ADD CONSTRAINT [PK_Messages]
+    PRIMARY KEY CLUSTERED ([Id] ASC);
+GO
+
+-- Creating primary key on [Id] in table 'GlobalMessages'
+ALTER TABLE [dbo].[GlobalMessages]
+ADD CONSTRAINT [PK_GlobalMessages]
+    PRIMARY KEY CLUSTERED ([Id] ASC);
+GO
+
+-- Creating primary key on [Id] in table 'CharacterGlobalStatus'
+ALTER TABLE [dbo].[CharacterGlobalStatus]
+ADD CONSTRAINT [PK_CharacterGlobalStatus]
     PRIMARY KEY CLUSTERED ([Id] ASC);
 GO
 
@@ -361,6 +407,21 @@ GO
 -- Creating non-clustered index for FOREIGN KEY 'FK_TCharacterTMessage'
 CREATE INDEX [IX_FK_TCharacterTMessage]
 ON [dbo].[Messages]
+    ([TCharacterID]);
+GO
+
+-- Creating foreign key on [TCharacterID] in table 'CharacterGlobalStatus'
+ALTER TABLE [dbo].[CharacterGlobalStatus]
+ADD CONSTRAINT [FK_TCharacterTCharacterGlobalStatus]
+    FOREIGN KEY ([TCharacterID])
+    REFERENCES [dbo].[Characters]
+        ([ID])
+    ON DELETE NO ACTION ON UPDATE NO ACTION;
+GO
+
+-- Creating non-clustered index for FOREIGN KEY 'FK_TCharacterTCharacterGlobalStatus'
+CREATE INDEX [IX_FK_TCharacterTCharacterGlobalStatus]
+ON [dbo].[CharacterGlobalStatus]
     ([TCharacterID]);
 GO
 

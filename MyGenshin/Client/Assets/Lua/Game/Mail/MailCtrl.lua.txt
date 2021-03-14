@@ -1,0 +1,58 @@
+require('Game.Mail.MailView')
+require('Game.Mail.MailGridView')
+
+
+MailCtrl={}
+
+
+function MailCtrl:Init()
+
+    self:AddEvent()
+
+end
+
+function MailCtrl:AddEvent()
+    local OnMessageUpdate = function()
+        self:MessageUpdate()
+    end
+
+    MessageMgr.Instance.OnMessageUpdate:AddListener(OnMessageUpdate)
+end
+function MailCtrl:MessageUpdate()
+    if self.mail == nil or self.mail.state ~= "Show" then
+        return
+    end
+    self.mail:MessageUpdate()
+end
+
+function MailCtrl:SetCurrentMail(mail)
+    self.mail:SetCurrentMail(mail)
+    
+end
+
+function MailCtrl:ShowMail()
+    self.mail=MailView:New()
+    UIManager:Show(self.mail)
+    self.mail:GenMessages()
+
+end
+
+
+
+function MailCtrl:Confirm(mail)
+
+    if mail.Status==0 then
+        MessageMgr.Instance:SendMessageReply(mail.Id,MessageReply.Accept,mail.Type)
+    elseif mail.Status==1 then
+        MessageMgr.Instance:SendMessageReply(mail.Id,MessageReply.Delete,mail.Type)
+    end
+
+end
+
+function MailCtrl:CloseMail()
+
+    UIManager:Close(self.mail)
+end
+
+
+return MailCtrl

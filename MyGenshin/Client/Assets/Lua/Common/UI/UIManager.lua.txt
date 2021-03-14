@@ -13,6 +13,12 @@ function UIManager:Init()
     end
 end
 
+function UIManager:ShowDaleyTip(text)
+    local tip = UIDelayTipView:New()
+    self:Show(tip)
+    tip:SetData(text)
+end
+
 function UIManager:AddToCanvas(node, canvas_names)
     if canvas_names and self.canvas[canvas_names] then
         node.transform:SetParent(self.canvas[canvas_names], false)

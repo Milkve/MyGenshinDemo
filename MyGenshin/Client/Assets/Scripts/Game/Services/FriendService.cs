@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Network;
 using SkillBridge.Message;
 using UnityEngine;
+using Managers;
 
 namespace Services
 {
@@ -58,6 +59,21 @@ namespace Services
             NetClient.Instance.SendMessage(message);
         }
 
+        internal void SendFriendDeleteRequest(int friendId)
+        {
+            NetMessage message = new NetMessage()
+            {
+                Request = new NetMessageRequest()
+                {
+                    friendRemove = new FriendRemoveRequest()
+                    {
+                        friendId = friendId
+                    }
+                }
+            };
+            NetClient.Instance.SendMessage(message);
+        }
+
 
 
 
@@ -99,17 +115,22 @@ namespace Services
 
         private void OnFriendList(object sender, FriendListResponse message)
         {
-
+            //Debug.Log($"OnFriendList Update");
+            if (message.Result == Result.Success)
+            {
+                FriendManager.Instance.FriendInit(message.Friends);
+            }
+            
         }
 
         private void OnFriendRemove(object sender, FriendRemoveResponse message)
         {
-
+            FriendManager.Instance.FriendRemove(message.Result);
         }
 
         private void OnFriendAddResponse(object sender, FriendAddResponse message)
         {
-            Debug.Log(message.Errormsg);
+            FriendManager.Instance.OnFriendAdd(message);
         }
 
         //private void OnFriendAddRequest(object sender, FriendAddRequest message)

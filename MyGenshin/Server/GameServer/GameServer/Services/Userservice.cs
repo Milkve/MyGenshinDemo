@@ -131,7 +131,8 @@ namespace GameServer.Services
                     MapDirection = 9000,
                     Equiped = new byte[sizeof(int) * 10],
                     Gold = 10000,
-                    Level = 1
+                    Level = 1,
+                    CGMsgID = 0
                 };
                 character = DBService.Instance.Entities.Characters.Add(character);
                 sender.Session.TUser.Player.Characters.Add(character);
@@ -164,7 +165,6 @@ namespace GameServer.Services
         private void OnGameEnter(NetConnection<NetSession> sender, UserGameEnterRequest request)
         {
             TCharacter tchr = sender.Session.TUser.Player.Characters.ElementAt(request.characterIdx);
-            Log.InfoFormat("OnGameEnter TCharacterId: {0}", tchr.ID);
             Character character = CharacterManager.Instance.AddCharacter(tchr);
 
             // character.itemManager.AddItem(1, 1);
@@ -177,7 +177,7 @@ namespace GameServer.Services
             };
             SessionManager.Instance.AddSession(character.Id, sender);
             sender.SendResponse();
-            Log.InfoFormat("OnGameEnter CharacterId: {0}", character.Id);
+            Log.Info($"OnGameEnter Id: {character.Id} EntityId:{character.Info.EntityId}");
             MapManager.Instance[tchr.MapID].CharacterEnter(sender, character);
             sender.Session.Character = character;
             sender.Session.postProcesser = character;

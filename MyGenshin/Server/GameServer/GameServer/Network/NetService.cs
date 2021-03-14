@@ -82,7 +82,7 @@ namespace Network
         /// <param name="e"></param>
         static void DataReceived(NetConnection<NetSession> sender, DataEventArgs e)
         {
-            Log.WarningFormat("Client[{0}] DataReceived Len:{1}", e.RemoteEndPoint, e.Length);
+            //Log.WarningFormat("Client[{0}] DataReceived Len:{1}", e.RemoteEndPoint, e.Length);
             //由包处理器处理封包
             lock (sender.packageHandler)
             {

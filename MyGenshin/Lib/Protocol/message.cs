@@ -300,10 +300,7 @@ namespace SkillBridge.Message
         public MessageSendRequest messageSendRequest { get; set; }
 
         [global::ProtoBuf.ProtoMember(17)]
-        public MessageAcceptRequest messageAcceptRequest { get; set; }
-
-        [global::ProtoBuf.ProtoMember(18)]
-        public MessageDeleteRequest messageDeleteRequest { get; set; }
+        public MessageReplyRequest messageReplyRequest { get; set; }
 
         [global::ProtoBuf.ProtoMember(19)]
         public MessageListRequest messageListRequest { get; set; }
@@ -375,10 +372,10 @@ namespace SkillBridge.Message
         public MessageSendResponse messageSendResponse { get; set; }
 
         [global::ProtoBuf.ProtoMember(17)]
-        public MessageAcceptResponse messageAcceptResponse { get; set; }
+        public MessageReplyResponse messageReplyResponse { get; set; }
 
         [global::ProtoBuf.ProtoMember(18)]
-        public MessageDeleteResponse messageDeleteResponse { get; set; }
+        public MessageReceive messageReceive { get; set; }
 
         [global::ProtoBuf.ProtoMember(19)]
         public MessageListResponse messageListResponse { get; set; }
@@ -394,6 +391,18 @@ namespace SkillBridge.Message
 
         [global::ProtoBuf.ProtoMember(23)]
         public FriendAddResponse friendAdd { get; set; }
+
+        [global::ProtoBuf.ProtoMember(24, Name = @"update")]
+        public StatusUpdate Update { get; set; }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class StatusUpdate : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
 
     }
 
@@ -961,6 +970,9 @@ namespace SkillBridge.Message
         [global::ProtoBuf.ProtoMember(10, Name = @"exp")]
         public int Exp { get; set; }
 
+        [global::ProtoBuf.ProtoMember(11, Name = @"time")]
+        public long Time { get; set; }
+
     }
 
     [global::ProtoBuf.ProtoContract()]
@@ -1022,19 +1034,16 @@ namespace SkillBridge.Message
     }
 
     [global::ProtoBuf.ProtoContract()]
-    public partial class MessageAcceptRequest : global::ProtoBuf.IExtensible
+    public partial class MessageReceive : global::ProtoBuf.IExtensible
     {
         private global::ProtoBuf.IExtension __pbn__extensionData;
         global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
             => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
-
-        [global::ProtoBuf.ProtoMember(1, Name = @"id")]
-        public int Id { get; set; }
 
     }
 
     [global::ProtoBuf.ProtoContract()]
-    public partial class MessageAcceptResponse : global::ProtoBuf.IExtensible
+    public partial class MessageReplyRequest : global::ProtoBuf.IExtensible
     {
         private global::ProtoBuf.IExtension __pbn__extensionData;
         global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
@@ -1042,6 +1051,21 @@ namespace SkillBridge.Message
 
         [global::ProtoBuf.ProtoMember(1, Name = @"id")]
         public int Id { get; set; }
+
+        [global::ProtoBuf.ProtoMember(2, Name = @"reply")]
+        public MessageReply Reply { get; set; }
+
+        [global::ProtoBuf.ProtoMember(3, Name = @"type")]
+        public MessageType Type { get; set; }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class MessageReplyResponse : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
 
         [global::ProtoBuf.ProtoMember(2, Name = @"result")]
         public Result Result { get; set; }
@@ -1049,43 +1073,6 @@ namespace SkillBridge.Message
         [global::ProtoBuf.ProtoMember(3, Name = @"errormsg")]
         [global::System.ComponentModel.DefaultValue("")]
         public string Errormsg { get; set; } = "";
-
-        [global::ProtoBuf.ProtoMember(4, Name = @"type")]
-        public MessageType Type { get; set; }
-
-    }
-
-    [global::ProtoBuf.ProtoContract()]
-    public partial class MessageDeleteRequest : global::ProtoBuf.IExtensible
-    {
-        private global::ProtoBuf.IExtension __pbn__extensionData;
-        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
-            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
-
-        [global::ProtoBuf.ProtoMember(1, Name = @"id")]
-        public int Id { get; set; }
-
-        [global::ProtoBuf.ProtoMember(2, Name = @"type")]
-        public MessageType Type { get; set; }
-
-    }
-
-    [global::ProtoBuf.ProtoContract()]
-    public partial class MessageDeleteResponse : global::ProtoBuf.IExtensible
-    {
-        private global::ProtoBuf.IExtension __pbn__extensionData;
-        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
-            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
-
-        [global::ProtoBuf.ProtoMember(1, Name = @"result")]
-        public Result Result { get; set; }
-
-        [global::ProtoBuf.ProtoMember(2, Name = @"errormsg")]
-        [global::System.ComponentModel.DefaultValue("")]
-        public string Errormsg { get; set; } = "";
-
-        [global::ProtoBuf.ProtoMember(3, Name = @"type")]
-        public MessageType Type { get; set; }
 
     }
 
@@ -1103,6 +1090,9 @@ namespace SkillBridge.Message
         [global::System.ComponentModel.DefaultValue("")]
         public string Name { get; set; } = "";
 
+        [global::ProtoBuf.ProtoMember(3, Name = @"type")]
+        public MessageType Type { get; set; }
+
     }
 
     [global::ProtoBuf.ProtoContract()]
@@ -1119,7 +1109,10 @@ namespace SkillBridge.Message
         [global::System.ComponentModel.DefaultValue("")]
         public string Errormsg { get; set; } = "";
 
-        [global::ProtoBuf.ProtoMember(3, Name = @"info")]
+        [global::ProtoBuf.ProtoMember(3, Name = @"type")]
+        public MessageType Type { get; set; }
+
+        [global::ProtoBuf.ProtoMember(4, Name = @"info")]
         public NMessageCharInfo Info { get; set; }
 
     }
@@ -1214,6 +1207,15 @@ namespace SkillBridge.Message
 
         [global::ProtoBuf.ProtoMember(3)]
         public int friendId { get; set; }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class TeamInviteRequest : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
 
     }
 
@@ -1343,6 +1345,14 @@ namespace SkillBridge.Message
         Friend = 1,
         Mail = 2,
         Global = 3,
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public enum MessageReply
+    {
+        Refuse = 0,
+        Accept = 1,
+        Delete = 2,
     }
 
 }

@@ -14,12 +14,19 @@ namespace GameServer
     
     public partial class TFriend
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public TFriend()
+        {
+            this.IsDelete = false;
+        }
+    
         public int Id { get; set; }
         public int FriendID { get; set; }
         public string FriendName { get; set; }
         public int FriendClass { get; set; }
         public int FriendLevel { get; set; }
         public int TCharacterID { get; set; }
+        public bool IsDelete { get; set; }
     
         public virtual TCharacter Character { get; set; }
     }

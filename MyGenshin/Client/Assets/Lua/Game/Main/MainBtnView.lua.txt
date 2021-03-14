@@ -21,7 +21,9 @@ function MainBtnView:AddEvent()
         elseif self.Button_Bag == btn then
             BagCtrl:ShowBag()
         elseif self.Button_Friends == btn then
-            FriendsCtrl:ShowFriends()
+            FriendCtrl:ShowFriends()
+        elseif self.Button_Mail == btn then
+            MailCtrl:ShowMail()
         elseif self.Button_Eye == btn then
 
 
@@ -33,4 +35,5 @@ function MainBtnView:AddEvent()
     self:AddClickEvent(self.Button_Bag,OnClick)
     self:AddClickEvent(self.Button_Eye,OnClick)
     self:AddClickEvent(self.Button_Friends,OnClick)
+    self:AddClickEvent(self.Button_Mail,OnClick)
 end

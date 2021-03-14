@@ -1,0 +1,39 @@
+FriendGridView = BaseClass(UINode)
+
+function FriendGridView:Construtor(parent,transform)
+    self.viewCfg.prefabName = "UIQuest"
+    self.viewCfg.prefabPath = "ui/friend/UIFriendGrid.prefab"
+    self.viewCfg.parent=parent
+    self.viewCfg.parentTransform=transform
+    self.viewCfg.isDestroyOnClose=true
+    self.viewCfg.component = {
+        -- {UI.Fade, {alpha = 1, durtion = 0.5, delay = 0,isHide =false}},
+    }
+end
+
+function FriendGridView:AddEvent()
+    local OnClick=function (btn)
+        if(btn==self.Button_Detial)then
+            FriendCtrl:ShowInfo(self.info.friendInfo,"Friend")
+        end
+    end
+
+    self:AddClickEvent(self.Button_Detial,OnClick)
+end
+
+
+
+function  FriendGridView:SetData(info)
+    self.info=info
+    self.Text_Name.text=info.friendInfo.Name
+    self.Text_Level.text='Lv.'..info.friendInfo.Level
+    if info.Status==0 then
+        self.Text_Online.text='离线'
+        self.Text_Online.color=FriendConst.Color.Offline
+        self.Image_Online.color=FriendConst.Color.Offline
+    elseif info.Status==1 then
+        self.Text_Online.text='在线'
+        self.Text_Online.color=FriendConst.Color.Online
+        self.Image_Online.color=FriendConst.Color.Online
+    end
+end

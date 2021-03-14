@@ -1,0 +1,52 @@
+FriendInfoView = BaseClass(UINode)
+
+function FriendInfoView:Construtor()
+    self.viewCfg.prefabName = "UIQuest"
+    self.viewCfg.prefabPath = "ui/friend/UIFriendInfo.prefab"
+    self.viewCfg.canvasName = "Normal"
+    self.viewCfg.component = {
+        {UI.Mask, {isCloseOnClick = true}} --蒙版
+    }
+end
+
+function FriendInfoView:AddEvent()
+    local OnClick=function (btn)
+        if(btn==self.Button_Close)then
+            UIManager:Close(self)
+        elseif  btn==self.Button_AddFriend then
+            FriendCtrl:AddFriend(self.Info.Id)
+        elseif  btn==self.Button_DeleteFriend then
+            FriendCtrl:DeleteFriend(self.Info.Id)
+        elseif btn==self.Button_Accept then
+            FriendCtrl:AccpetFriend(self.Info.Id)
+        elseif btn==self.Button_Refuse then
+            FriendCtrl:RefuseFriend(self.Info.Id)
+        end
+    end
+
+    self:AddClickEvent(self.Button_Close,OnClick)
+    self:AddClickEvent(self.Button_AddFriend,OnClick)
+    self:AddClickEvent(self.Button_DeleteFriend,OnClick)
+    self:AddClickEvent(self.Button_Accept,OnClick)
+    self:AddClickEvent(self.Button_Refuse,OnClick)
+end
+
+
+
+function  FriendInfoView:SetData(info,status)
+    self.Info=info
+    if status =="NotFriend" then
+        self.Button_AddFriend.gameObject:SetActive(true)
+    elseif status=='AddFriend'then
+        self.Button_Accept.gameObject:SetActive(true)
+        self.Button_Refuse.gameObject:SetActive(true)
+    elseif status=='Friend'then
+        self.Button_DeleteFriend.gameObject:SetActive(true)
+    end
+
+    self.Text_ID.text='UID '..info.Id
+    self.Text_Name.text=info.Name
+    self.Text_Class.text=DataMgr.Instance.Characters[info.Class].Name
+    self.Text_Level.text=info.Level
+
+end

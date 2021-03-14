@@ -45,6 +45,8 @@ public class EntityController : MonoBehaviour, EntityManager.IEntityNotify
     }
     void LateUpdate()
     {
+        if (this.entity == null)
+            return;
 
         if (!this.isCurrentPlayer)
         {

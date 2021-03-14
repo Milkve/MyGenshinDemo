@@ -212,8 +212,10 @@ namespace Network
                         MessageDispatch<T>.Instance.Dispatch(package.sender, package.message.Response);
                 }
             }
-            catch
+            catch (Exception e )
             {
+                Log.Error(e.Message);
+                Log.Error(e.StackTrace);
             }
             finally
             {

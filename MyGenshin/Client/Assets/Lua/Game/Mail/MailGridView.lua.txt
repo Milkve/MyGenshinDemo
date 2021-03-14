@@ -1,0 +1,72 @@
+MailGridView = BaseClass(UINode)
+
+function MailGridView:Construtor(parent, transform)
+    self.viewCfg.prefabName = "UIQuest"
+    self.viewCfg.prefabPath = "ui/Mail/UIMailGrid.prefab"
+    self.viewCfg.parent = parent
+    self.viewCfg.parentTransform = transform
+    self.viewCfg.isDestroyOnClose = true
+    self.viewCfg.component = {}
+    self.select = false
+end
+
+function MailGridView:AddEvent()
+    if self.animator == nil then
+        self.animator = self.UIElementQuestNode_Main:GetComponent("Animator")
+    end
+    self.OnClick = function(data)
+        self:SetCurrent()
+    end
+    self.UIElementQuestNode_Main.ActionOnClick:AddListener(self.OnClick)
+
+    self.eventMgr:AddListener(
+        UINode.event.OnShow,
+        function(callback)
+            self.animator:SetBool("Selected", self.select)
+            callback()
+        end
+    )
+    -- self.OnSelect = function(data)
+    --     self:SetSelect(true)
+    -- end
+    -- self.UIElementQuestNode_Main.ActionOnSelect:AddListener(self.OnSelect)
+    -- self.OnDeselect = function(data)
+    --     self:SetSelect(false)
+    -- end
+    -- self.UIElementQuestNode_Main.ActionOnDeselect:AddListener(self.OnDeselect)
+end
+function MailGridView:SetCurrent()
+    MailCtrl:SetCurrentMail(self.mailinfo)
+end
+
+function MailGridView:SetSelect(bool)
+    if bool == true  then
+        self.select = true
+    elseif bool == false then
+        self.select = false
+    end
+    self.animator:SetBool("Selected", self.select)
+end
+
+function MailGridView:SetData(info)
+    
+    self.mailinfo=info
+    self.Text_Title.text=info.Title
+    self.Text_Sender.text=info.FromInfo.Name
+    local define
+    if info.Gold~=0 then
+        define = DataMgr.Instance.Specials[1]     
+    elseif  info.exp~=0 then
+        define = DataMgr.Instance.Specials[2]
+    elseif info.Items.Count>0 then
+        define = DataMgr.Instance.Items[info.Items[0].Id]
+    end
+    self.Image_Icon.sprite=ResMgr.GetSprite(define.Name,define.Resource)
+
+    self.canvasGroup =  self.UIElementQuestNode_Main.gameObject:GetComponent("CanvasGroup")
+    if info.Status==0 then
+        self.canvasGroup.alpha = 1
+    else
+        self.canvasGroup.alpha=0.5
+    end
+end

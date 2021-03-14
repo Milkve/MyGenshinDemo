@@ -27,6 +27,7 @@ public static class XLuaCustomExport
         typeof(Action<long>),
         typeof(Action<NpcQuestStatus,NpcQuestStatus>),
         typeof(Action<UIState,UIState>),
+        typeof(Action<Result>),
         typeof(Dictionary<UIState, Action<PointerEventData>>),
         typeof(UnityAction),
         typeof(UnityAction<Result,string>),

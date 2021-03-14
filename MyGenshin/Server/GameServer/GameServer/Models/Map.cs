@@ -139,7 +139,7 @@ namespace GameServer.Models
 
         void SendEntitySync(NetConnection<NetSession> conn, NEntitySync nEntitySync)
         {
-            Log.InfoFormat("SendEntitySync:nEntityEvent:{0}", nEntitySync.Event.ToString());
+            //Log.InfoFormat("SendEntitySync:nEntityEvent:{0}", nEntitySync.Event.ToString());
             conn.Session.Response.mapEntitySync = new MapEntitySyncResponse();
             conn.Session.Response.mapEntitySync.entitySyncs.Add(nEntitySync);
             conn.SendResponse();

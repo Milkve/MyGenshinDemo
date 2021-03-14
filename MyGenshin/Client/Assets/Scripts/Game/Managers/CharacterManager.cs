@@ -26,7 +26,7 @@ namespace Managers
 
         public void AddCharacter(NCharacterInfo nCharacterInfo)
         {
-            Debug.Log($"CharacterManager.AddCharacter ID:{ nCharacterInfo.Id}");
+            Debug.Log($"CharacterManager.AddCharacter ID:{ nCharacterInfo.Id} { nCharacterInfo.EntityId}");
             Character character = new Character(nCharacterInfo);
             this.Characters.Add(nCharacterInfo.EntityId, character);
 

@@ -110,7 +110,7 @@ public class PlayerController : MonoBehaviour
         cc.Move(Velocity * Time.deltaTime);
         character.SetEntityData(this.transform.position, this.transform.forward, cc.velocity.magnitude/moveSpeed);
         if (lastV == null) lastV = Velocity;
-        if (Velocity != lastV)
+        if ((Velocity - lastV).magnitude>0.1f)
         {
             SendSync(EntityEvent.None);
             lastV = Velocity;
@@ -137,7 +137,7 @@ public class PlayerController : MonoBehaviour
     }
 
     public void SendSync(NEntityEvent nEntityEvent)
-    {
+    {      
         if (ec != null)
         {
             ec.OnEntityEvent(nEntityEvent);

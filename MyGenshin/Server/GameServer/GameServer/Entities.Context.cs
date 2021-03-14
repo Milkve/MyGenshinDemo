@@ -34,5 +34,7 @@ namespace GameServer
         public virtual DbSet<TQuest> Quests { get; set; }
         public virtual DbSet<TFriend> Friends { get; set; }
         public virtual DbSet<TMessage> Messages { get; set; }
+        public virtual DbSet<TGlobalMessage> GlobalMessages { get; set; }
+        public virtual DbSet<TCharacterGlobalStatus> CharacterGlobalStatus { get; set; }
     }
 }

@@ -22,12 +22,12 @@ function LoginRegisterView:AddEvent()
                 confirm=self.Text_Confirm.text
             }
             if RegisterInfo.accuant=='' or RegisterInfo.password=='' then
-                local LoginTip=LoginTipView:New(self)
+                local LoginTip=UIDelayTipView:New(self)
                 UIManager:Show(LoginTip)
                 LoginTip:SetData("请输入用户名/密码")
                 return
             elseif RegisterInfo.password~=RegisterInfo.confirm then
-                local LoginTip=LoginTipView:New(self)
+                local LoginTip=UIDelayTipView:New(self)
                 UIManager:Show(LoginTip)
                 LoginTip:SetData("两次输入的密码不一致")
                 return

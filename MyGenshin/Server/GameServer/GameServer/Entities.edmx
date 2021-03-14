@@ -15,6 +15,8 @@
     <EntitySet Name="Quests" EntityType="ExtremeWorldModel.Store.Quests" store:Type="Tables" Schema="dbo" />
     <EntitySet Name="Friends" EntityType="ExtremeWorldModel.Store.Friends" store:Type="Tables" Schema="dbo" />
     <EntitySet Name="Messages" EntityType="ExtremeWorldModel.Store.Messages" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="GlobalMessages" EntityType="ExtremeWorldModel.Store.GlobalMessages" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="CharacterGlobalStatus" EntityType="ExtremeWorldModel.Store.CharacterGlobalStatus" store:Type="Tables" Schema="dbo" />
     <AssociationSet Name="UserPlayer" Association="ExtremeWorldModel.Store.UserPlayer">
       <End Role="User" EntitySet="Users" />
       <End Role="Player" EntitySet="Players" />
@@ -46,6 +48,10 @@
     <AssociationSet Name="TCharacterTMessage" Association="ExtremeWorldModel.Store.TCharacterTMessage">
       <End Role="TCharacter" EntitySet="Characters" />
       <End Role="TMessage" EntitySet="Messages" />
+    </AssociationSet>
+    <AssociationSet Name="TCharacterTCharacterGlobalStatus" Association="ExtremeWorldModel.Store.TCharacterTCharacterGlobalStatus">
+      <End Role="TCharacter" EntitySet="Characters" />
+      <End Role="TCharacterGlobalStatus" EntitySet="CharacterGlobalStatus" />
     </AssociationSet>
   </EntityContainer>
   <EntityType Name="Users">
@@ -81,6 +87,7 @@
     <Property Name="Equiped" Type="varbinary(max)" Nullable="false" />
     <Property Name="Level" Type="int" Nullable="false" />
     <Property Name="Exp" Type="bigint" Nullable="false" />
+    <Property Name="CGMsgID" Type="int" Nullable="false" />
     <Property Name="Player_ID" Type="int" Nullable="false" />
   </EntityType>
   <EntityType Name="CharacterItems">
@@ -134,6 +141,7 @@
     <Property Name="FriendClass" Type="int" Nullable="false" />
     <Property Name="FriendLevel" Type="int" Nullable="false" />
     <Property Name="TCharacterID" Type="int" Nullable="false" />
+    <Property Name="IsDelete" Type="bit" Nullable="false" DefaultValue="false" />
   </EntityType>
   <EntityType Name="Messages">
     <Key>
@@ -144,13 +152,36 @@
     <Property Name="TCharacterID" Type="int" Nullable="false" />
     <Property Name="FromID" Type="int" Nullable="false" />
     <Property Name="Status" Type="int" Nullable="false" />
-    <Property Name="Title" Type="nvarchar(max)" Nullable="false" />
-    <Property Name="Message" Type="nvarchar(max)" Nullable="false" />
-    <Property Name="Items" Type="varbinary(max)" Nullable="false" />
-    <Property Name="Equips" Type="varbinary(max)" Nullable="false" />
-    <Property Name="Gold" Type="int" Nullable="false" />
-    <Property Name="Exp" Type="int" Nullable="false" />
-    <Property Name="Time" Type="datetime" Nullable="false" />
+    <Property Name="Title" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="Message" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="Items" Type="varbinary(max)" Nullable="true" />
+    <Property Name="Equips" Type="varbinary(max)" Nullable="true" />
+    <Property Name="Gold" Type="int" Nullable="true" />
+    <Property Name="Exp" Type="int" Nullable="true" />
+    <Property Name="Time" Type="bigint" Nullable="false" />
+  </EntityType>
+  <EntityType Name="GlobalMessages">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Title" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="Message" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="Items" Type="varbinary(max)" Nullable="true" />
+    <Property Name="Equips" Type="varbinary(max)" Nullable="true" />
+    <Property Name="Gold" Type="int" Nullable="true" />
+    <Property Name="Exp" Type="int" Nullable="true" />
+    <Property Name="FromID" Type="int" Nullable="false" />
+    <Property Name="Time" Type="bigint" Nullable="false" />
+  </EntityType>
+  <EntityType Name="CharacterGlobalStatus">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="TCharacterID" Type="int" Nullable="false" />
+    <Property Name="MessageID" Type="int" Nullable="false" />
+    <Property Name="Status" Type="int" Nullable="false" />
   </EntityType>
   <Association Name="UserPlayer">
     <End Role="User" Type="ExtremeWorldModel.Store.Users" Multiplicity="*" />
@@ -248,6 +279,18 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
+  <Association Name="TCharacterTCharacterGlobalStatus">
+    <End Role="TCharacter" Type="ExtremeWorldModel.Store.Characters" Multiplicity="1" />
+    <End Role="TCharacterGlobalStatus" Type="ExtremeWorldModel.Store.CharacterGlobalStatus" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="TCharacter">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="TCharacterGlobalStatus">
+        <PropertyRef Name="TCharacterID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
 </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
@@ -304,6 +347,12 @@
             <End Role="TCharacter" EntitySet="Characters" />
             <End Role="TMessage" EntitySet="Messages" />
           </AssociationSet>
+          <EntitySet Name="GlobalMessages" EntityType="ExtremeWorldModel.TGlobalMessage" />
+          <EntitySet Name="CharacterGlobalStatus" EntityType="ExtremeWorldModel.TCharacterGlobalStatus" />
+          <AssociationSet Name="TCharacterTCharacterGlobalStatus" Association="ExtremeWorldModel.TCharacterTCharacterGlobalStatus">
+            <End Role="TCharacter" EntitySet="Characters" />
+            <End Role="TCharacterGlobalStatus" EntitySet="CharacterGlobalStatus" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="TPlayer">
           <Key>
@@ -340,6 +389,8 @@
           <Property Name="Exp" Type="Int64" Nullable="false" />
           <NavigationProperty Name="Friends" Relationship="ExtremeWorldModel.TCharacterTFriend" FromRole="TCharacter" ToRole="TFriend" />
           <NavigationProperty Name="Messages" Relationship="ExtremeWorldModel.TCharacterTMessage" FromRole="TCharacter" ToRole="TMessage" />
+          <NavigationProperty Name="CharacterGlobalStatus" Relationship="ExtremeWorldModel.TCharacterTCharacterGlobalStatus" FromRole="TCharacter" ToRole="TCharacterGlobalStatus" />
+          <Property Name="CGMsgID" Type="Int32" Nullable="false" />
         </EntityType>
         <Association Name="PlayerCharacter">
           <End Type="ExtremeWorldModel.TPlayer" Role="Player" Multiplicity="1" />
@@ -440,6 +491,7 @@
           <Property Name="FriendLevel" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Character" Relationship="ExtremeWorldModel.TCharacterTFriend" FromRole="TFriend" ToRole="TCharacter" />
           <Property Name="TCharacterID" Type="Int32" Nullable="false" />
+          <Property Name="IsDelete" Type="Boolean" Nullable="false" DefaultValue="False" />
         </EntityType>
         <Association Name="TCharacterTFriend">
           <End Type="ExtremeWorldModel.TCharacter" Role="TCharacter" Multiplicity="1" />
@@ -463,13 +515,13 @@
           <Property Name="TCharacterID" Type="Int32" Nullable="false" />
           <Property Name="FromID" Type="Int32" Nullable="false" />
           <Property Name="Status" Type="Int32" Nullable="false" />
-          <Property Name="Title" Type="String" Nullable="false" />
-          <Property Name="Message" Type="String" Nullable="false" />
-          <Property Name="Items" Type="Binary" Nullable="false" />
-          <Property Name="Equips" Type="Binary" Nullable="false" />
-          <Property Name="Gold" Type="Int32" Nullable="false" />
-          <Property Name="Exp" Type="Int32" Nullable="false" />
-          <Property Name="Time" Type="DateTime" Nullable="false" />
+          <Property Name="Title" Type="String" Nullable="true" />
+          <Property Name="Message" Type="String" Nullable="true" />
+          <Property Name="Items" Type="Binary" Nullable="true" />
+          <Property Name="Equips" Type="Binary" Nullable="true" />
+          <Property Name="Gold" Type="Int32" Nullable="true" />
+          <Property Name="Exp" Type="Int32" Nullable="true" />
+          <Property Name="Time" Type="Int64" Nullable="false" />
         </EntityType>
         <Association Name="TCharacterTMessage">
           <End Type="ExtremeWorldModel.TCharacter" Role="TCharacter" Multiplicity="1" />
@@ -479,6 +531,42 @@
               <PropertyRef Name="ID" />
             </Principal>
             <Dependent Role="TMessage">
+              <PropertyRef Name="TCharacterID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="TGlobalMessage">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Title" Type="String" Nullable="true" />
+          <Property Name="Message" Type="String" Nullable="true" />
+          <Property Name="Items" Type="Binary" Nullable="true" />
+          <Property Name="Equips" Type="Binary" Nullable="true" />
+          <Property Name="Gold" Type="Int32" Nullable="true" />
+          <Property Name="Exp" Type="Int32" Nullable="true" />
+          <Property Name="FromID" Type="Int32" Nullable="false" />
+          <Property Name="Time" Type="Int64" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TCharacterGlobalStatus">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <NavigationProperty Name="Character" Relationship="ExtremeWorldModel.TCharacterTCharacterGlobalStatus" FromRole="TCharacterGlobalStatus" ToRole="TCharacter" />
+          <Property Name="TCharacterID" Type="Int32" Nullable="false" />
+          <Property Name="MessageID" Type="Int32" Nullable="false" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+        </EntityType>
+        <Association Name="TCharacterTCharacterGlobalStatus">
+          <End Type="ExtremeWorldModel.TCharacter" Role="TCharacter" Multiplicity="1" />
+          <End Type="ExtremeWorldModel.TCharacterGlobalStatus" Role="TCharacterGlobalStatus" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TCharacter">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="TCharacterGlobalStatus">
               <PropertyRef Name="TCharacterID" />
             </Dependent>
           </ReferentialConstraint>
@@ -522,6 +610,7 @@
           <ScalarProperty Name="Equiped" ColumnName="Equiped" />
           <ScalarProperty Name="Level" ColumnName="Level" />
           <ScalarProperty Name="Exp" ColumnName="Exp" />
+          <ScalarProperty Name="CGMsgID" ColumnName="CGMsgID" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
@@ -578,6 +667,7 @@
           <ScalarProperty Name="FriendClass" ColumnName="FriendClass" />
           <ScalarProperty Name="FriendLevel" ColumnName="FriendLevel" />
           <ScalarProperty Name="TCharacterID" ColumnName="TCharacterID" />
+          <ScalarProperty Name="IsDelete" ColumnName="IsDelete" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
@@ -596,6 +686,31 @@
           <ScalarProperty Name="Gold" ColumnName="Gold" />
           <ScalarProperty Name="Exp" ColumnName="Exp" />
           <ScalarProperty Name="Time" ColumnName="Time" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="GlobalMessages">
+      <EntityTypeMapping TypeName="IsTypeOf(ExtremeWorldModel.TGlobalMessage)">
+        <MappingFragment StoreEntitySet="GlobalMessages">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Title" ColumnName="Title" />
+          <ScalarProperty Name="Message" ColumnName="Message" />
+          <ScalarProperty Name="Items" ColumnName="Items" />
+          <ScalarProperty Name="Equips" ColumnName="Equips" />
+          <ScalarProperty Name="Gold" ColumnName="Gold" />
+          <ScalarProperty Name="Exp" ColumnName="Exp" />
+          <ScalarProperty Name="FromID" ColumnName="FromID" />
+          <ScalarProperty Name="Time" ColumnName="Time" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="CharacterGlobalStatus">
+      <EntityTypeMapping TypeName="IsTypeOf(ExtremeWorldModel.TCharacterGlobalStatus)">
+        <MappingFragment StoreEntitySet="CharacterGlobalStatus">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="TCharacterID" ColumnName="TCharacterID" />
+          <ScalarProperty Name="MessageID" ColumnName="MessageID" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

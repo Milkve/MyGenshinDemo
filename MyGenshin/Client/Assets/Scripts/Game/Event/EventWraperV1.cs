@@ -5,6 +5,16 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 // 方便Lua绑定事件
+
+
+public class EventWraper
+{
+    Action @event;
+    public virtual void AddListener(Action callback) => @event += callback;
+    public virtual void RemoveListener(Action callback) => @event -= callback;
+    public virtual void Invoke() => @event?.Invoke();
+
+}
 public class EventWraperV1<Tvalue>
 {
     Action<Tvalue> @event;

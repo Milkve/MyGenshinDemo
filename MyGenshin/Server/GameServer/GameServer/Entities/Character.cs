@@ -78,8 +78,8 @@ namespace GameServer.Entities
 
         public void Clear()
         {
-
-            this.friendManager.UpdateInfo();
+            this.friendManager.OfflineNoisy();
+            //this.friendManager.UpdateInfo();
 
         }
     }

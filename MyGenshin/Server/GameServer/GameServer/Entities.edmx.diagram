@@ -20,8 +20,11 @@
         <AssociationConnector Association="ExtremeWorldModel.TCharacterTQuest" />
         <EntityTypeShape EntityType="ExtremeWorldModel.TFriend" Width="1.5" PointX="7.5" PointY="7.375" />
         <AssociationConnector Association="ExtremeWorldModel.TCharacterTFriend" />
-        <EntityTypeShape EntityType="ExtremeWorldModel.TMessage" Width="1.5" PointX="11.625" PointY="3.75" />
+        <EntityTypeShape EntityType="ExtremeWorldModel.TMessage" Width="1.5" PointX="3.625" PointY="6.25" />
         <AssociationConnector Association="ExtremeWorldModel.TCharacterTMessage" />
+        <EntityTypeShape EntityType="ExtremeWorldModel.TGlobalMessage" Width="1.5" PointX="12.875" PointY="2.75" />
+        <EntityTypeShape EntityType="ExtremeWorldModel.TCharacterGlobalStatus" Width="1.5" PointX="5.5" PointY="7.25" />
+        <AssociationConnector Association="ExtremeWorldModel.TCharacterTCharacterGlobalStatus" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

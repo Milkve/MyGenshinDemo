@@ -23,9 +23,9 @@ namespace GameServer
         public string Message { get; set; }
         public byte[] Items { get; set; }
         public byte[] Equips { get; set; }
-        public int Gold { get; set; }
-        public int Exp { get; set; }
-        public System.DateTime Time { get; set; }
+        public Nullable<int> Gold { get; set; }
+        public Nullable<int> Exp { get; set; }
+        public long Time { get; set; }
     
         public virtual TCharacter Character { get; set; }
     }

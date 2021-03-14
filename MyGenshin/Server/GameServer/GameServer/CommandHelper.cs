@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GameServer.Managers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +21,11 @@ namespace GameServer
                     case "exit":
                         run = false;
                         break;
+                    case "send":
+                        Send();
+
+                        break;
+
                     default:
                         Help();
                         break;
@@ -34,6 +40,14 @@ Help:
     exit    Exit Game Server
     help    Show Help
 ");
+        }
+
+
+        public static void Send()
+        {
+            
+            MessageManager.AddGolbalTest();
+
         }
     }
 }
